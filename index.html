@@ -1,38 +1,54 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>ניהול תלמידים</title>
-    <style>
-        body {
-            background-color: #1565c0;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            min-height: 100vh;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 60px;
-        }
-        h1 {
-            font-size: 3em;
-            font-weight: bold;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-        .subtitle {
-            font-size: 1em;
-            opacity: 0.8;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מערכת חכמה לניהול ציונים</title>
+  <style>
+    :root {
+      --bg: #001a33; /* כחול כהה מאוד */
+      --text: #ffffff;
+      --accent: #4da6ff; /* כחול בהיר זוהר לטקסט הראשי */
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Hebrew", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.4;
+      padding: 2rem 1rem;
+    }
+
+    .main-title {
+      color: var(--accent);
+      font-size: clamp(1.8rem, 2vw + 1rem, 2.4rem);
+      font-weight: 700;
+      text-shadow: 0 0 20px rgba(77,166,255,0.6);
+      margin-bottom: 0.75rem;
+    }
+
+    .sub-note {
+      color: var(--text);
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>ניהול תלמידים</h1>
-        <div class="subtitle">האתר מנוהל ע"י יניב רז</div>
-    </div>
+  <div class="main-title">מערכת חכמה לניהול ציונים</div>
+  <div class="sub-note">האתר מנוהל ע"י יניב רז</div>
 </body>
 </html>
+
