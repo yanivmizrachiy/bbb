@@ -326,3 +326,45 @@ def bar3d(cats, vals, ymin, ymax, ystep, colors, ytitle="", W=460, H=340, depth=
         s.append(f'<text x="15" y="{yc:.0f}" text-anchor="middle" fill="{SUB}" font-size="12.5" transform="rotate(-90 15 {yc:.0f})" style="{FONT}">{ytitle}</text>')
     s.append("</svg>")
     return "".join(s)
+
+
+def _book(cx, cy, w, h, color):
+    """A clean open-book glyph centred at (cx,cy)."""
+    hw, hh = w / 2, h / 2
+    top = cy - hh * 0.55
+    bot = cy + hh * 0.50
+    spine_b = cy + hh * 0.30
+    left = f'M{cx:.1f},{top:.1f} L{cx-hw:.1f},{cy-hh*0.12:.1f} L{cx-hw:.1f},{bot:.1f} L{cx:.1f},{spine_b:.1f} Z'
+    right = f'M{cx:.1f},{top:.1f} L{cx+hw:.1f},{cy-hh*0.12:.1f} L{cx+hw:.1f},{bot:.1f} L{cx:.1f},{spine_b:.1f} Z'
+    return (f'<path d="{left}" fill="{color}" stroke="{color}" stroke-width="0.8" stroke-linejoin="round"/>'
+            f'<path d="{right}" fill="{color}" fill-opacity="0.72" stroke="{color}" stroke-width="0.8" stroke-linejoin="round"/>'
+            f'<line x1="{cx:.1f}" y1="{top:.1f}" x2="{cx:.1f}" y2="{spine_b:.1f}" stroke="#ffffff" stroke-width="1.1"/>'
+            f'<line x1="{cx-hw*0.55:.1f}" y1="{cy-hh*0.02:.1f}" x2="{cx-hw*0.55:.1f}" y2="{bot-1:.1f}" stroke="#ffffff" stroke-width="0.6" opacity="0.7"/>'
+            f'<line x1="{cx+hw*0.55:.1f}" y1="{cy-hh*0.02:.1f}" x2="{cx+hw*0.55:.1f}" y2="{bot-1:.1f}" stroke="#ffffff" stroke-width="0.6" opacity="0.7"/>')
+
+
+def pictograph(cats, counts, color="#0d9488", W=640, H=330):
+    """Clean vector pictograph: columns of book icons. cats & counts given left->right."""
+    ml, mr, mt, mb = 24, 24, 44, 52
+    pw, ph = W - ml - mr, H - mt - mb
+    n = len(cats)
+    slot = pw / n
+    maxc = max(counts)
+    cellh = ph / maxc
+    iconh = min(cellh * 0.86, 32)
+    iconw = min(slot * 0.62, iconh * 1.25)
+    base = mt + ph
+    s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
+    # legend (RTL: book on the right, label flows left)
+    bx = W - 30
+    s.append(_book(bx, 16, iconw * 0.8, iconh * 0.8, color))
+    s.append(f'<text x="{bx-14}" y="21" text-anchor="start" fill="{SUB}" font-size="13" style="{FONT}">= תלמיד אחד</text>')
+    for i, (c, cnt) in enumerate(zip(cats, counts)):
+        cx = ml + slot * (i + 0.5)
+        for k in range(cnt):
+            cy = base - cellh * (k + 0.5)
+            s.append(_book(cx, cy, iconw, iconh, color))
+        s.append(f'<text x="{cx:.1f}" y="{base+20}" text-anchor="middle" fill="{INK}" font-size="13" style="{FONT}">{c}</text>')
+    s.append(f'<line x1="{ml}" y1="{base}" x2="{ml+pw}" y2="{base}" stroke="{AXIS}" stroke-width="1.6"/>')
+    s.append("</svg>")
+    return "".join(s)
