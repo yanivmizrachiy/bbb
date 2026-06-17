@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# Generated local A4 preview viewer + rasterized page images (regenerable via build.py)
+index.html
+assets/pages/
+
+# Scratch / temp
+_*.png
+_*.html
+_*.pdf
+*.tmp
