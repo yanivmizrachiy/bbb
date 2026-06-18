@@ -728,49 +728,62 @@ viewer = f"""<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8
 with open(os.path.join(OUT, "viewer.html"), "w", encoding="utf-8") as f:
     f.write(viewer)
 
-# ---- index.html : the premium landing app ----
+# ---- index.html : the premium landing app (responsive, gentle buttons) ----
+PAGES_URL = "https://yanivmizrachiy.github.io/bbb/"
 chips = "".join(f'<span class="chip" style="--cc:{c}"><i>{l}</i>{t}</span>' for l, t, c in TOPICS)
 APP = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>תחום אי־וודאות — אוסף שאלות</title>
 <style>
- *{box-sizing:border-box;margin:0;padding:0}
+ *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
  body{font-family:'Segoe UI','Arial',sans-serif;color:#1f2a44;min-height:100vh;
-      background:radial-gradient(1200px 600px at 80% -10%,#e7ecff 0%,transparent 60%),
-                 radial-gradient(900px 500px at 0% 0%,#dff5ee 0%,transparent 55%),#f3f5fb}
- .wrap{max-width:740px;margin:0 auto;padding:30px 18px 70px}
+      background:radial-gradient(1100px 560px at 85% -12%,#e7ecff 0%,transparent 60%),
+                 radial-gradient(820px 460px at -5% 2%,#dff5ee 0%,transparent 55%),#f4f6fb}
+ .wrap{max-width:680px;margin:0 auto;padding:26px 16px 60px}
  .hero{background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 52%,#0d9488 100%);
-       border-radius:26px;padding:42px 28px;color:#fff;text-align:center;
-       box-shadow:0 18px 50px rgba(79,70,229,.32)}
- .hero .kick{font-size:12px;letter-spacing:4px;opacity:.9;margin-bottom:10px}
- .hero h1{font-size:36px;letter-spacing:.5px;margin-bottom:8px}
- .hero p{opacity:.94;font-size:15px}
- .stats{display:flex;gap:12px;justify-content:center;margin:-26px auto 0;max-width:430px;position:relative}
- .stat{flex:1;background:#fff;border-radius:16px;padding:16px 8px;text-align:center;
-       box-shadow:0 8px 22px rgba(20,25,50,.10)}
- .stat b{display:block;font-size:26px;font-weight:800;
+       border-radius:24px;padding:38px 24px;color:#fff;text-align:center;
+       box-shadow:0 14px 38px rgba(79,70,229,.26)}
+ .hero .kick{font-size:11.5px;letter-spacing:4px;opacity:.9;margin-bottom:10px}
+ .hero h1{font-size:clamp(28px,7vw,36px);letter-spacing:.5px;margin-bottom:8px}
+ .hero p{opacity:.94;font-size:clamp(13px,3.6vw,15px)}
+ .stats{display:flex;gap:10px;justify-content:center;margin:-24px auto 0;max-width:420px;position:relative}
+ .stat{flex:1;background:#fff;border-radius:15px;padding:14px 6px;text-align:center;
+       box-shadow:0 8px 20px rgba(20,25,50,.09)}
+ .stat b{display:block;font-size:clamp(20px,6vw,25px);font-weight:800;
          background:linear-gradient(135deg,#4f46e5,#0d9488);-webkit-background-clip:text;background-clip:text;color:transparent}
- .stat span{font-size:12px;color:#5b6573}
- .btns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:26px 0 8px}
- .btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px 16px;border-radius:18px;
-      font-size:16.5px;font-weight:700;text-decoration:none;color:#fff;
-      box-shadow:0 10px 26px rgba(20,25,50,.16);transition:transform .09s ease, box-shadow .2s ease}
- .btn:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(20,25,50,.22)}
- .btn:active{transform:translateY(-1px)}
- .btn .ic{font-size:22px;line-height:1}
- .btn.view{background:linear-gradient(135deg,#4f46e5,#7c3aed)}
- .btn.dl{background:linear-gradient(135deg,#0d9488,#10b981)}
- .btn.gh{background:linear-gradient(135deg,#334155,#1e293b)}
- .btn.full{grid-column:1/-1;background:linear-gradient(135deg,#4f46e5,#0d9488);font-size:17px}
- .lbl{text-align:center;color:#6b7280;font-size:13px;font-weight:700;margin:26px 0 12px;
-      letter-spacing:1px}
- .chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
- .chip{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;padding:8px 13px;
-       font-size:13px;color:#3a4256;box-shadow:0 4px 14px rgba(20,25,50,.07);border-right:4px solid var(--cc)}
- .chip i{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
-        background:var(--cc);color:#fff;font-style:normal;font-weight:800;font-size:12px}
- .foot{text-align:center;color:#9aa3b8;font-size:11.5px;margin-top:30px}
- @media(max-width:480px){.btns{grid-template-columns:1fr}.hero h1{font-size:30px}}
+ .stat span{font-size:11.5px;color:#5b6573}
+ .actions{display:flex;flex-direction:column;gap:11px;margin:26px 0 6px}
+ .act{display:flex;align-items:center;gap:13px;padding:14px 15px;background:#fff;
+      border:1px solid #e7e9f2;border-radius:16px;text-decoration:none;color:#1f2a44;
+      box-shadow:0 2px 8px rgba(20,25,50,.04);transition:transform .15s ease,box-shadow .2s ease,border-color .2s ease}
+ .act:hover{transform:translateY(-2px);border-color:#d3d8ea;box-shadow:0 10px 22px rgba(20,25,50,.09)}
+ .act:active{transform:translateY(0)}
+ .act .ic{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+          font-size:21px;color:#fff;flex-shrink:0}
+ .act .tx{flex:1;min-width:0}
+ .act .tx b{display:block;font-size:16px;font-weight:700}
+ .act .tx span{font-size:12.5px;color:#7a8194}
+ .act .ar{color:#c4cad8;font-size:24px;font-weight:300;flex-shrink:0}
+ .ic-view{background:linear-gradient(135deg,#6366f1,#7c3aed)}
+ .ic-dl{background:linear-gradient(135deg,#0d9488,#10b981)}
+ .ic-gh{background:linear-gradient(135deg,#475569,#1e293b)}
+ .link{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e7e9f2;border-radius:16px;
+       padding:12px 14px;margin:18px 0 6px;box-shadow:0 2px 8px rgba(20,25,50,.04);flex-wrap:wrap}
+ .link .ic{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);
+           color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+ .link .u{flex:1;min-width:140px}
+ .link .u .t{font-size:11.5px;color:#7a8194;font-weight:600}
+ .link .u a{display:block;font-size:13px;color:#4f46e5;text-decoration:none;word-break:break-all;direction:ltr;text-align:right}
+ .cpy{border:1px solid #d8dcee;background:#f6f7fd;color:#4f46e5;border-radius:11px;padding:9px 14px;
+      font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .1s}
+ .cpy:active{transform:scale(.95)}
+ .lbl{text-align:center;color:#6b7280;font-size:12.5px;font-weight:700;margin:24px 0 11px;letter-spacing:1px}
+ .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+ .chip{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;padding:7px 12px;
+       font-size:12.5px;color:#3a4256;box-shadow:0 3px 12px rgba(20,25,50,.06);border-right:4px solid var(--cc)}
+ .chip i{display:flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:50%;
+        background:var(--cc);color:#fff;font-style:normal;font-weight:800;font-size:11.5px}
+ .foot{text-align:center;color:#9aa3b8;font-size:11px;margin-top:28px;line-height:1.7}
 </style></head><body>
 <div class="wrap">
  <div class="hero">
@@ -783,20 +796,45 @@ APP = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
    <div class="stat"><b>__NCHAP__</b><span>פרקים</span></div>
    <div class="stat"><b>__NPAGES__</b><span>עמודי A4</span></div>
  </div>
- <div class="btns">
-   <a class="btn view" href="viewer.html"><span class="ic">📖</span> צפייה בדפים</a>
-   <a class="btn dl" href="__PDF__" download><span class="ic">⬇</span> הורדת ה־PDF</a>
-   <a class="btn gh" href="__GH__" target="_blank" rel="noopener"><span class="ic">🔗</span> GitHub</a>
-   <a class="btn full" href="viewer.html"><span class="ic">✦</span> פתיחת החוברת המלאה</a>
+
+ <div class="link">
+   <span class="ic">🌐</span>
+   <span class="u"><span class="t">קישור לאפליקציה (לשיתוף)</span><a href="__PAGES__" target="_blank" rel="noopener">__PAGES__</a></span>
+   <button class="cpy" id="cpb" onclick="cp()">העתקה</button>
  </div>
+
+ <div class="actions">
+   <a class="act" href="viewer.html">
+     <span class="ic ic-view">📖</span>
+     <span class="tx"><b>צפייה בדפים</b><span>תצוגת A4 איכותית · גלילה נוחה</span></span>
+     <span class="ar">‹</span>
+   </a>
+   <a class="act" href="__PDF__" download>
+     <span class="ic ic-dl">⬇</span>
+     <span class="tx"><b>הורדת ה־PDF</b><span>כל הדפים למכשיר · מוכן להדפסה</span></span>
+     <span class="ar">‹</span>
+   </a>
+   <a class="act" href="__GH__" target="_blank" rel="noopener">
+     <span class="ic ic-gh">🔗</span>
+     <span class="tx"><b>קוד המקור ב־GitHub</b><span>קישור חיצוני · נפתח בלשונית חדשה</span></span>
+     <span class="ar">‹</span>
+   </a>
+ </div>
+
  <div class="lbl">הפרקים בחוברת</div>
  <div class="chips">__CHIPS__</div>
  <div class="foot">הופק מתוך מסמך "תחום אי־וודאות" · גרפיקה וקטורית · __NPAGES__ עמודי A4</div>
 </div>
+<script>
+function cp(){var u="__PAGES__";var b=document.getElementById('cpb');
+ (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){b.textContent='הועתק ✓';},
+ function(){var t=document.createElement('textarea');t.value=u;document.body.appendChild(t);t.select();try{document.execCommand('copy');b.textContent='הועתק ✓';}catch(e){b.textContent='העתק ידנית';}document.body.removeChild(t);});
+ setTimeout(function(){b.textContent='העתקה';},1600);}
+</script>
 </body></html>"""
 APP = (APP.replace("__NQ__", str(nq)).replace("__NCHAP__", str(nchap))
           .replace("__NPAGES__", str(npages)).replace("__PDF__", pdf_href)
-          .replace("__GH__", GH_URL).replace("__CHIPS__", chips))
+          .replace("__GH__", GH_URL).replace("__PAGES__", PAGES_URL).replace("__CHIPS__", chips))
 with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
     f.write(APP)
 print(f"App + viewer written. questions={nq} chapters={nchap} pages={npages}")

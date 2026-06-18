@@ -2,6 +2,9 @@
 __pycache__/
 *.pyc
 
+# Redundant build intermediate (the PDF + viewer are the deliverables)
+worksheet.html
+
 # Scratch / temp working files
 _*.png
 _*.html
