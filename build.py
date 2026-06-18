@@ -43,12 +43,20 @@ def fig(svg, cap=""):
     return f'<div class="figure">{svg}{c}</div>'
 
 CARDS = []
+_qcount = [0]
 def Q(num, body, src="", grade=""):
+    # int num -> auto sequential number per section; string num -> titled question (kept as label)
+    if isinstance(num, int):
+        _qcount[0] += 1
+        label = str(_qcount[0])
+    else:
+        label = num
     pill = f'<span class="pill">{src}</span>' if src else ""
     gp = f'<span class="pill grade">{grade}</span>' if grade else ""
-    CARDS.append(f'<div class="q"><div class="qhead"><span class="qnum">{num}</span><div class="qtags">{src and pill}{gp}</div></div><div class="qbody">{body}</div></div>')
+    CARDS.append(f'<div class="q"><div class="qhead"><span class="qnum">{label}</span><div class="qtags">{src and pill}{gp}</div></div><div class="qbody">{body}</div></div>')
 
 def SECTION(letter, title, subtitle, color):
+    _qcount[0] = 0
     CARDS.append(f'<section class="topic" style="--c:{color}"><div class="sectionbar"><div class="secletter">{letter}</div><div><div class="sectitle">{title}</div><div class="secsub">{subtitle}</div></div></div>')
 
 def ENDSEC():
@@ -61,11 +69,6 @@ def note(html):
 # SECTION A — איסוף וארגון נתונים
 # =====================================================================
 SECTION("א", "איסוף וארגון נתונים", "סטטיסטיקה · כיתה ז' · טבלאות, דיאגרמות ושכיחות", "#4f46e5")
-
-Q(1, "גלגל המשחק שלפניכם הוא משחקו החדש של סער."
-  + fig(C.color_wheel([('סגול',180,'#8b5cf6'),('אדום',30,'#ef4444'),('כחול',30,'#3b82f6'),('ירוק',30,'#22c55e'),('כתום',90,'#f59e0b')]))
-  + "<p>מתוך " + L("600") + " סיבובים, כמה פעמים בערך יש לצפות לכך שהמחוג ייעצר בגזרה האדומה?</p>"
-  + mc([("א.", "30"), ("ב.", "40"), ("ג.", "50"), ("ד.", "60")]))
 
 Q(2, "ארבעה תלמידים צפו במשך שעה בתנועת כלי־הרכב שעברו ליד בית־ספרם. הטבלה מציגה את תוצאות התצפית:"
   + table(['מספר', 'סוג כלי־הרכב'], [['60', 'מכוניות'], ['30', 'אופניים'], ['10', 'אוטובוסים'], ['20', 'משאיות']])
@@ -257,6 +260,11 @@ Q(1, "שני כרטיסים שהוכנו להגרלה ממוספרים במספ�
   + ". יתר הכרטיסים — ללא זכייה. עדה היא הראשונה למשוך כרטיס אחד."
   + parts([("א.", "מהי ההסתברות שעדה תמשוך כרטיס <b>ללא זכייה</b>?", 1),
            ("ב.", "האם ההסתברות לבחור כרטיס זוכה שווה / גדולה / קטנה מההסתברות לבחור כרטיס ללא זכייה? נמקו.", 2)]))
+
+Q(1, "גלגל המשחק שלפניכם הוא משחקו החדש של סער."
+  + '<div class="figure" style="max-width:336px;margin:8px auto">' + C.color_wheel([('סגול',180,'#8b5cf6'),('אדום',30,'#ef4444'),('כחול',30,'#3b82f6'),('ירוק',30,'#22c55e'),('כתום',90,'#f59e0b')]) + '</div>'
+  + "<p>מתוך " + L("600") + " סיבובים, כמה פעמים בערך יש לצפות לכך שהמחוג ייעצר בגזרה האדומה?</p>"
+  + mc([("א.", "30"), ("ב.", "40"), ("ג.", "50"), ("ד.", "60")]))
 
 Q(2, "גלגל המשחק של רוני מחולק לשמונה גזרות שוות בשלושה צבעים: כתום, סגול וירוק. רוני סובב את הגלגל " + L("1000")
   + " פעמים. בטבלה מצוין כמה פעמים נעצר הגלגל בכל גזרה:"

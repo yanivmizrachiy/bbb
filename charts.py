@@ -343,9 +343,9 @@ def _book(cx, cy, w, h, color):
             f'<line x1="{cx+hw*0.55:.1f}" y1="{cy-hh*0.02:.1f}" x2="{cx+hw*0.55:.1f}" y2="{bot-1:.1f}" stroke="#ffffff" stroke-width="0.6" opacity="0.7"/>')
 
 
-def color_wheel(segments, W=380, H=330, r=96, pointer_deg=-45):
-    """A spinner / color wheel. segments: list of (label, degrees, color), clockwise from top."""
-    cx, cy = W / 2, H / 2 + 4
+def color_wheel(segments, W=370, H=232, r=82, pointer_deg=-45):
+    """Spinner / color wheel with a tidy side legend. segments: (label, degrees, color), clockwise from top."""
+    cx, cy = W - r - 24, H / 2
     s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
     a = -90.0
     for label, deg, col in segments:
@@ -355,23 +355,22 @@ def color_wheel(segments, W=380, H=330, r=96, pointer_deg=-45):
         large = 1 if deg > 180 else 0
         s.append(f'<path d="M{cx:.1f},{cy:.1f} L{x0:.2f},{y0:.2f} A{r},{r} 0 {large} 1 {x1:.2f},{y1:.2f} Z" '
                  f'fill="{col}" stroke="#ffffff" stroke-width="2"/>')
-        mid = math.radians(a + deg / 2)
-        lr = r * 1.17
-        lx = cx + lr * math.cos(mid); ly = cy + lr * math.sin(mid)
-        anchor = "middle"
-        if math.cos(mid) > 0.34: anchor = "start"
-        elif math.cos(mid) < -0.34: anchor = "end"
-        s.append(f'<text x="{lx:.1f}" y="{ly+4:.1f}" text-anchor="{anchor}" fill="{INK}" font-size="13" font-weight="600" style="{FONT}">{label}</text>')
         a += deg
     s.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{INK}" stroke-width="2.5"/>')
-    pa = math.radians(pointer_deg); pr = r * 0.80
+    pa = math.radians(pointer_deg); pr = r * 0.78
     px = cx + pr * math.cos(pa); py = cy + pr * math.sin(pa)
     s.append(f'<line x1="{cx}" y1="{cy}" x2="{px:.1f}" y2="{py:.1f}" stroke="{INK}" stroke-width="4" stroke-linecap="round"/>')
-    ah = math.radians(pointer_deg)
-    bx, by = px - 13 * math.cos(ah - 0.4), py - 13 * math.sin(ah - 0.4)
-    ex, ey = px - 13 * math.cos(ah + 0.4), py - 13 * math.sin(ah + 0.4)
+    bx, by = px - 13 * math.cos(pa - 0.4), py - 13 * math.sin(pa - 0.4)
+    ex, ey = px - 13 * math.cos(pa + 0.4), py - 13 * math.sin(pa + 0.4)
     s.append(f'<polygon points="{px:.1f},{py:.1f} {bx:.1f},{by:.1f} {ex:.1f},{ey:.1f}" fill="{INK}"/>')
     s.append(f'<circle cx="{cx}" cy="{cy}" r="6.5" fill="{INK}"/>')
+    # legend on the left (RTL: swatch on the right of each row, name flows left)
+    sx = cx - r - 26
+    y = cy - len(segments) * 12 + 6
+    for label, deg, col in segments:
+        s.append(f'<rect x="{sx}" y="{y-11:.0f}" width="15" height="15" rx="3" fill="{col}"/>')
+        s.append(f'<text x="{sx-8}" y="{y+1:.0f}" text-anchor="start" fill="{INK}" font-size="13.5" style="{FONT}">{label}</text>')
+        y += 24
     s.append("</svg>")
     return "".join(s)
 
