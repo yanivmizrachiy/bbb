@@ -683,7 +683,7 @@ with sync_playwright() as p:
     b.close()
 print("PDF written OK")
 
-# index.html = comfortable A4 page viewer: rasterize the real PDF to page-images and stack them.
+# Rasterize the real PDF to page-images for the in-browser viewer.
 import fitz, glob
 pages_dir = os.path.join(OUT, "assets", "pages")
 os.makedirs(pages_dir, exist_ok=True)
@@ -696,29 +696,107 @@ for i in range(npages):
 _doc.close()
 
 ts = int(time.time())
+nq = len([c for c in CARDS if c.startswith('<div class="q"')])
+nchap = len(TOPICS)
+pdf_href = urllib.parse.quote(PDF_NAME)
+GH_URL = "https://github.com/yanivmizrachiy/bbb"
+
+# ---- viewer.html : high-quality A4 page gallery ----
 sheets = "".join(
     f'<div class="sheet"><img src="assets/pages/p{i+1:03d}.png?v={ts}" loading="lazy" alt="עמוד {i+1}">'
     f'<div class="pgn">עמוד {i+1} / {npages}</div></div>'
     for i in range(npages))
 viewer = f"""<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>תחום אי-ודאות — תצוגת הדפסה A4</title>
+<title>תחום אי־וודאות — תצוגת הדפים</title>
 <style>
   html,body {{ margin:0; background:#e9ebf0; font-family:'Segoe UI',Arial,sans-serif; }}
-  .bar {{ position:sticky; top:0; z-index:5; background:#2b2d31; color:#eef;
-          padding:9px 16px; font-size:13px; text-align:center; }}
+  .bar {{ position:sticky; top:0; z-index:5; background:#191c2e; color:#eef;
+          padding:11px 16px; font-size:13.5px; display:flex; gap:16px; align-items:center; justify-content:center; }}
   .bar b {{ color:#fff; }}
-  .bar a {{ color:#7fd6ff; text-decoration:none; }}
+  .bar a {{ color:#8ad7ff; text-decoration:none; font-weight:600; }}
   .wrap {{ padding:22px 10px 70px; display:flex; flex-direction:column; align-items:center; gap:22px; }}
   .sheet {{ width:min(820px,96vw); background:#fff; box-shadow:0 5px 20px rgba(20,25,50,.22);
             border-radius:3px; overflow:hidden; }}
   .sheet img {{ display:block; width:100%; height:auto; }}
   .pgn {{ text-align:center; color:#7a8194; font-size:11px; padding:6px; background:#fafbfd; border-top:1px solid #eef; }}
 </style></head><body>
-<div class="bar">📄 <b>תצוגת הדפסה A4</b> · {npages} עמודים · מתעדכן אוטומטית אחרי כל שינוי
- &nbsp;·&nbsp; <a href="{urllib.parse.quote(PDF_NAME)}?v={ts}" download>⬇ הורדת PDF</a></div>
+<div class="bar"><a href="index.html">⌂ דף הבית</a> <span>📄 <b>תצוגת הדפים A4</b> · {npages} עמודים</span>
+ <a href="{pdf_href}?v={ts}" download>⬇ הורדה</a></div>
 <div class="wrap">{sheets}</div>
 </body></html>"""
-with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
+with open(os.path.join(OUT, "viewer.html"), "w", encoding="utf-8") as f:
     f.write(viewer)
-print("Viewer index.html written:", npages, "pages")
+
+# ---- index.html : the premium landing app ----
+chips = "".join(f'<span class="chip" style="--cc:{c}"><i>{l}</i>{t}</span>' for l, t, c in TOPICS)
+APP = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תחום אי־וודאות — אוסף שאלות</title>
+<style>
+ *{box-sizing:border-box;margin:0;padding:0}
+ body{font-family:'Segoe UI','Arial',sans-serif;color:#1f2a44;min-height:100vh;
+      background:radial-gradient(1200px 600px at 80% -10%,#e7ecff 0%,transparent 60%),
+                 radial-gradient(900px 500px at 0% 0%,#dff5ee 0%,transparent 55%),#f3f5fb}
+ .wrap{max-width:740px;margin:0 auto;padding:30px 18px 70px}
+ .hero{background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 52%,#0d9488 100%);
+       border-radius:26px;padding:42px 28px;color:#fff;text-align:center;
+       box-shadow:0 18px 50px rgba(79,70,229,.32)}
+ .hero .kick{font-size:12px;letter-spacing:4px;opacity:.9;margin-bottom:10px}
+ .hero h1{font-size:36px;letter-spacing:.5px;margin-bottom:8px}
+ .hero p{opacity:.94;font-size:15px}
+ .stats{display:flex;gap:12px;justify-content:center;margin:-26px auto 0;max-width:430px;position:relative}
+ .stat{flex:1;background:#fff;border-radius:16px;padding:16px 8px;text-align:center;
+       box-shadow:0 8px 22px rgba(20,25,50,.10)}
+ .stat b{display:block;font-size:26px;font-weight:800;
+         background:linear-gradient(135deg,#4f46e5,#0d9488);-webkit-background-clip:text;background-clip:text;color:transparent}
+ .stat span{font-size:12px;color:#5b6573}
+ .btns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:26px 0 8px}
+ .btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px 16px;border-radius:18px;
+      font-size:16.5px;font-weight:700;text-decoration:none;color:#fff;
+      box-shadow:0 10px 26px rgba(20,25,50,.16);transition:transform .09s ease, box-shadow .2s ease}
+ .btn:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(20,25,50,.22)}
+ .btn:active{transform:translateY(-1px)}
+ .btn .ic{font-size:22px;line-height:1}
+ .btn.view{background:linear-gradient(135deg,#4f46e5,#7c3aed)}
+ .btn.dl{background:linear-gradient(135deg,#0d9488,#10b981)}
+ .btn.gh{background:linear-gradient(135deg,#334155,#1e293b)}
+ .btn.full{grid-column:1/-1;background:linear-gradient(135deg,#4f46e5,#0d9488);font-size:17px}
+ .lbl{text-align:center;color:#6b7280;font-size:13px;font-weight:700;margin:26px 0 12px;
+      letter-spacing:1px}
+ .chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
+ .chip{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;padding:8px 13px;
+       font-size:13px;color:#3a4256;box-shadow:0 4px 14px rgba(20,25,50,.07);border-right:4px solid var(--cc)}
+ .chip i{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
+        background:var(--cc);color:#fff;font-style:normal;font-weight:800;font-size:12px}
+ .foot{text-align:center;color:#9aa3b8;font-size:11.5px;margin-top:30px}
+ @media(max-width:480px){.btns{grid-template-columns:1fr}.hero h1{font-size:30px}}
+</style></head><body>
+<div class="wrap">
+ <div class="hero">
+   <div class="kick">אוסף שאלות להדפסה</div>
+   <h1>תְּחוּם אִי־וַדָּאוּת</h1>
+   <p>סטטיסטיקה והסתברות · חטיבת הביניים · כיתות ז'–ח'</p>
+ </div>
+ <div class="stats">
+   <div class="stat"><b>__NQ__</b><span>שאלות</span></div>
+   <div class="stat"><b>__NCHAP__</b><span>פרקים</span></div>
+   <div class="stat"><b>__NPAGES__</b><span>עמודי A4</span></div>
+ </div>
+ <div class="btns">
+   <a class="btn view" href="viewer.html"><span class="ic">📖</span> צפייה בדפים</a>
+   <a class="btn dl" href="__PDF__" download><span class="ic">⬇</span> הורדת ה־PDF</a>
+   <a class="btn gh" href="__GH__" target="_blank" rel="noopener"><span class="ic">🔗</span> GitHub</a>
+   <a class="btn full" href="viewer.html"><span class="ic">✦</span> פתיחת החוברת המלאה</a>
+ </div>
+ <div class="lbl">הפרקים בחוברת</div>
+ <div class="chips">__CHIPS__</div>
+ <div class="foot">הופק מתוך מסמך "תחום אי־וודאות" · גרפיקה וקטורית · __NPAGES__ עמודי A4</div>
+</div>
+</body></html>"""
+APP = (APP.replace("__NQ__", str(nq)).replace("__NCHAP__", str(nchap))
+          .replace("__NPAGES__", str(npages)).replace("__PDF__", pdf_href)
+          .replace("__GH__", GH_URL).replace("__CHIPS__", chips))
+with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
+    f.write(APP)
+print(f"App + viewer written. questions={nq} chapters={nchap} pages={npages}")
