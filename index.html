@@ -1,107 +1,79 @@
 <!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>תחום אי־וודאות — אוסף שאלות</title>
-<style>
+<title>ספר השאלות — חטיבת הביניים</title><style>
  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
- body{font-family:'Segoe UI','Arial',sans-serif;color:#1f2a44;min-height:100vh;
-      background:radial-gradient(1100px 560px at 85% -12%,#e7ecff 0%,transparent 60%),
-                 radial-gradient(820px 460px at -5% 2%,#dff5ee 0%,transparent 55%),#f4f6fb}
- .wrap{max-width:680px;margin:0 auto;padding:26px 16px 60px}
- .hero{background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 52%,#0d9488 100%);
-       border-radius:24px;padding:38px 24px;color:#fff;text-align:center;
-       box-shadow:0 14px 38px rgba(79,70,229,.26)}
- .hero .kick{font-size:11.5px;letter-spacing:4px;opacity:.9;margin-bottom:10px}
- .hero h1{font-size:clamp(28px,7vw,36px);letter-spacing:.5px;margin-bottom:8px}
+ body{font-family:'Segoe UI','Arial',sans-serif;color:#1f2a44;min-height:100vh;background:radial-gradient(1100px 560px at 85% -12%,#e7ecff 0,transparent 60%),radial-gradient(820px 460px at -5% 2%,#dff5ee 0,transparent 55%),#f4f6fb}
+ .wrap{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+ .hero{background:linear-gradient(135deg,#4f46e5 0,#7c3aed 52%,#0d9488 100%);border-radius:26px;padding:42px 26px;color:#fff;text-align:center;box-shadow:0 16px 44px rgba(79,70,229,.28)}
+ .hero .kick{font-size:12px;letter-spacing:5px;opacity:.9;margin-bottom:10px}
+ .hero h1{font-size:clamp(30px,8vw,42px);letter-spacing:.5px;margin-bottom:8px}
  .hero p{opacity:.94;font-size:clamp(13px,3.6vw,15px)}
- .stats{display:flex;gap:10px;justify-content:center;margin:-24px auto 0;max-width:420px;position:relative}
- .stat{flex:1;background:#fff;border-radius:15px;padding:14px 6px;text-align:center;
-       box-shadow:0 8px 20px rgba(20,25,50,.09)}
- .stat b{display:block;font-size:clamp(20px,6vw,25px);font-weight:800;
-         background:linear-gradient(135deg,#4f46e5,#0d9488);-webkit-background-clip:text;background-clip:text;color:transparent}
+ .stats{display:flex;gap:11px;justify-content:center;margin:-26px auto 0;max-width:440px;position:relative}
+ .stat{flex:1;background:#fff;border-radius:16px;padding:15px 6px;text-align:center;box-shadow:0 8px 22px rgba(20,25,50,.10)}
+ .stat b{display:block;font-size:clamp(22px,6vw,27px);font-weight:800;background:linear-gradient(135deg,#4f46e5,#0d9488);-webkit-background-clip:text;background-clip:text;color:transparent}
  .stat span{font-size:11.5px;color:#5b6573}
- .actions{display:flex;flex-direction:column;gap:11px;margin:26px 0 6px}
- .act{display:flex;align-items:center;gap:13px;padding:14px 15px;background:#fff;
-      border:1px solid #e7e9f2;border-radius:16px;text-decoration:none;color:#1f2a44;
-      box-shadow:0 2px 8px rgba(20,25,50,.04);transition:transform .15s ease,box-shadow .2s ease,border-color .2s ease}
- .act:hover{transform:translateY(-2px);border-color:#d3d8ea;box-shadow:0 10px 22px rgba(20,25,50,.09)}
- .act:active{transform:translateY(0)}
- .act .ic{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;
-          font-size:21px;color:#fff;flex-shrink:0}
- .act .tx{flex:1;min-width:0}
- .act .tx b{display:block;font-size:16px;font-weight:700}
- .act .tx span{font-size:12.5px;color:#7a8194}
- .act .ar{color:#c4cad8;font-size:24px;font-weight:300;flex-shrink:0}
- .ic-view{background:linear-gradient(135deg,#6366f1,#7c3aed)}
- .ic-dl{background:linear-gradient(135deg,#0d9488,#10b981)}
- .ic-print{background:linear-gradient(135deg,#f59e0b,#d97706)}
- .ic-gh{background:linear-gradient(135deg,#475569,#1e293b)}
- .link{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e7e9f2;border-radius:16px;
-       padding:12px 14px;margin:18px 0 6px;box-shadow:0 2px 8px rgba(20,25,50,.04);flex-wrap:wrap}
- .link .ic{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);
-           color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
- .link .u{flex:1;min-width:140px}
- .link .u .t{font-size:11.5px;color:#7a8194;font-weight:600}
- .link .u a{display:block;font-size:13px;color:#4f46e5;text-decoration:none;word-break:break-all;direction:ltr;text-align:right}
- .cpy{border:1px solid #d8dcee;background:#f6f7fd;color:#4f46e5;border-radius:11px;padding:9px 14px;
-      font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .1s}
- .cpy:active{transform:scale(.95)}
- .lbl{text-align:center;color:#6b7280;font-size:12.5px;font-weight:700;margin:24px 0 11px;letter-spacing:1px}
- .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
- .chip{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;padding:7px 12px;
-       font-size:12.5px;color:#3a4256;box-shadow:0 3px 12px rgba(20,25,50,.06);border-right:4px solid var(--cc)}
- .chip i{display:flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:50%;
-        background:var(--cc);color:#fff;font-style:normal;font-weight:800;font-size:11.5px}
- .foot{text-align:center;color:#9aa3b8;font-size:11px;margin-top:28px;line-height:1.7}
+ .lbl{text-align:center;color:#6b7280;font-size:13px;font-weight:700;margin:28px 0 14px;letter-spacing:1px}
+ .subject{background:#fff;border:1px solid #e7e9f2;border-top:5px solid var(--cc);border-radius:18px;padding:18px;margin:0 0 16px;box-shadow:0 4px 16px rgba(20,25,50,.06)}
+ .shead{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+ .sicon{width:52px;height:52px;border-radius:15px;background:var(--cc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:800;flex-shrink:0}
+ .sinfo{flex:1;min-width:0}
+ .stitle{font-size:19px;font-weight:800}
+ .ssub{font-size:13px;color:#5b6573}
+ .smeta{font-size:12px;color:var(--cc);font-weight:700;margin-top:4px}
+ .sbtns{display:grid;grid-template-columns:1fr 1fr auto;gap:9px}
+ .sb{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 10px;border-radius:13px;text-decoration:none;font-size:14px;font-weight:700;transition:transform .12s,filter .2s}
+ .sb:hover{transform:translateY(-2px);filter:brightness(.97)}
+ .sb.view{background:var(--cc);color:#fff}
+ .sb.dl{background:#eef1f7;color:#1f2a44}
+ .sb.open{background:#fff;border:1px solid #e0e3ee;color:#5b6573}
+ .ext{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 0;padding:13px;border-radius:14px;background:#fff;border:1px solid #e7e9f2;color:#475569;text-decoration:none;font-size:13.5px;font-weight:700}
+ .foot{text-align:center;color:#9aa3b8;font-size:11.5px;margin-top:26px;line-height:1.8}
+ @media(max-width:470px){.sbtns{grid-template-columns:1fr 1fr}.sb.open{grid-column:1/-1}}
 </style></head><body>
 <div class="wrap">
  <div class="hero">
-   <div class="kick">אוסף שאלות להדפסה</div>
-   <h1>תְּחוּם אִי־וַדָּאוּת</h1>
-   <p>סטטיסטיקה והסתברות · חטיבת הביניים · כיתות ז'–ח'</p>
+   <div class="kick">חוברת שאלות · חטיבת הביניים</div>
+   <h1>סֵפֶר הַשְּׁאֵלוֹת</h1>
+   <p>שני נושאים נפרדים · עיצוב אחיד · מוכן להדפסה ב־A4</p>
  </div>
  <div class="stats">
-   <div class="stat"><b>54</b><span>שאלות</span></div>
-   <div class="stat"><b>7</b><span>פרקים</span></div>
-   <div class="stat"><b>43</b><span>עמודי A4</span></div>
+   <div class="stat"><b>115</b><span>שאלות</span></div>
+   <div class="stat"><b>2</b><span>נושאים</span></div>
+   <div class="stat"><b>70</b><span>עמודי A4</span></div>
  </div>
+ <div class="lbl">בחרו נושא</div>
 
- <div class="link">
-   <span class="ic">🌐</span>
-   <span class="u"><span class="t">קישור לאפליקציה (לשיתוף)</span><a href="https://yanivmizrachiy.github.io/bbb/" target="_blank" rel="noopener">https://yanivmizrachiy.github.io/bbb/</a></span>
-   <button class="cpy" id="cpb" onclick="cp()">העתקה</button>
- </div>
-
- <div class="actions">
-   <a class="act" href="viewer.html">
-     <span class="ic ic-view">📖</span>
-     <span class="tx"><b>צפייה בדפים</b><span>תצוגת A4 איכותית · גלילה נוחה</span></span>
-     <span class="ar">‹</span>
-   </a>
-   <a class="act" href="%D7%AA%D7%97%D7%95%D7%9D-%D7%90%D7%99-%D7%95%D7%93%D7%90%D7%95%D7%AA-%D7%A9%D7%90%D7%9C%D7%95%D7%AA.pdf" download>
-     <span class="ic ic-dl">⬇</span>
-     <span class="tx"><b>הורדת ה־PDF</b><span>כל הדפים למכשיר · מוכן להדפסה</span></span>
-     <span class="ar">‹</span>
-   </a>
-   <a class="act" href="%D7%AA%D7%97%D7%95%D7%9D-%D7%90%D7%99-%D7%95%D7%93%D7%90%D7%95%D7%AA-%D7%A9%D7%90%D7%9C%D7%95%D7%AA.pdf" target="_blank" rel="noopener">
-     <span class="ic ic-print">🖨️</span>
-     <span class="tx"><b>הדפסה מהירה</b><span>פתיחת ה־PDF להדפסה ישירה</span></span>
-     <span class="ar">‹</span>
-   </a>
-   <a class="act" href="https://github.com/yanivmizrachiy/bbb" target="_blank" rel="noopener">
-     <span class="ic ic-gh">🔗</span>
-     <span class="tx"><b>קוד המקור ב־GitHub</b><span>קישור חיצוני · נפתח בלשונית חדשה</span></span>
-     <span class="ar">‹</span>
-   </a>
- </div>
-
- <div class="lbl">הפרקים בחוברת</div>
- <div class="chips"><span class="chip" style="--cc:#4f46e5"><i>א</i>איסוף וארגון נתונים</span><span class="chip" style="--cc:#0d9488"><i>ב</i>שכיחות יחסית</span><span class="chip" style="--cc:#7c3aed"><i>ג</i>מדדי מרכז</span><span class="chip" style="--cc:#e11d48"><i>ד</i>הסתברות</span><span class="chip" style="--cc:#d97706"><i>ה</i>אינטרפולציה</span><span class="chip" style="--cc:#059669"><i>ו</i>אקסטרפולציה</span><span class="chip" style="--cc:#0284c7"><i>ז</i>פירוש משני מקורות מידע</span></div>
- <div class="foot">הופק מתוך מסמך "תחום אי־וודאות" · גרפיקה וקטורית · 43 עמודי A4</div>
+   <div class="subject" style="--cc:#4f46e5">
+     <div class="shead">
+       <div class="sicon">%</div>
+       <div class="sinfo">
+         <div class="stitle">תחום אי־וודאות</div>
+         <div class="ssub">סטטיסטיקה והסתברות</div>
+         <div class="smeta">54 שאלות · 7 פרקים · 43 עמ'</div>
+       </div>
+     </div>
+     <div class="sbtns">
+       <a class="sb view" href="uncertainty/viewer.html">📖 צפייה בדפים</a>
+       <a class="sb dl" href="uncertainty/%D7%AA%D7%97%D7%95%D7%9D-%D7%90%D7%99-%D7%95%D7%93%D7%90%D7%95%D7%AA-%D7%A9%D7%90%D7%9C%D7%95%D7%AA.pdf" download>⬇ הורדת PDF</a>
+       <a class="sb open" href="uncertainty/index.html">פתיחה ›</a>
+     </div>
+   </div>
+   <div class="subject" style="--cc:#0284c7">
+     <div class="shead">
+       <div class="sicon">∑</div>
+       <div class="sinfo">
+         <div class="stitle">אלגברה לכיתה ז'</div>
+         <div class="ssub">ביטויים, משוואות וגרפים</div>
+         <div class="smeta">61 שאלות · 6 פרקים · 27 עמ'</div>
+       </div>
+     </div>
+     <div class="sbtns">
+       <a class="sb view" href="algebra/viewer.html">📖 צפייה בדפים</a>
+       <a class="sb dl" href="algebra/%D7%90%D7%9C%D7%92%D7%91%D7%A8%D7%94-%D7%96-%D7%A9%D7%90%D7%9C%D7%95%D7%AA.pdf" download>⬇ הורדת PDF</a>
+       <a class="sb open" href="algebra/index.html">פתיחה ›</a>
+     </div>
+   </div>
+ <a class="ext" href="https://github.com/yanivmizrachiy/bbb" target="_blank" rel="noopener">🔗 קוד המקור ב־GitHub</a>
+ <div class="foot">כל נושא עומד בפני עצמו (ללא ערבוב) · הנתונים מתעדכנים אוטומטית לפי תוכן השאלות</div>
 </div>
-<script>
-function cp(){var u="https://yanivmizrachiy.github.io/bbb/";var b=document.getElementById('cpb');
- (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){b.textContent='הועתק ✓';},
- function(){var t=document.createElement('textarea');t.value=u;document.body.appendChild(t);t.select();try{document.execCommand('copy');b.textContent='הועתק ✓';}catch(e){b.textContent='העתק ידנית';}document.body.removeChild(t);});
- setTimeout(function(){b.textContent='העתקה';},1600);}
-</script>
 </body></html>

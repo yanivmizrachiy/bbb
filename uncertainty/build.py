@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, charts as C
 
-OUT = r"C:\Users\yaniv\OneDrive\Desktop\תחום-אי-ודאות-שאלות"
+OUT = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(OUT, exist_ok=True)
 
 # ---------- small HTML helpers ----------
@@ -820,9 +820,9 @@ APP = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
      <span class="tx"><b>הדפסה מהירה</b><span>פתיחת ה־PDF להדפסה ישירה</span></span>
      <span class="ar">‹</span>
    </a>
-   <a class="act" href="__GH__" target="_blank" rel="noopener">
-     <span class="ic ic-gh">🔗</span>
-     <span class="tx"><b>קוד המקור ב־GitHub</b><span>קישור חיצוני · נפתח בלשונית חדשה</span></span>
+   <a class="act" href="../index.html">
+     <span class="ic ic-gh">⌂</span>
+     <span class="tx"><b>חזרה לדף הראשי</b><span>כל הספר — אי-ודאות ואלגברה</span></span>
      <span class="ar">‹</span>
    </a>
  </div>
@@ -843,4 +843,10 @@ APP = (APP.replace("__NQ__", str(nq)).replace("__NCHAP__", str(nchap))
           .replace("__GH__", GH_URL).replace("__PAGES__", PAGES_URL).replace("__CHIPS__", chips))
 with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
     f.write(APP)
-print(f"App + viewer written. questions={nq} chapters={nchap} pages={npages}")
+
+import json
+json.dump({"key": "uncertainty", "title": "תחום אי־וודאות", "subtitle": "סטטיסטיקה והסתברות",
+           "questions": nq, "chapters": nchap, "pages": npages, "pdf": PDF_NAME,
+           "color": "#4f46e5", "icon": "%"},
+          open(os.path.join(OUT, "meta.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+print(f"App + viewer + meta written. questions={nq} chapters={nchap} pages={npages}")
