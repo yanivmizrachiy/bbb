@@ -4,7 +4,7 @@ with fully dynamic statistics read from each subject's meta.json."""
 import os, sys, json, subprocess, urllib.parse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-SUBJECTS = ["uncertainty", "algebra", "algebra8"]   # order on the home page (source-file order)
+SUBJECTS = ["uncertainty", "algebra", "algebra8", "geometry8"]   # order on the home page (source-file order)
 GH_URL = "https://github.com/yanivmizrachiy/bbb"
 
 # 1) build every subject (each writes its own index/viewer/PDF/pages/meta.json)
