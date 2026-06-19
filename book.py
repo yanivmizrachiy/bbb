@@ -36,13 +36,13 @@ for m in metas:
        <div class="sinfo">
          <div class="stitle">{m['title']}</div>
          <div class="ssub">{m['subtitle']}</div>
-         <div class="smeta">{m['questions']} שאלות · {m['chapters']} פרקים · {m['pages']} עמ'</div>
+         <div class="smeta">{m['questions']} שאלות &nbsp;·&nbsp; {m['chapters']} פרקים &nbsp;·&nbsp; {m['pages']} עמ'</div>
        </div>
      </div>
      <div class="sbtns">
-       <a class="sb view" href="{m['key']}/viewer.html">📖 צפייה בדפים</a>
-       <a class="sb dl" href="{pdf}" download>⬇ הורדת PDF</a>
-       <a class="sb open" href="{m['key']}/index.html">פתיחה ›</a>
+       <a class="sb" href="{m['key']}/viewer.html">צפייה בדפים</a>
+       <a class="sb" href="{pdf}" download>הורדה</a>
+       <a class="sb" href="{m['key']}/index.html">פתיחה</a>
      </div>
    </div>"""
 
@@ -60,29 +60,28 @@ HOME = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
  .stat{flex:1;background:#fff;border-radius:16px;padding:15px 6px;text-align:center;box-shadow:0 8px 22px rgba(20,25,50,.10)}
  .stat b{display:block;font-size:clamp(22px,6vw,27px);font-weight:800;background:linear-gradient(135deg,#4f46e5,#0d9488);-webkit-background-clip:text;background-clip:text;color:transparent}
  .stat span{font-size:11.5px;color:#5b6573}
- .lbl{text-align:center;color:#6b7280;font-size:13px;font-weight:700;margin:28px 0 14px;letter-spacing:1px}
- .subject{background:#fff;border:1px solid #e7e9f2;border-top:5px solid var(--cc);border-radius:18px;padding:18px;margin:0 0 16px;box-shadow:0 4px 16px rgba(20,25,50,.06)}
- .shead{display:flex;align-items:center;gap:14px;margin-bottom:14px}
- .sicon{width:52px;height:52px;border-radius:15px;background:var(--cc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:800;flex-shrink:0}
+ .lbl{text-align:center;color:#9aa1b3;font-size:11px;font-weight:600;margin:30px 0 16px;letter-spacing:4px}
+ .subject{background:#fff;border:0.75px solid #e8eaf1;border-radius:16px;margin:0 0 16px;overflow:hidden;box-shadow:0 6px 22px rgba(20,25,50,.05)}
+ .subject::before{content:"";display:block;height:3px;background:var(--cc)}
+ .shead{display:flex;align-items:center;gap:15px;padding:20px 22px 16px}
+ .sicon{width:46px;height:46px;border-radius:12px;border:1.25px solid var(--cc);color:var(--cc);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0}
  .sinfo{flex:1;min-width:0}
- .stitle{font-size:19px;font-weight:800}
- .ssub{font-size:13px;color:#5b6573}
- .smeta{font-size:12px;color:var(--cc);font-weight:700;margin-top:4px}
- .sbtns{display:grid;grid-template-columns:1fr 1fr auto;gap:9px}
- .sb{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 10px;border-radius:13px;text-decoration:none;font-size:14px;font-weight:700;transition:transform .12s,filter .2s}
- .sb:hover{transform:translateY(-2px);filter:brightness(.97)}
- .sb.view{background:var(--cc);color:#fff}
- .sb.dl{background:#eef1f7;color:#1f2a44}
- .sb.open{background:#fff;border:1px solid #e0e3ee;color:#5b6573}
- .ext{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 0;padding:13px;border-radius:14px;background:#fff;border:1px solid #e7e9f2;color:#475569;text-decoration:none;font-size:13.5px;font-weight:700}
- .foot{text-align:center;color:#9aa3b8;font-size:11.5px;margin-top:26px;line-height:1.8}
- @media(max-width:470px){.sbtns{grid-template-columns:1fr 1fr}.sb.open{grid-column:1/-1}}
+ .stitle{font-size:18px;font-weight:700;letter-spacing:.2px}
+ .ssub{font-size:12.5px;color:#6b7280;margin-top:1px}
+ .smeta{font-size:11.5px;color:var(--cc);font-weight:600;margin-top:7px;letter-spacing:.3px}
+ .sbtns{display:flex;border-top:0.75px solid #eef0f4}
+ .sb{flex:1;text-align:center;padding:13px 8px;font-size:13.5px;font-weight:600;color:#3a4256;text-decoration:none;border-inline-start:0.75px solid #eef0f4;transition:background .15s,color .15s}
+ .sb:first-child{border-inline-start:none}
+ .sb:hover{background:#fafbff;color:var(--cc)}
+ .ext{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0 0;padding:13px;border-radius:13px;background:transparent;border:0.75px solid #d7dae6;color:#6b7280;text-decoration:none;font-size:12.5px;font-weight:600;letter-spacing:.5px}
+ .ext:hover{background:#fff;color:#4f46e5}
+ .foot{text-align:center;color:#b6bbc7;font-size:9.5px;margin-top:28px;letter-spacing:3px}
 </style></head><body>
 <div class="wrap">
  <div class="hero">
    <div class="kick">אוסף שאלות להדפסה</div>
    <h1>מָתֵמָטִיקָה לַחֲטִיבַת הַבֵּינַיִים</h1>
-   <p>שני נושאים נפרדים · עיצוב אחיד · מוכן להדפסה ב־A4</p>
+   <p>שאלות מקור · עיצוב אחיד · מוכן להדפסה ב־A4</p>
  </div>
  <div class="stats">
    <div class="stat"><b>__TOTQ__</b><span>שאלות</span></div>
@@ -91,8 +90,8 @@ HOME = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
  </div>
  <div class="lbl">בחרו נושא</div>
 __CARDS__
- <a class="ext" href="__GH__" target="_blank" rel="noopener">🔗 קוד המקור ב־GitHub</a>
- <div class="foot">כל נושא עומד בפני עצמו (ללא ערבוב) · הנתונים מתעדכנים אוטומטית לפי תוכן השאלות</div>
+ <a class="ext" href="__GH__" target="_blank" rel="noopener">קוד המקור ב־GitHub</a>
+ <div class="foot">מתמטיקה · חטיבת הביניים</div>
 </div>
 </body></html>"""
 HOME = (HOME.replace("__TOTQ__", str(tot_q)).replace("__TOTS__", str(tot_s))

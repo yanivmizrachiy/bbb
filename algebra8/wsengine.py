@@ -107,12 +107,15 @@ p { margin:6px 0; }
 .cover h1 { font-size:40pt; margin:0 0 6px; letter-spacing:.5px; }
 .cover .sub { font-size:15pt; opacity:.95; }
 .cover .meta { margin-top:14px; font-size:11pt; opacity:.9; }
-.toc { margin:30px 8px 0; }
-.toc h2 { color:#4f46e5; font-size:15pt; border-bottom:2px solid #e6e8ee; padding-bottom:6px; }
-.toc ol { list-style:none; padding:0; margin:10px 0; }
-.toc li { display:flex; align-items:center; gap:12px; padding:8px 6px; border-bottom:1px dashed #e6e8ee; font-size:12pt;}
-.toc .dot { width:26px; height:26px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; flex:0 0 auto; }
-.cover .foot { margin-top:auto; text-align:center; color:#7a8194; font-size:9.5pt; padding-top:18px;}
+.toc { margin:40px 6px 0; }
+.toc h2 { color:#1f2a44; font-size:12pt; font-weight:600; letter-spacing:5px; padding-bottom:12px; border-bottom:1.5px solid #1f2a44; margin:0; }
+.toc ol { list-style:none; padding:0; margin:0; }
+.toc li { display:flex; align-items:center; gap:18px; padding:13px 2px; border-bottom:0.75px solid #ececf1; }
+.toc li:last-child { border-bottom:none; }
+.toc .idx { color:var(--cc,#4f46e5); font-size:11pt; font-weight:600; letter-spacing:1px; min-width:24px; text-align:center; }
+.toc .nm { flex:1; font-size:12pt; color:#2a3142; letter-spacing:.2px; }
+.toc .tick { width:24px; height:1.5px; background:var(--cc,#4f46e5); opacity:.5; }
+.cover .foot { margin-top:auto; text-align:center; color:#b6bbc7; font-size:8pt; letter-spacing:3px; padding-top:18px;}
 .sectionbar { display:flex; align-items:center; gap:16px; background:var(--c); color:#fff; border-radius:14px; padding:14px 20px; margin:4px 0 14px; page-break-before: always; page-break-after: avoid; box-shadow:0 4px 14px rgba(0,0,0,.10); }
 .secletter { width:46px; height:46px; border-radius:12px; background:rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; font-size:22pt; font-weight:800; }
 .sectitle { font-size:17pt; font-weight:800; }
@@ -152,12 +155,12 @@ def render(OUT, h1, subtitle, meta_line, pdf_name, meta):
     """Assemble cover + all CARDS, then emit worksheet.html, PDF, page images,
     viewer.html, index.html (app) and meta.json into OUT."""
     import time, urllib.parse, json
-    toc = "".join(f'<li><span class="dot" style="background:{c}">{l}</span><span>{t}</span></li>'
+    toc = "".join(f'<li style="--cc:{c}"><span class="idx">{l}</span><span class="nm">{t}</span><span class="tick"></span></li>'
                   for l, t, c in SECTIONS)
     cover = f"""<div class="cover">
-  <div class="band"><h1>{h1}</h1><div class="sub">{subtitle}</div><div class="meta">{meta_line}</div></div>
+  <div class="band"><h1>{h1}</h1><div class="sub">{subtitle}</div></div>
   <div class="toc"><h2>תוכן העניינים</h2><ol>{toc}</ol></div>
-  <div class="foot">הופק מתוך תוכנית הלימודים · השאלות בלבד, בעיצוב מחודש להדפסה</div>
+  <div class="foot">מתמטיקה · חטיבת הביניים</div>
 </div>"""
     html = (f'<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
             f'<title>{h1}</title><style>{CSS}</style></head><body>' + cover + "".join(CARDS) + "</body></html>")
