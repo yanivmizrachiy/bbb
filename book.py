@@ -8,9 +8,11 @@ SUBJECTS = ["uncertainty", "algebra"]          # order on the home page
 GH_URL = "https://github.com/yanivmizrachiy/bbb"
 
 # 1) build every subject (each writes its own index/viewer/PDF/pages/meta.json)
-for sub in SUBJECTS:
-    print(f"=== building {sub} ===")
-    subprocess.run([sys.executable, "build.py"], cwd=os.path.join(ROOT, sub), check=True)
+#    pass --home-only to regenerate just the home page from existing meta.json
+if "--home-only" not in sys.argv:
+    for sub in SUBJECTS:
+        print(f"=== building {sub} ===")
+        subprocess.run([sys.executable, "build.py"], cwd=os.path.join(ROOT, sub), check=True)
 
 # 2) read live stats
 metas = []
@@ -46,7 +48,7 @@ for m in metas:
 
 HOME = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ספר השאלות — חטיבת הביניים</title><style>
+<title>מתמטיקה לחטיבת הביניים</title><style>
  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
  body{font-family:'Segoe UI','Arial',sans-serif;color:#1f2a44;min-height:100vh;background:radial-gradient(1100px 560px at 85% -12%,#e7ecff 0,transparent 60%),radial-gradient(820px 460px at -5% 2%,#dff5ee 0,transparent 55%),#f4f6fb}
  .wrap{max-width:720px;margin:0 auto;padding:28px 16px 64px}
@@ -78,8 +80,8 @@ HOME = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 </style></head><body>
 <div class="wrap">
  <div class="hero">
-   <div class="kick">חוברת שאלות · חטיבת הביניים</div>
-   <h1>סֵפֶר הַשְּׁאֵלוֹת</h1>
+   <div class="kick">אוסף שאלות להדפסה</div>
+   <h1>מָתֵמָטִיקָה לַחֲטִיבַת הַבֵּינַיִים</h1>
    <p>שני נושאים נפרדים · עיצוב אחיד · מוכן להדפסה ב־A4</p>
  </div>
  <div class="stats">
@@ -98,7 +100,7 @@ HOME = (HOME.replace("__TOTQ__", str(tot_q)).replace("__TOTS__", str(tot_s))
 open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(HOME)
 
 # 4) dynamic README
-rd = ["# ספר השאלות — חטיבת הביניים 📚", "",
+rd = ["# מתמטיקה לחטיבת הביניים 📚", "",
       f"אוסף שאלות מעוצב להדפסה ב־A4, מחולק ל־**{tot_s} נושאים נפרדים** (ללא ערבוב ביניהם), "
       "עם עיצוב אחיד וגרפיקה וקטורית. כל הנתונים המספריים נגזרים אוטומטית מתוכן השאלות.", "",
       f"🌐 **אפליקציה חיה:** https://yanivmizrachiy.github.io/bbb/", "",
