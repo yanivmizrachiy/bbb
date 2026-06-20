@@ -210,3 +210,49 @@ def x_segments():
 
 def cong_plain():
     return _tri_pair({})
+
+
+# ---- topic-4 (similarity) reconstructed figures ----
+def palm_shadow():
+    g = 150
+    b = seg((10, g), (330, g))                       # ground
+    # person (small right triangle)
+    P0, P1, Ptop = (40, g), (120, g), (120, 78)
+    b += seg(P0, P1) + seg(P1, Ptop) + seg(P0, Ptop) + right_angle(P1, P0, Ptop, size=9)
+    b += label(((P0[0]+P1[0])/2, g+14), "2.15 מ'", size=11)
+    b += label((P1[0]+24, (g+Ptop[1])/2), "1.72 מ'", size=11)
+    # palm (large right triangle, same base angle)
+    Q0, Q1, Qtop = (165, g), (320, g), (320, 28)
+    b += seg(Q0, Q1) + seg(Q1, Qtop) + seg(Q0, Qtop) + right_angle(Q1, Q0, Qtop, size=9)
+    b += label(((Q0[0]+Q1[0])/2, g+14), "12 מ'", size=11)
+    b += label((Q1[0]-22, (g+Qtop[1])/2), "x = ?", size=11, col=ACC)
+    return _svg(340, 172, b)
+
+
+def square_in_tri():
+    A, B, C = (120, 14), (18, 168), (222, 168)
+    S, R, Q, P = (66, 168), (150, 168), (150, 96), (66, 96)
+    b = poly([A, B, C]) + poly([P, Q, R, S], col=ACC)
+    b += right_angle(S, P, R, size=8) + right_angle(R, Q, S, size=8)
+    b += vertex(A, "A", 0, -7) + vertex(B, "B", -9, 6) + vertex(C, "C", 9, 6)
+    b += vertex(P, "P", -9, -2) + vertex(Q, "Q", 9, -2) + vertex(R, "R", 9, 14) + vertex(S, "S", -9, 14)
+    return _svg(240, 182, b)
+
+
+def rect_38():
+    A, B, C, D = (24, 16), (184, 16), (184, 92), (24, 92)
+    b = poly([A, B, C, D])
+    b += label(((A[0]+B[0])/2, A[1]-6), "8 ס\"מ", size=12)
+    b += label((A[0]-8, (A[1]+D[1])/2+4), "3 ס\"מ", size=12, anchor="end")
+    b += vertex(A, "A", -8, -3) + vertex(B, "B", 8, -3) + vertex(C, "C", 8, 14) + vertex(D, "D", -8, 14)
+    return _svg(210, 110, b)
+
+
+def drone_cone():
+    K, L, R = (120, 14), (44, 162), (196, 162)
+    M = (120, 162)
+    b = poly([K, L, R]) + seg(K, M, dash=True) + right_angle(M, L, K, size=8)
+    b += label((K[0]+40, (K[1]+M[1])/2), "20 מ'", size=11)
+    b += label(((L[0]+R[0])/2, M[1]+15), "16 מ'", size=11)
+    b += vertex(K, "K", 0, -7)
+    return _svg(240, 182, b)
