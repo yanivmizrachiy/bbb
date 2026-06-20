@@ -54,9 +54,10 @@ def table(headers, rows, cls="tbl"):
     out.append('</tbody></table>')
     return "".join(out)
 
-def fig(svg, cap=""):
+def fig(svg, cap="", w=None):
     c = f'<div class="cap">{cap}</div>' if cap else ""
-    return f'<div class="figure">{svg}{c}</div>'
+    style = f' style="max-width:{w}%;margin-inline:auto"' if w else ""
+    return f'<div class="figure"{style}>{svg}{c}</div>'
 
 def img(name, w=64, cap=""):
     c = f'<div class="cap">{cap}</div>' if cap else ""
