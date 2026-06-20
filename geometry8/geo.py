@@ -70,12 +70,13 @@ def arc(center, a, b, r=20, col=INK, text="", tdx=0, tdy=0):
     import math
     def ang(p): return math.atan2(p[1]-center[1], p[0]-center[0])
     a0, a1 = ang(a), ang(b)
+    d = (a1 - a0) % (2*math.pi)
+    if d > math.pi:                      # always draw the interior (minor) arc
+        a0, a1 = a1, a0
+        d = 2*math.pi - d
     x0, y0 = center[0]+r*math.cos(a0), center[1]+r*math.sin(a0)
     x1, y1 = center[0]+r*math.cos(a1), center[1]+r*math.sin(a1)
-    d = (a1-a0) % (2*math.pi)
-    large = 1 if d > math.pi else 0
-    sweep = 1
-    s = f'<path d="M{x0:.1f},{y0:.1f} A{r},{r} 0 {large} {sweep} {x1:.1f},{y1:.1f}" fill="none" stroke="{col}" stroke-width="1.6"/>'
+    s = f'<path d="M{x0:.1f},{y0:.1f} A{r},{r} 0 0 1 {x1:.1f},{y1:.1f}" fill="none" stroke="{col}" stroke-width="1.6"/>'
     if text:
         mid = (a0 + d/2)
         tx, ty = center[0]+(r+11)*math.cos(mid), center[1]+(r+11)*math.sin(mid)
@@ -147,3 +148,65 @@ def inh_yehuda():
     b += vertex(A, "A", 0, -7) + vertex(B, "B", -9, 4) + vertex(C, "C", 9, 4)
     b += vertex(F, "F", -10, -2) + vertex(E, "E", 10, -2) + vertex(D, "D", 0, 16)
     return _svg(320, 160, b)
+
+
+# ---- topic-3 (congruence) reconstructed figures ----
+def _tri_pair(marks):
+    """Two congruent triangles side by side. marks: dict with optional
+    'sides':[(idx,n)], 'angles':[(vertex,n)] applied to BOTH triangles.
+    Triangle vertices indexed 0=A(top),1=B(left),2=C(right)."""
+    import math
+    L = [(62, 22), (20, 128), (128, 128)]
+    R = [(250, 22), (208, 128), (316, 128)]
+    b = poly(L) + poly(R)
+    side_pts = {0: (0, 1), 1: (0, 2), 2: (1, 2)}   # AB, AC, BC
+    for idx, n in marks.get("sides", []):
+        i, j = side_pts[idx]
+        b += tick(L[i], L[j], n) + tick(R[i], R[j], n)
+    arcr = {0: 16, 1: 22, 2: 28}
+    for v, n in marks.get("angles", []):
+        others = [k for k in (0, 1, 2) if k != v]
+        for T in (L, R):
+            b += arc(T[v], T[others[0]], T[others[1]], r=arcr.get(n, 18))
+            if n == 2:
+                b += arc(T[v], T[others[0]], T[others[1]], r=arcr[n]+5)
+    names = ["A", "B", "C"]
+    off = [(0, -7), (-9, 6), (9, 6)]
+    for T in (L, R):
+        for k in range(3):
+            b += vertex(T[k], names[k] if T is L else names[k]+"'", off[k][0], off[k][1])
+    return _svg(340, 150, b)
+
+
+def cong_sas():
+    return _tri_pair({"sides": [(0, 1), (1, 2)], "angles": [(0, 1)]})   # AB,AC + ∠A
+
+
+def cong_asa():
+    return _tri_pair({"sides": [(2, 1)], "angles": [(1, 1), (2, 2)]})   # BC + ∠B,∠C
+
+
+def cong_sss():
+    return _tri_pair({"sides": [(0, 1), (1, 2), (2, 3)]})               # AB,AC,BC
+
+
+def isosceles_ext():
+    A, B, C, D = (120, 20), (40, 140), (200, 140), (280, 140)
+    b = poly([A, B, C]) + seg(C, D) + seg(A, D)
+    b += tick(A, B) + tick(A, C)
+    b += vertex(A, "A", 0, -7) + vertex(B, "B", -9, 6) + vertex(C, "C", 0, 16) + vertex(D, "D", 9, 6)
+    return _svg(320, 165, b)
+
+
+def x_segments():
+    A, C = (30, 28), (250, 150)
+    B, D = (30, 150), (250, 28)
+    M = (140, 89)
+    b = seg(A, C) + seg(B, D) + seg(A, B) + seg(C, D)
+    b += tick(A, M) + tick(M, C) + tick(B, M, 2) + tick(M, D, 2)
+    b += vertex(A, "A", -9, 0) + vertex(B, "B", -9, 6) + vertex(C, "C", 9, 6) + vertex(D, "D", 9, 0) + vertex(M, "M", 0, -8)
+    return _svg(290, 175, b)
+
+
+def cong_plain():
+    return _tri_pair({})
