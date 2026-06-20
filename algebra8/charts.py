@@ -448,3 +448,131 @@ def points_plot(points, xmin, xmax, xstep, ymin, ymax, ystep, xtitle="", ytitle=
         s.append(f'<text x="{ml+8}" y="{mt+12}" text-anchor="start" fill="{SUB}" font-size="13" style="{FONT}">{ytitle}</text>')
     s.append("</svg>")
     return "".join(s)
+
+
+# ---------------------------------------------------------------------------
+# Full Cartesian coordinate plane (vector reconstruction of source graphs).
+# Origin-centred axes with arrows, numbered ticks, exact lines / points / curves.
+# ---------------------------------------------------------------------------
+def _clip_line(m, b, xmin, xmax, ymin, ymax):
+    """Return the two endpoints where y=mx+b enters/exits the view box."""
+    cand = []
+    for xx in (xmin, xmax):
+        yy = m * xx + b
+        if ymin - 1e-9 <= yy <= ymax + 1e-9:
+            cand.append((xx, yy))
+    if abs(m) > 1e-12:
+        for yy in (ymin, ymax):
+            xx = (yy - b) / m
+            if xmin - 1e-9 <= xx <= xmax + 1e-9:
+                cand.append((xx, yy))
+    uniq = []
+    for p in cand:
+        if not any(abs(p[0] - q[0]) < 1e-6 and abs(p[1] - q[1]) < 1e-6 for q in uniq):
+            uniq.append(p)
+    uniq.sort()
+    return (uniq[0], uniq[-1]) if len(uniq) >= 2 else None
+
+
+_POS = {"tr": (7, -7, "start"), "tl": (-7, -7, "end"), "br": (7, 15, "start"),
+        "bl": (-7, 15, "end"), "t": (0, -9, "middle"), "b": (0, 16, "middle"),
+        "r": (9, 5, "start"), "l": (-9, 5, "end")}
+
+
+def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
+          xlabel="x", ylabel="y", xstep=1, ystep=1, labx=None, laby=None,
+          W=380, H=330, title=""):
+    """Cartesian plane. lines:[(m,b,color,label?,dash?)], points:[(x,y,label,color?,pos?)],
+    curves:[(pts,color,label?,dash?)]. labx/laby = numeric-label spacing."""
+    lines = lines or []; points = points or []; curves = curves or []
+    labx = labx or xstep; laby = laby or ystep
+    ml = mr = 14; mt = 16 + (16 if title else 0); mb = 14
+    pw, ph = W - ml - mr, H - mt - mb
+
+    def X(x): return ml + (x - xmin) / (xmax - xmin) * pw
+    def Y(y): return mt + (ymax - y) / (ymax - ymin) * ph
+
+    x0, y0 = X(0), Y(0)
+    s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
+    if title:
+        s.append(f'<text x="{W/2:.0f}" y="13" text-anchor="middle" fill="{INK}" font-size="14" font-weight="700" style="{FONT}">{title}</text>')
+    # grid
+    import math as _m
+    gx = _m.ceil(xmin / xstep) * xstep
+    while gx <= xmax + 1e-9:
+        s.append(f'<line x1="{X(gx):.1f}" y1="{mt}" x2="{X(gx):.1f}" y2="{mt+ph}" stroke="{GRID}" stroke-width="1"/>')
+        gx += xstep
+    gy = _m.ceil(ymin / ystep) * ystep
+    while gy <= ymax + 1e-9:
+        s.append(f'<line x1="{ml}" y1="{Y(gy):.1f}" x2="{ml+pw}" y2="{Y(gy):.1f}" stroke="{GRID}" stroke-width="1"/>')
+        gy += ystep
+    # axes + arrowheads
+    s.append(f'<line x1="{ml}" y1="{y0:.1f}" x2="{ml+pw}" y2="{y0:.1f}" stroke="{INK}" stroke-width="1.6"/>')
+    s.append(f'<line x1="{x0:.1f}" y1="{mt}" x2="{x0:.1f}" y2="{mt+ph}" stroke="{INK}" stroke-width="1.6"/>')
+    s.append(f'<path d="M{ml+pw+1},{y0:.1f} l-8,-4 l0,8 z" fill="{INK}"/>')
+    s.append(f'<path d="M{x0:.1f},{mt-1} l-4,8 l8,0 z" fill="{INK}"/>')
+    # numeric tick labels (skip 0)
+    gx = _m.ceil(xmin / labx) * labx
+    while gx <= xmax + 1e-9:
+        if abs(gx) > 1e-9:
+            s.append(f'<text x="{X(gx):.1f}" y="{y0+13:.1f}" text-anchor="middle" fill="{SUB}" font-size="10.5" style="{FONT}">{_num(gx)}</text>')
+        gx += labx
+    gy = _m.ceil(ymin / laby) * laby
+    while gy <= ymax + 1e-9:
+        if abs(gy) > 1e-9:
+            s.append(f'<text x="{x0-5:.1f}" y="{Y(gy)+3.5:.1f}" text-anchor="end" fill="{SUB}" font-size="10.5" style="{FONT}">{_num(gy)}</text>')
+        gy += laby
+    s.append(f'<text x="{x0-5:.1f}" y="{y0+13:.1f}" text-anchor="end" fill="{SUB}" font-size="10.5" style="{FONT}">O</text>')
+    # axis names
+    s.append(f'<text x="{ml+pw-2:.0f}" y="{y0-7:.1f}" text-anchor="end" fill="{INK}" font-size="13" font-style="italic" style="{FONT}">{xlabel}</text>')
+    s.append(f'<text x="{x0+7:.1f}" y="{mt+11}" text-anchor="start" fill="{INK}" font-size="13" font-style="italic" style="{FONT}">{ylabel}</text>')
+    # curves (sampled polylines)
+    for cv in curves:
+        pts = cv[0]; col = cv[1] if len(cv) > 1 else PAL[0]
+        dash = ' stroke-dasharray="7 5"' if (len(cv) > 3 and cv[3]) else ""
+        pl = " ".join(f"{X(px):.1f},{Y(py):.1f}" for px, py in pts)
+        s.append(f'<polyline points="{pl}" fill="none" stroke="{col}" stroke-width="2.6"{dash}/>')
+        if len(cv) > 2 and cv[2]:
+            ex, ey = pts[-1]
+            s.append(f'<text x="{X(ex)-4:.1f}" y="{Y(ey)-6:.1f}" text-anchor="end" fill="{col}" font-size="13" style="{FONT}">{cv[2]}</text>')
+    # lines y=mx+b
+    for ln in lines:
+        m, b, col = ln[0], ln[1], (ln[2] if len(ln) > 2 else PAL[0])
+        dash = ' stroke-dasharray="7 5"' if (len(ln) > 4 and ln[4]) else ""
+        seg = _clip_line(m, b, xmin, xmax, ymin, ymax)
+        if not seg:
+            continue
+        (ax, ay), (bx, by) = seg
+        s.append(f'<line x1="{X(ax):.1f}" y1="{Y(ay):.1f}" x2="{X(bx):.1f}" y2="{Y(by):.1f}" stroke="{col}" stroke-width="2.6"{dash}/>')
+        if len(ln) > 3 and ln[3]:
+            tx, ty = (ax, ay) if ay > by else (bx, by)        # topmost end
+            off = 6 if tx <= (xmin + xmax) / 2 else -6
+            anc = "start" if off > 0 else "end"
+            s.append(f'<text x="{X(tx)+off:.1f}" y="{Y(ty)+13:.1f}" text-anchor="{anc}" fill="{col}" font-size="13" font-style="italic" style="{FONT}">{ln[3]}</text>')
+    # points
+    for p in points:
+        px, py = p[0], p[1]
+        lab = p[2] if len(p) > 2 else ""
+        col = p[3] if len(p) > 3 else INK
+        pos = p[4] if len(p) > 4 else "tr"
+        s.append(f'<circle cx="{X(px):.1f}" cy="{Y(py):.1f}" r="3.6" fill="{col}"/>')
+        if lab:
+            dx, dy, anc = _POS.get(pos, _POS["tr"])
+            s.append(f'<text x="{X(px)+dx:.1f}" y="{Y(py)+dy:.1f}" text-anchor="{anc}" fill="{INK}" font-size="13" font-weight="700" style="{FONT}">{lab}</text>')
+    s.append("</svg>")
+    return "".join(s)
+
+
+def grid_of(svgs, cols, cellW, cellH, gap=12):
+    """Compose several coord()/chart SVGs into a grid (nested <svg> panels)."""
+    rows = (len(svgs) + cols - 1) // cols
+    PW = cols * cellW + (cols - 1) * gap
+    PH = rows * cellH + (rows - 1) * gap
+    out = [f'<svg class="chart" viewBox="0 0 {PW} {PH}" xmlns="http://www.w3.org/2000/svg">']
+    for i, sv in enumerate(svgs):
+        r, c = divmod(i, cols)
+        x, y = c * (cellW + gap), r * (cellH + gap)
+        out.append(sv.replace('<svg class="chart" viewBox',
+                               f'<svg x="{x}" y="{y}" width="{cellW}" height="{cellH}" preserveAspectRatio="xMidYMid meet" viewBox', 1))
+    out.append("</svg>")
+    return "".join(out)
