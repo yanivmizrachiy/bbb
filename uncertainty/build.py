@@ -742,7 +742,7 @@ APP = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
       background:radial-gradient(1100px 560px at 85% -12%,#e7ecff 0%,transparent 60%),
                  radial-gradient(820px 460px at -5% 2%,#dff5ee 0%,transparent 55%),#f4f6fb}
  .wrap{max-width:680px;margin:0 auto;padding:26px 16px 60px}
- .hero{background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 52%,#0d9488 100%);
+ .hero{background:linear-gradient(135deg,#4f46e5 0,#7c3aed 52%,#0d9488 100%);
        border-radius:24px;padding:38px 24px;color:#fff;text-align:center;
        box-shadow:0 14px 38px rgba(79,70,229,.26)}
  .hero .kick{font-size:11.5px;letter-spacing:4px;opacity:.9;margin-bottom:10px}

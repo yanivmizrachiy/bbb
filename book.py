@@ -114,6 +114,10 @@ for m in metas:
 rd += ["```", "", "## בנייה מחדש", "```bash", "pip install pymupdf playwright",
        "playwright install chromium", "python book.py", "```",
        "הפקודה בונה מחדש כל נושא, מעדכנת את `meta.json` שלו, ומרכיבה את דף הבית עם הסטטיסטיקות המעודכנות.",
+       "", "## אחידות עיצוב",
+       "כל העמודים מעוצבים לפי [`STYLE_GUIDE.md`](./STYLE_GUIDE.md) (גופנים, צבעים, רכיבים, סימון מתמטי). "
+       "המנוע הקנוני המשותף הוא `wsengine.py`. לפני כל קומיט הריצו את שומר-האחידות:",
+       "```bash", "python tools/check_uniformity.py --heights", "```",
        "", "*Python · PyMuPDF · Playwright/Chromium · SVG · RTL.*", ""]
 open(os.path.join(ROOT, "README.md"), "w", encoding="utf-8").write("\n".join(rd))
 
