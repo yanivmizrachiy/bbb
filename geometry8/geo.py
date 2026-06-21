@@ -4,6 +4,7 @@ geometry booklet (triangles, medians, rectangles, congruence/similarity marks)."
 
 INK = "#1f2a44"
 ACC = "#4f46e5"
+SUB = "#5b6573"
 FONT = "font-family:'Segoe UI',Arial,sans-serif;"
 
 
@@ -264,3 +265,40 @@ def drone_cone():
     b += label(((L[0]+R[0])/2, M[1]+15), "16 מ'", size=11)
     b += vertex(K, "K", 0, -7)
     return _svg(240, 182, b)
+
+
+# ---- topic-1 (circle) reconstructed coordinate figure ----
+def circle_diameter():
+    """Coordinate circle with horizontal diameter AB: A(-3,0), B(7,0) → centre (2,0), r=5.
+    Clean vector: faint grid, arrowed axes, labelled points."""
+    ml, mt, u = 26, 16, 18                 # unit = 18 px/grid-square
+    xmin, xmax, ymin, ymax = -5, 9, -6, 6
+    def X(x): return ml + (x - xmin) * u
+    def Y(y): return mt + (ymax - y) * u
+    W = ml + (xmax - xmin) * u + 22
+    H = mt + (ymax - ymin) * u + 16
+    GRID = "#e7eaf1"
+    s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
+    # faint grid
+    for gx in range(xmin, xmax + 1):
+        s.append(f'<line x1="{X(gx):.0f}" y1="{Y(ymax):.0f}" x2="{X(gx):.0f}" y2="{Y(ymin):.0f}" stroke="{GRID}" stroke-width="1"/>')
+    for gy in range(ymin, ymax + 1):
+        s.append(f'<line x1="{X(xmin):.0f}" y1="{Y(gy):.0f}" x2="{X(xmax):.0f}" y2="{Y(gy):.0f}" stroke="{GRID}" stroke-width="1"/>')
+    # axes + arrowheads
+    y0, x0 = Y(0), X(0)
+    s.append(f'<line x1="{X(xmin):.0f}" y1="{y0:.0f}" x2="{X(xmax):.0f}" y2="{y0:.0f}" stroke="{INK}" stroke-width="1.6"/>')
+    s.append(f'<line x1="{x0:.0f}" y1="{Y(ymin):.0f}" x2="{x0:.0f}" y2="{Y(ymax):.0f}" stroke="{INK}" stroke-width="1.6"/>')
+    s.append(f'<path d="M{X(xmax):.0f},{y0:.0f} l-8,-4 l0,8 z" fill="{INK}"/>')
+    s.append(f'<path d="M{x0:.0f},{Y(ymax):.0f} l-4,8 l8,0 z" fill="{INK}"/>')
+    s.append(label((x0 - 6, Y(0) + 13), "O", anchor="end", size=12, col=SUB))
+    s.append(label((X(xmax) - 2, y0 - 7), "x", anchor="end", size=13, col=INK))
+    s.append(label((x0 + 8, Y(ymax) + 11), "y", anchor="start", size=13, col=INK))
+    # circle  (centre (2,0), r=5)
+    s.append(f'<circle cx="{X(2):.0f}" cy="{Y(0):.0f}" r="{5*u}" fill="none" stroke="{INK}" stroke-width="2.2"/>')
+    # diameter AB + endpoints + centre
+    s.append(seg((X(-3), Y(0)), (X(7), Y(0)), wd=2.2))
+    s.append(dot((X(-3), Y(0))) + dot((X(7), Y(0))) + dot((X(2), Y(0)), r=2.6))
+    s.append(label((X(-3), Y(0) + 18), "A(−3,0)", size=12.5))
+    s.append(label((X(7), Y(0) + 18), "B(7,0)", size=12.5))
+    s.append("</svg>")
+    return "".join(s)
