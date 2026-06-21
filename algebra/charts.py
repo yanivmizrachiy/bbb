@@ -567,3 +567,45 @@ def seq_a3():            # three terms 3,5,7 as two-row dot clusters
             b += _dot((cx+(i-(bot-1)/2)*s, 58+s), r)
         b += _glab((cx, 110), str(n), size=11, col=SUB)
     return _gsvg(384, 128, b)
+
+
+def seg_walk():          # two walkers toward each other, 14 km apart
+    y = 58
+    b = _gseg((45, y), (315, y), wd=2) + _gseg((45, y-9), (45, y+9)) + _gseg((315, y-9), (315, y+9))
+    b += _glab((180, y-12), "14 ק\"מ", size=13, col=SUB)
+    b += _glab((70, y-24), "דן", size=12) + _glab((292, y-24), "אנה", size=12)
+    b += f'<path d="M70,{y+20} h26 l-6,-5 m6,5 l-6,5" fill="none" stroke="{INK}" stroke-width="2"/>'   # דן → right
+    b += f'<path d="M292,{y+20} h-26 l6,-5 m-6,5 l6,5" fill="none" stroke="{INK}" stroke-width="2"/>'  # אנה ← left
+    return _gsvg(360, 95, b)
+
+
+def cups_two():          # stacks of 4 cups (20 cm) and 6 cups (26 cm)
+    def stack(cx, n, label):
+        topw, botw, ch, off = 64, 44, 60, 13
+        top = 30
+        b = ""
+        for i in range(n):
+            t = top + i*off
+            tw = topw - i*2; bw = botw - i*2
+            b += _gpoly([(cx-tw/2, t), (cx+tw/2, t), (cx+bw/2, t+ch), (cx-bw/2, t+ch)], wd=1.6)
+        H = top + (n-1)*off + ch
+        b += f'<path d="M{cx+50},{top} v{H-top}" stroke="{SUB}" stroke-width="1.2"/>'
+        b += f'<path d="M{cx+46},{top+4} l4,-4 l4,4 M{cx+46},{H-4} l4,4 l4,-4" fill="none" stroke="{SUB}" stroke-width="1.2"/>'
+        b += _glab((cx+62, (top+H)/2+4), label, size=12, col=SUB, anchor="start")
+        return b
+    b = stack(95, 4, "20 ס\"מ") + stack(255, 6, "26 ס\"מ")
+    return _gsvg(360, 230, b)
+
+
+def fig_e13_cross():     # lines AB, CD cross at O; ∠AOC = 5x−40, ∠DOB = x (vertical angles)
+    O = (155, 108)
+    A, B = (52, 52), (258, 164)
+    C, D = (52, 164), (258, 52)
+    b = _gseg(A, B) + _gseg(C, D)
+    b += _garc(O, A, C, r=26, text="5x − 40°")
+    b += _garc(O, D, B, r=24, text="x")
+    b += _dot(O, 2.6)
+    b += _glab((A[0]-9, A[1]), "A", anchor="end") + _glab((D[0]+9, D[1]), "D", anchor="start")
+    b += _glab((C[0]-9, C[1]+5), "C", anchor="end") + _glab((B[0]+9, B[1]+5), "B", anchor="start")
+    b += _glab((O[0]-7, O[1]+15), "O", anchor="end", size=11, col=SUB)
+    return _gsvg(320, 216, b)
