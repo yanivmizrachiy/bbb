@@ -388,3 +388,30 @@ def shapes_ab():
     b += label((ax+rw+7, (yt+yb)/2+4), "12", size=10.5, col=SUB, anchor="start")
     b += label((ax+rw/2, yb+22), "צורה א'", size=12)
     return _svg(250+rw+30, yb+34, b)
+
+
+def _cyl(cx, rx, topY, botY, ry=15, col=INK):
+    s = f'<ellipse cx="{cx}" cy="{topY}" rx="{rx}" ry="{ry}" fill="none" stroke="{col}" stroke-width="2"/>'
+    s += seg((cx-rx, topY), (cx-rx, botY), col=col) + seg((cx+rx, topY), (cx+rx, botY), col=col)
+    s += f'<path d="M{cx-rx},{botY} A{rx},{ry} 0 0 0 {cx+rx},{botY}" fill="none" stroke="{col}" stroke-width="2"/>'
+    s += f'<path d="M{cx-rx},{botY} A{rx},{ry} 0 0 1 {cx+rx},{botY}" fill="none" stroke="{col}" stroke-width="1.1" stroke-dasharray="4 3"/>'
+    return s
+
+
+def cylinders_pair():
+    b = ""
+    # cylinder א : r = 3
+    cxA, rxA = 78, 40
+    b += _cyl(cxA, rxA, 36, 150)
+    b += seg((cxA, 36), (cxA+rxA, 36), col=SUB, wd=1.3) + label((cxA+rxA/2, 30), "r=3", size=11, col=SUB)
+    b += label((cxA, 172), "א'", size=13, col=SUB)
+    # cylinder ב : r = 5, h = 8, axial rectangle ABCD (area 60)
+    cxB, rxB, topB, botB = 250, 56, 36, 150
+    b += _cyl(cxB, rxB, topB, botB)
+    A, Bp, C, D = (cxB-rxB, topB), (cxB+rxB, topB), (cxB+rxB, botB), (cxB-rxB, botB)
+    b += seg(A, D, col=ACC, wd=1.6) + seg(Bp, C, col=ACC, wd=1.6)
+    b += label((A[0]-8, A[1]+2), "A", size=11) + label((Bp[0]+8, Bp[1]+2), "B", size=11)
+    b += label((C[0]+8, C[1]+6), "C", size=11) + label((D[0]-8, D[1]+6), "D", size=11)
+    b += label((cxB+rxB+12, (topB+botB)/2+4), "h=8", size=11, col=SUB, anchor="start")
+    b += label((cxB, 172), "ב'", size=13, col=SUB)
+    return _svg(340, 186, b)
