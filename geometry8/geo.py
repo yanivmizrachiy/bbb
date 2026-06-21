@@ -302,3 +302,56 @@ def circle_diameter():
     s.append(label((X(7), Y(0) + 18), "B(7,0)", size=12.5))
     s.append("</svg>")
     return "".join(s)
+
+
+# ---- topic-1 (circle/area/solid) reconstructed figures ----
+def hexagon_in_circle():
+    import math
+    cx, cy, R = 135, 120, 95
+    pts = [(cx + R*math.cos(math.radians(a)), cy - R*math.sin(math.radians(a))) for a in range(0, 360, 60)]
+    b = f'<circle cx="{cx}" cy="{cy}" r="{R}" fill="none" stroke="{INK}" stroke-width="2"/>'
+    b += poly(pts, col=ACC, wd=2)
+    b += seg((cx, cy), pts[0]) + seg((cx, cy), pts[1])   # two radii → one triangle
+    b += dot((cx, cy), r=2.6) + label((cx-6, cy-7), "O", anchor="end", size=12, col=SUB)
+    midr = ((cx+pts[0][0])/2, (cx and (cy+pts[0][1])/2))
+    b += label(((cx+pts[0][0])/2, cy-8), "1", size=12, col=SUB)
+    return _svg(280, 245, b)
+
+
+def circle_in_square():
+    A, B, C, D = (35, 25), (215, 25), (215, 205), (35, 205)
+    cx, cy, r = 125, 115, 90
+    b = poly([A, B, C, D]) + f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{ACC}" stroke-width="2"/>'
+    b += seg((cx, cy), (cx+r, cy), col=SUB, wd=1.6) + dot((cx, cy), r=2.4)
+    b += label((cx+r/2, cy-6), "6", size=12, col=SUB)
+    b += vertex(A, "A", -9, -4) + vertex(B, "B", 9, -4) + vertex(C, "C", 9, 14) + vertex(D, "D", -9, 14)
+    return _svg(250, 232, b)
+
+
+def stadium():
+    # square (area 144 → side 12) with a semicircle on left and right
+    x0, y0, s = 90, 40, 130
+    r = s/2
+    b = f'<rect x="{x0}" y="{y0}" width="{s}" height="{s}" fill="none" stroke="{INK}" stroke-width="2"/>'
+    cyl = y0 + r
+    b += f'<path d="M{x0},{y0} A{r},{r} 0 0 0 {x0},{y0+s}" fill="none" stroke="{INK}" stroke-width="2"/>'
+    b += f'<path d="M{x0+s},{y0} A{r},{r} 0 0 1 {x0+s},{y0+s}" fill="none" stroke="{INK}" stroke-width="2"/>'
+    b += label((x0+s/2, cyl+5), "144 מ\"ר", size=13, col=SUB)
+    b += label((x0+s/2, y0-8), "12 מ'", size=11, col=SUB)
+    return _svg(90+s+90, s+80, b)
+
+
+def cone():
+    # inverted cone (ice-cream): rim ellipse on top, apex at bottom; r=6, slant=10, h=?
+    cx, topY, botY = 140, 50, 240
+    rx, ry = 92, 24
+    b = f'<ellipse cx="{cx}" cy="{topY}" rx="{rx}" ry="{ry}" fill="none" stroke="{INK}" stroke-width="2"/>'
+    b += seg((cx-rx, topY), (cx, botY)) + seg((cx+rx, topY), (cx, botY))   # slant sides
+    b += seg((cx, topY), (cx, botY), col=SUB, wd=1.4, dash=True)            # height
+    b += seg((cx, topY), (cx+rx, topY), col=SUB, wd=1.4)                    # top radius
+    b += right_angle((cx, topY), (cx+rx, topY), (cx, botY), size=10, col=SUB)
+    b += label((cx+rx/2, topY-8), "r = 6", size=12, col=SUB)
+    b += label((cx+52, (topY+botY)/2+20), "10 ס\"מ", size=12, col=SUB)
+    b += label((cx-12, (topY+botY)/2), "h = ?", size=12, col=SUB, anchor="end")
+    b += label((cx, topY-30), "קוטר = 12 ס\"מ", size=11, col=SUB)
+    return _svg(290, 270, b)
