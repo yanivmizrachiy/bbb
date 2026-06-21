@@ -217,12 +217,14 @@ def palm_shadow():
     g = 150
     b = seg((10, g), (330, g))                       # ground
     # person (small right triangle)
-    P0, P1, Ptop = (40, g), (120, g), (120, 78)
+    # both right triangles share the SAME acute angle (sun rays parallel):
+    # height/shadow = 1.72/2.15 = 9.6/12 = 0.8 for both.
+    P0, P1, Ptop = (40, g), (120, g), (120, g - 64)      # 80 x 64  (ratio 0.8)
     b += seg(P0, P1) + seg(P1, Ptop) + seg(P0, Ptop) + right_angle(P1, P0, Ptop, size=9)
     b += label(((P0[0]+P1[0])/2, g+14), "2.15 מ'", size=11)
     b += label((P1[0]+24, (g+Ptop[1])/2), "1.72 מ'", size=11)
-    # palm (large right triangle, same base angle)
-    Q0, Q1, Qtop = (165, g), (320, g), (320, 28)
+    # palm (large right triangle, same base angle): 155 x 124 (ratio 0.8)
+    Q0, Q1, Qtop = (165, g), (320, g), (320, g - 124)
     b += seg(Q0, Q1) + seg(Q1, Qtop) + seg(Q0, Qtop) + right_angle(Q1, Q0, Qtop, size=9)
     b += label(((Q0[0]+Q1[0])/2, g+14), "12 מ'", size=11)
     b += label((Q1[0]-22, (g+Qtop[1])/2), "x = ?", size=11, col=ACC)
@@ -230,13 +232,18 @@ def palm_shadow():
 
 
 def square_in_tri():
-    A, B, C = (120, 14), (18, 168), (222, 168)
-    S, R, Q, P = (66, 168), (150, 168), (150, 96), (66, 96)
-    b = poly([A, B, C]) + poly([P, Q, R, S], col=ACC)
-    b += right_angle(S, P, R, size=8) + right_angle(R, Q, S, size=8)
-    b += vertex(A, "A", 0, -7) + vertex(B, "B", -9, 6) + vertex(C, "C", 9, 6)
+    # isosceles right triangle: apex A = 90deg, base angles 45deg at C,B.
+    # true inscribed square, side s = base*height/(base+height) = 200*100/300.
+    A, C, B = (120, 70), (20, 170), (220, 170)
+    s2 = (200*100/300) / 2          # half the square side ≈ 33.3
+    S = (120 - s2, 170); R = (120 + s2, 170)
+    Q = (120 + s2, 170 - 2*s2); P = (120 - s2, 170 - 2*s2)
+    b = poly([A, C, B]) + poly([P, Q, R, S], col=ACC)
+    b += right_angle(A, C, B, size=10)
+    b += arc(C, B, A, r=24, text="45°", tdx=2) + arc(B, A, C, r=24, text="45°", tdx=-2)
+    b += vertex(A, "A", 0, -7) + vertex(C, "C", -9, 6) + vertex(B, "B", 9, 6)
     b += vertex(P, "P", -9, -2) + vertex(Q, "Q", 9, -2) + vertex(R, "R", 9, 14) + vertex(S, "S", -9, 14)
-    return _svg(240, 182, b)
+    return _svg(240, 190, b)
 
 
 def rect_38():
@@ -249,10 +256,11 @@ def rect_38():
 
 
 def drone_cone():
-    K, L, R = (120, 14), (44, 162), (196, 162)
-    M = (120, 162)
-    b = poly([K, L, R]) + seg(K, M, dash=True) + right_angle(M, L, K, size=8)
-    b += label((K[0]+40, (K[1]+M[1])/2), "20 מ'", size=11)
+    # proportions match the data: height:base = 20:16 = 1.25 (148 px : 118 px).
+    K, M = (120, 14), (120, 162)
+    L, R = (61, 162), (179, 162)
+    b = poly([K, L, R]) + seg(K, M, dash=True) + right_angle(M, R, K, size=8)
+    b += label((K[0]+38, (K[1]+M[1])/2), "20 מ'", size=11)
     b += label(((L[0]+R[0])/2, M[1]+15), "16 מ'", size=11)
     b += vertex(K, "K", 0, -7)
     return _svg(240, 182, b)
