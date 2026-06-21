@@ -452,6 +452,7 @@ def points_plot(points, xmin, xmax, xstep, ymin, ymax, ystep, xtitle="", ytitle=
 
 # ---- vector geometry primitives + reconstructed algebra-7 figures ----
 def _gsvg(w, h, body): return f'<svg class="chart" viewBox="0 0 {w} {h}" xmlns="http://www.w3.org/2000/svg">{body}</svg>'
+def _dot(p, r=3.0, col=INK): return f'<circle cx="{p[0]:.1f}" cy="{p[1]:.1f}" r="{r}" fill="{col}"/>'
 def _gseg(a, b, col=INK, wd=2.0, dash=False):
     d = ' stroke-dasharray="6 4"' if dash else ""
     return f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col}" stroke-width="{wd}"{d}/>'
@@ -538,3 +539,31 @@ def landhouse():         # plot 20×a (green) with house 10×(a/2) (red) inside
     b += _glab((hx+hw/2, hy+hh+16), "10 מטר", size=11, col="#ef4444")
     b += _glab((hx+18, hy-5), "a/2", size=11, col="#ef4444")
     return _gsvg(300, 200, b)
+
+
+def dotpattern():        # 4 plus-shapes, dots = 4(n−1)+1  (n = 1..4)
+    s, r = 11, 3.6
+    cxs = [55, 150, 248, 348]
+    b = ""
+    for n, cx in enumerate(cxs, start=1):
+        cy = 70
+        b += _dot((cx, cy), r)
+        for d in range(1, n):
+            for dx, dy in [(d, 0), (-d, 0), (0, d), (0, -d)]:
+                b += _dot((cx+dx*s, cy+dy*s), r)
+        b += _glab((cx, 150), str(n), size=12, col=SUB)
+    return _gsvg(405, 165, b)
+
+
+def seq_a3():            # three terms 3,5,7 as two-row dot clusters
+    s, r = 18, 5
+    cxs = [72, 192, 312]
+    b = ""
+    for n, cx in enumerate(cxs, start=1):
+        top, bot = n, n+1
+        for i in range(top):
+            b += _dot((cx+(i-(top-1)/2)*s, 58), r)
+        for i in range(bot):
+            b += _dot((cx+(i-(bot-1)/2)*s, 58+s), r)
+        b += _glab((cx, 110), str(n), size=11, col=SUB)
+    return _gsvg(384, 128, b)
