@@ -415,3 +415,111 @@ def cylinders_pair():
     b += label((cxB+rxB+12, (topB+botB)/2+4), "h=8", size=11, col=SUB, anchor="start")
     b += label((cxB, 172), "ב'", size=13, col=SUB)
     return _svg(340, 186, b)
+
+
+# ---- topic-2 (angles) reconstructed line diagrams ----
+RED, BLU, GRN = "#ef4444", "#2563eb", "#0d9488"
+
+
+def _isect(a, b, c, d):
+    x1, y1 = a; x2, y2 = b; x3, y3 = c; x4, y4 = d
+    den = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4)
+    t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / den
+    return (x1 + t*(x2-x1), y1 + t*(y2-y1))
+
+
+def t2_fig_q2():           # △ABC, D on extension of BC, AB∥EC, ∠A=65°, ∠ECD=40°, α=∠BCA
+    B, C, D, A = (48, 152), (168, 152), (288, 152), (110, 52)
+    E = (168 + (110-48), 152 - (152-52))     # CE ∥ AB
+    b = seg(A, B) + seg(B, D) + seg(A, C) + seg(C, E)
+    b += arc(A, B, C, r=22, text="65°")
+    b += arc(C, E, D, r=20, text="40°")
+    b += arc(C, B, A, r=30, text="α")
+    b += vertex(A, "A", 0, -7) + vertex(B, "B", -9, 6) + vertex(C, "C", 0, 16) + vertex(D, "D", 9, 6) + vertex(E, "E", 9, -2)
+    return _svg(320, 180, b)
+
+
+def t2_fig_q5():           # ∠A=50°(bisected 25°), ∠C=30° (∠BCE=150°), α=∠B=100°
+    A, B, C, D, E = (45, 150), (110, 72), (245, 150), (156, 98), (290, 150)
+    b = seg(A, B) + seg(B, C) + seg(C, A) + seg(A, D) + seg(C, E)
+    b += arc(A, D, C, r=26, text="25°")
+    b += arc(C, B, E, r=24, text="150°")
+    b += arc(B, A, C, r=20, text="α")
+    b += vertex(A, "A", -9, 6) + vertex(B, "B", 0, -7) + vertex(C, "C", 0, 16) + vertex(D, "D", 9, -2) + vertex(E, "E", 9, 6)
+    return _svg(320, 178, b)
+
+
+def t2_fig_q3km():         # k∥m, A,D on k; B,C on m; x and 55° at A, y at B
+    k0, k1 = (40, 48), (296, 48)
+    m0, m1 = (40, 168), (296, 168)
+    A, D, B, C = (150, 48), (258, 48), (108, 168), (212, 168)
+    b = seg(k0, k1) + seg(m0, m1) + seg(A, B) + seg(A, C)
+    b += arc(A, k0, B, r=20, text="x")
+    b += arc(A, D, C, r=26, text="55°")
+    b += arc(B, A, m0, r=20, text="y")
+    b += label((30, 52), "k", size=13) + label((30, 172), "m", size=13)
+    b += vertex(A, "A", 0, -7) + vertex(D, "D", 9, -4) + vertex(B, "B", -2, 16) + vertex(C, "C", 2, 16)
+    return _svg(320, 195, b)
+
+
+def t2_fig_2tri():         # B,E,C,F collinear; △ABC & △DEF; G=AC∩DE; ∠B=40°, ∠F=60°
+    B, E, C, F = (45, 158), (118, 158), (215, 158), (292, 158)
+    A, D = (135, 52), (228, 58)
+    G = _isect(A, C, D, E)
+    b = seg(A, B) + seg(A, C) + seg(D, E) + seg(D, F) + seg(B, F)
+    b += arc(B, A, F, r=22, text="40°")
+    b += arc(F, D, B, r=22, text="60°")
+    b += dot(G, 2.6) + label((G[0]+2, G[1]-7), "G", size=12)
+    b += vertex(A, "A", -2, -7) + vertex(B, "B", -2, 16) + vertex(E, "E", 0, 16)
+    b += vertex(C, "C", 0, 16) + vertex(F, "F", 6, 16) + vertex(D, "D", 6, -5)
+    return _svg(320, 178, b)
+
+
+def _cross4(P, ll, lr, tu, td, labs, cols, r=20):
+    """4 angle arcs around a crossing P. ll/lr = line left/right pts, tu/td = transversal up/down pts.
+    labs/cols = [top, right, bottom, left] (between tu&lr, lr&td, td&ll, ll&tu)."""
+    quads = [(tu, lr), (lr, td), (td, ll), (ll, tu)]
+    s = ""
+    for (a, c), lab, col in zip(quads, labs, cols):
+        if lab:
+            s += arc(P, a, c, r=r, text=lab, col=col)
+    return s
+
+
+def t2_fig_8angles():      # two parallels + 1 transversal, α/β at top, α1/β1 at bottom
+    l1a, l1b = (45, 78), (302, 50)
+    l2a, l2b = (45, 172), (302, 144)
+    ta, tb = (108, 24), (236, 198)
+    P1 = _isect(ta, tb, l1a, l1b)
+    P2 = _isect(ta, tb, l2a, l2b)
+    b = seg(l1a, l1b) + seg(l2a, l2b) + seg(ta, tb)
+    b += arc(P1, l1b, ta, r=20, text="β", col=BLU)
+    b += arc(P1, l1a, tb, r=20, text="α", col=RED)
+    b += arc(P2, l2b, ta, r=20, text="α₁", col=RED)
+    b += arc(P2, l2a, tb, r=20, text="β₁", col=BLU)
+    return _svg(330, 210, b)
+
+
+def t2_fig_islands():      # two parallels + transversal, 4 corresponding angles each crossing
+    l1a, l1b = (45, 70), (302, 46)
+    l2a, l2b = (45, 168), (302, 144)
+    ta, tb = (120, 22), (250, 196)
+    P1 = _isect(ta, tb, l1a, l1b)
+    P2 = _isect(ta, tb, l2a, l2b)
+    b = seg(l1a, l1b) + seg(l2a, l2b) + seg(ta, tb)
+    b += _cross4(P1, l1a, l1b, ta, tb, ["δ", "γ", "β", "α"], ["#1f2a44", BLU, RED, GRN])
+    b += _cross4(P2, l2a, l2b, ta, tb, ["δ₁", "γ₁", "β₁", "α₁"], ["#1f2a44", BLU, RED, GRN])
+    return _svg(330, 210, b)
+
+
+def t2_fig_ext():          # right △ABC (right angle B), D on AC, 56° at D, 22° at C, α at B, β at A
+    A, B, C = (70, 40), (70, 208), (290, 208)
+    D = (215, 150)          # on AC
+    b = seg(A, B) + seg(B, C) + seg(C, A) + seg(B, D)
+    b += right_angle(B, A, C, size=11)
+    b += arc(D, B, C, r=22, text="56°")
+    b += arc(C, B, A, r=24, text="22°")
+    b += arc(B, D, C, r=22, text="α")
+    b += arc(A, B, C, r=22, text="β")
+    b += vertex(A, "A", -2, -7) + vertex(B, "B", -9, 6) + vertex(C, "C", 9, 6) + vertex(D, "D", 10, 0)
+    return _svg(330, 235, b)
