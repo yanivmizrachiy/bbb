@@ -448,3 +448,93 @@ def points_plot(points, xmin, xmax, xstep, ymin, ymax, ystep, xtitle="", ytitle=
         s.append(f'<text x="{ml+8}" y="{mt+12}" text-anchor="start" fill="{SUB}" font-size="13" style="{FONT}">{ytitle}</text>')
     s.append("</svg>")
     return "".join(s)
+
+
+# ---- vector geometry primitives + reconstructed algebra-7 figures ----
+def _gsvg(w, h, body): return f'<svg class="chart" viewBox="0 0 {w} {h}" xmlns="http://www.w3.org/2000/svg">{body}</svg>'
+def _gseg(a, b, col=INK, wd=2.0, dash=False):
+    d = ' stroke-dasharray="6 4"' if dash else ""
+    return f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{col}" stroke-width="{wd}"{d}/>'
+def _gpoly(pts, col=INK, wd=2.0, fill="none"):
+    return f'<polygon points="{" ".join(f"{x:.1f},{y:.1f}" for x,y in pts)}" fill="{fill}" stroke="{col}" stroke-width="{wd}"/>'
+def _glab(p, t, dx=0, dy=0, size=13, col=INK, anchor="middle"):
+    return f'<text x="{p[0]+dx:.1f}" y="{p[1]+dy:.1f}" text-anchor="{anchor}" fill="{col}" font-size="{size}" font-weight="700" style="{FONT}">{t}</text>'
+def _gtick(a, b, n=1, col=INK):
+    import math
+    mx, my = (a[0]+b[0])/2, (a[1]+b[1])/2; dx, dy = b[0]-a[0], b[1]-a[1]
+    ln = math.hypot(dx, dy) or 1; ux, uy = dx/ln, dy/ln; px, py = -uy, ux; out = []
+    for i in range(n):
+        o = (i-(n-1)/2)*5; cx, cy = mx+ux*o, my+uy*o
+        out.append(f'<line x1="{cx-px*5:.1f}" y1="{cy-py*5:.1f}" x2="{cx+px*5:.1f}" y2="{cy+py*5:.1f}" stroke="{col}" stroke-width="1.8"/>')
+    return "".join(out)
+def _garc(c, a, b, r=22, col=INK, text=""):
+    import math
+    def an(p): return math.atan2(p[1]-c[1], p[0]-c[0])
+    a0, a1 = an(a), an(b); d = (a1-a0) % (2*math.pi)
+    if d > math.pi: a0, a1 = a1, a0; d = 2*math.pi-d
+    x0, y0 = c[0]+r*math.cos(a0), c[1]+r*math.sin(a0); x1, y1 = c[0]+r*math.cos(a1), c[1]+r*math.sin(a1)
+    s = f'<path d="M{x0:.1f},{y0:.1f} A{r},{r} 0 0 1 {x1:.1f},{y1:.1f}" fill="none" stroke="{col}" stroke-width="1.6"/>'
+    if text:
+        m = a0+d/2; s += _glab((c[0]+(r+13)*math.cos(m), c[1]+(r+13)*math.sin(m)), text, 0, 4, 13, col)
+    return s
+
+
+def eq_fig():            # two lines crossing (X): 150° top, x° bottom (vertical angles)
+    P = (150, 108)
+    L1a, L1b = (30, 74), (270, 142)
+    L2a, L2b = (270, 74), (30, 142)
+    b = _gseg(L1a, L1b) + _gseg(L2a, L2b)
+    b += _garc(P, L1a, L2a, r=30, text="150°")
+    b += _garc(P, L1b, L2b, r=24, text="x°")
+    return _gsvg(300, 185, b)
+
+
+def rect_two():          # rectangle split into widths 2 | 3, height x
+    x0, y0, h = 40, 38, 64
+    b = f'<rect x="{x0}" y="{y0}" width="200" height="{h}" fill="none" stroke="{INK}" stroke-width="2"/>'
+    b += _gseg((x0+80, y0), (x0+80, y0+h))
+    b += _glab((x0-12, y0+h/2+5), "x", size=14, anchor="end")
+    b += _glab((x0+40, y0+h+18), "2", size=13, col=SUB) + _glab((x0+140, y0+h+18), "3", size=13, col=SUB)
+    return _gsvg(280, 130, b)
+
+
+def polygon_perim():     # quadrilateral, sides c, c−b, b−2, b
+    A, B, C, D = (120, 32), (292, 118), (250, 205), (48, 182)
+    b = _gpoly([A, B, C, D])
+    b += _glab(((A[0]+B[0])/2+6, (A[1]+B[1])/2-6), "c", size=13, col=SUB)
+    b += _glab(((B[0]+C[0])/2+12, (B[1]+C[1])/2+4), "c − b", size=13, col=SUB)
+    b += _glab(((C[0]+D[0])/2, (C[1]+D[1])/2+18), "b − 2", size=13, col=SUB)
+    b += _glab(((D[0]+A[0])/2-12, (D[1]+A[1])/2), "b", size=13, col=SUB, anchor="end")
+    return _gsvg(320, 225, b)
+
+
+def iso_tri():           # isosceles triangle, equal legs marked
+    A, B, C = (140, 26), (40, 180), (240, 180)
+    b = _gpoly([A, B, C]) + _gtick(A, B) + _gtick(A, C)
+    b += _glab(((A[0]+B[0])/2-12, (A[1]+B[1])/2), "שוק", size=12, col=SUB, anchor="end")
+    b += _glab(((A[0]+C[0])/2+12, (A[1]+C[1])/2), "שוק", size=12, col=SUB)
+    b += _glab((140, 198), "בסיס", size=12, col=SUB)
+    return _gsvg(280, 210, b)
+
+
+def tri_pent():          # equilateral triangle (side 10) + regular pentagon (side d)
+    import math
+    b = _gpoly([(140, 40), (40, 98), (140, 156)])      # triangle pointing left
+    b += _glab((150, 100), "10 ס\"מ", size=12, col=SUB, anchor="start")
+    cx, cy, R = 260, 100, 58                            # regular pentagon
+    pent = [(cx+R*math.cos(math.radians(-90+72*k)), cy+R*math.sin(math.radians(-90+72*k))) for k in range(5)]
+    b += _gpoly(pent, fill="#eef0fb")
+    b += _glab((cx, cy+R+16), "d ס\"מ", size=12, col=SUB)
+    return _gsvg(340, 190, b)
+
+
+def landhouse():         # plot 20×a (green) with house 10×(a/2) (red) inside
+    px, py, pw, ph = 30, 26, 250, 150
+    b = f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" fill="#eaf6ea" stroke="#0d9488" stroke-width="2"/>'
+    hx, hy, hw, hh = px+70, py+45, 120, 70
+    b += f'<rect x="{hx}" y="{hy}" width="{hw}" height="{hh}" fill="#fdeaea" stroke="#ef4444" stroke-width="2"/>'
+    b += _glab((px+pw/2, py+ph+18), "20 מטר", size=12, col="#0d9488")
+    b += _glab((px-8, py+ph/2+4), "a", size=13, col="#0d9488", anchor="end")
+    b += _glab((hx+hw/2, hy+hh+16), "10 מטר", size=11, col="#ef4444")
+    b += _glab((hx+18, hy-5), "a/2", size=11, col="#ef4444")
+    return _gsvg(300, 200, b)
