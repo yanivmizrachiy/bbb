@@ -554,10 +554,11 @@ body { direction: rtl; font-family:'Segoe UI','Arial',sans-serif; color:#1f2a44;
 p { margin:6px 0; }
 .cover { height: 262mm; display:flex; flex-direction:column; justify-content:center; align-items:stretch;
          page-break-after: always; }
-.cover .band { background: linear-gradient(135deg,#4f46e5,#7c3aed 55%,#0d9488); color:#fff;
-         border-radius:22px; padding:46px 40px; text-align:center; box-shadow:0 10px 30px rgba(79,70,229,.18); }
-.cover h1 { font-size:40pt; margin:0 0 6px; letter-spacing:.5px; }
-.cover .sub { font-size:15pt; opacity:.95; }
+.cover .band { text-align:center; padding:0 28px; }
+.cover .kick { font-size:10.5pt; letter-spacing:6px; color:#9aa1b3; font-weight:400; margin:0 0 18px; }
+.cover h1 { font-size:30pt; font-weight:600; color:#3730a3; letter-spacing:1px; margin:0; }
+.cover .rule { width:88px; height:3px; margin:18px auto 0; background:linear-gradient(90deg,#4f46e5,#7c3aed 55%,#0d9488); border-radius:2px; }
+.cover .sub { font-size:13pt; color:#5b6573; font-weight:400; margin-top:16px; }
 .cover .meta { margin-top:14px; font-size:11pt; opacity:.9; }
 .toc { margin:40px 6px 0; }
 .toc h2 { color:#1f2a44; font-size:12pt; font-weight:600; letter-spacing:5px; padding-bottom:12px; border-bottom:1.5px solid #1f2a44; margin:0; }
@@ -635,7 +636,7 @@ table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
   body { max-width: 880px; margin: 22px auto 60px; padding: 32px 44px;
          background:#fff; box-shadow:0 4px 24px rgba(20,25,50,.14); border-radius:6px; }
   .cover { height:auto; min-height:auto; }
-  .cover .band { box-shadow:0 8px 24px rgba(79,70,229,.22); }
+  .cover .band { box-shadow:none; }
 }
 """
 
@@ -648,7 +649,9 @@ toc = "".join(f'<li style="--cc:{c}"><span class="idx">{l}</span><span class="nm
 
 cover = f"""<div class="cover">
   <div class="band">
-    <h1>תְּחוּם אִי־וַדָּאוּת</h1>
+    <div class="kick">מתמטיקה · חטיבת הביניים</div>
+    <h1>תחום אי־ודאות</h1>
+    <div class="rule"></div>
     <div class="sub">סטטיסטיקה והסתברות · חטיבת הביניים</div>
   </div>
   <div class="toc">
@@ -742,13 +745,12 @@ APP = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
       background:radial-gradient(1100px 560px at 85% -12%,#e7ecff 0%,transparent 60%),
                  radial-gradient(820px 460px at -5% 2%,#dff5ee 0%,transparent 55%),#f4f6fb}
  .wrap{max-width:680px;margin:0 auto;padding:26px 16px 60px}
- .hero{background:linear-gradient(135deg,#4f46e5 0,#7c3aed 52%,#0d9488 100%);
-       border-radius:24px;padding:38px 24px;color:#fff;text-align:center;
-       box-shadow:0 14px 38px rgba(79,70,229,.26)}
- .hero .kick{font-size:11.5px;letter-spacing:4px;opacity:.9;margin-bottom:10px}
- .hero h1{font-size:clamp(28px,7vw,36px);letter-spacing:.5px;margin-bottom:8px}
- .hero p{opacity:.94;font-size:clamp(13px,3.6vw,15px)}
- .stats{display:flex;gap:10px;justify-content:center;margin:-24px auto 0;max-width:420px;position:relative}
+ .hero{text-align:center;padding:26px 16px 6px}
+ .hero .kick{font-size:11px;letter-spacing:5px;color:#9aa1b3;margin-bottom:12px}
+ .hero h1{font-size:clamp(24px,6vw,30px);font-weight:600;color:#3730a3;letter-spacing:.5px;margin:0}
+ .hero .rule{width:84px;height:3px;margin:14px auto 0;background:linear-gradient(90deg,#4f46e5,#7c3aed 55%,#0d9488);border-radius:2px}
+ .hero p{color:#5b6573;font-size:clamp(13px,3.6vw,15px);margin-top:14px}
+ .stats{display:flex;gap:10px;justify-content:center;margin:18px auto 0;max-width:420px;position:relative}
  .stat{flex:1;background:#fff;border-radius:15px;padding:14px 6px;text-align:center;
        box-shadow:0 8px 20px rgba(20,25,50,.09)}
  .stat b{display:block;font-size:clamp(20px,6vw,25px);font-weight:800;
@@ -791,7 +793,8 @@ APP = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 <div class="wrap">
  <div class="hero">
    <div class="kick">אוסף שאלות להדפסה</div>
-   <h1>תְּחוּם אִי־וַדָּאוּת</h1>
+   <h1>תחום אי־ודאות</h1>
+   <div class="rule"></div>
    <p>סטטיסטיקה והסתברות · חטיבת הביניים · כיתות ז'–ח'</p>
  </div>
  <div class="stats">

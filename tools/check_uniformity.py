@@ -23,7 +23,8 @@ CSS_TOKENS = [
     "font-family:'Segoe UI','Arial',sans-serif",
     "@page { size: A4; margin: 16mm 12mm 18mm 12mm; }",
     "border-radius:12px; padding:12px 16px 14px; margin:11px 0",        # .q card
-    "linear-gradient(135deg,#4f46e5,#7c3aed 55%,#0d9488)",             # cover band
+    "linear-gradient(90deg,#4f46e5,#7c3aed 55%,#0d9488)",              # title accent rule
+    "color:#3730a3",                                                    # title ink (cover + hero)
 ]
 
 # forbidden -> required, checked inside L("...") content fragments
