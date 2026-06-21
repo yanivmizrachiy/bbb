@@ -576,3 +576,22 @@ def grid_of(svgs, cols, cellW, cellH, gap=12):
                                f'<svg x="{x}" y="{y}" width="{cellW}" height="{cellH}" preserveAspectRatio="xMidYMid meet" viewBox', 1))
     out.append("</svg>")
     return "".join(out)
+
+
+def balance_scale():
+    """Two balance states: 1 ingot vs 8g (8g down) ; 3 ingots vs 20g (ingots down)."""
+    F = "font-family:'Segoe UI',Arial,sans-serif;"
+    def state(cy, tilt, left, right):
+        cx, bw = 190, 120
+        lx, rx = cx-bw, cx+bw
+        yl, yr = cy-tilt, cy+tilt           # tilt>0 → right side lower
+        s = f'<polygon points="{cx},{cy+6} {cx-15},{cy+40} {cx+15},{cy+40}" fill="#e7eaf1" stroke="{INK}" stroke-width="1.4"/>'
+        s += f'<line x1="{lx}" y1="{yl}" x2="{rx}" y2="{yr}" stroke="{INK}" stroke-width="3"/>'
+        s += f'<circle cx="{cx}" cy="{cy+6}" r="2.5" fill="{INK}"/>'
+        for ex, ey, lab in [(lx, yl, left), (rx, yr, right)]:
+            s += f'<line x1="{ex}" y1="{ey}" x2="{ex}" y2="{ey+22}" stroke="{INK}" stroke-width="1"/>'
+            s += f'<path d="M{ex-28},{ey+22} Q{ex},{ey+46} {ex+28},{ey+22}" fill="#f4f5fb" stroke="{INK}" stroke-width="1.6"/>'
+            s += f'<text x="{ex}" y="{ey+14}" text-anchor="middle" fill="{INK}" font-size="12" font-weight="700" style="{F}">{lab}</text>'
+        return s
+    body = state(72, 24, "מטיל", "8 ג'") + state(210, -24, "3 מטילים", "20 ג'")
+    return f'<svg class="chart" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg">{body}</svg>'
