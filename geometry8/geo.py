@@ -523,3 +523,53 @@ def t2_fig_ext():          # right △ABC (right angle B), D on AC, 56° at D, 2
     b += arc(A, B, C, r=22, text="β")
     b += vertex(A, "A", -2, -7) + vertex(B, "B", -9, 6) + vertex(C, "C", 9, 6) + vertex(D, "D", 10, 0)
     return _svg(330, 235, b)
+
+
+# ---- topic-1 complex figures reconstructed ----
+FILLB = "#cfe8f3"
+
+
+def yin_shaded():
+    # circle split into two equal areas by an S-curve of two half-radius semicircles
+    cx, cy, R = 140, 132, 104
+    h = R/2
+    shaded = (f'<path d="M{cx},{cy-R} A{R},{R} 0 0 1 {cx},{cy+R} '
+              f'A{h},{h} 0 0 1 {cx},{cy} A{h},{h} 0 0 0 {cx},{cy-R} Z" fill="{FILLB}" stroke="none"/>')
+    out = shaded
+    out += f'<circle cx="{cx}" cy="{cy}" r="{R}" fill="none" stroke="{INK}" stroke-width="2"/>'
+    out += (f'<path d="M{cx},{cy-R} A{h},{h} 0 0 1 {cx},{cy} A{h},{h} 0 0 0 {cx},{cy+R}" '
+            f'fill="none" stroke="{INK}" stroke-width="2"/>')
+    return _svg(280, 268, out)
+
+
+def _arrow_arc(cx, cy, r, a0, a1, col=INK):
+    import math
+    x0, y0 = cx+r*math.cos(math.radians(a0)), cy+r*math.sin(math.radians(a0))
+    x1, y1 = cx+r*math.cos(math.radians(a1)), cy+r*math.sin(math.radians(a1))
+    large = 1 if abs(a1-a0) > 180 else 0
+    sweep = 1 if a1 > a0 else 0
+    s = f'<path d="M{x0:.1f},{y0:.1f} A{r},{r} 0 {large} {sweep} {x1:.1f},{y1:.1f}" fill="none" stroke="{col}" stroke-width="3"/>'
+    # arrowhead at (x1,y1)
+    ang = math.radians(a1) + (math.pi/2 if sweep else -math.pi/2)
+    s += (f'<path d="M{x1:.1f},{y1:.1f} l{7*math.cos(ang-2.6):.1f},{7*math.sin(ang-2.6):.1f} '
+          f'l{7*math.cos(ang+2.6):.1f},{7*math.sin(ang+2.6):.1f} z" fill="{col}"/>')
+    return s
+
+
+def paper_roll():
+    def sheet(x, y, w, h):
+        return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{FILLB}" fill-opacity="0.5" stroke="{INK}" stroke-width="1.8"/>'
+    b = ""
+    # (א) roll by width — arrows wrap the left & right vertical edges
+    x1, y1, w, h = 40, 55, 90, 130
+    b += sheet(x1, y1, w, h)
+    b += _arrow_arc(x1, y1+h/2, 26, -60, 60)
+    b += _arrow_arc(x1+w, y1+h/2, 26, 120, 240)
+    b += label((x1+w/2, y1-12), "(א) לפי הרוחב", size=12)
+    # (ב) roll by length — arrows wrap the top & bottom edges
+    x2 = 230
+    b += sheet(x2, y1, w, h)
+    b += _arrow_arc(x2+w/2, y1, 24, 30, 150)
+    b += _arrow_arc(x2+w/2, y1+h, 24, 210, 330)
+    b += label((x2+w/2, y1-12), "(ב) לפי האורך", size=12)
+    return _svg(360, 215, b)
