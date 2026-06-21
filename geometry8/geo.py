@@ -355,3 +355,36 @@ def cone():
     b += label((cx-12, (topY+botY)/2), "h = ?", size=12, col=SUB, anchor="end")
     b += label((cx, topY-30), "קוטר = 12 ס\"מ", size=11, col=SUB)
     return _svg(290, 270, b)
+
+
+def two_circles_rect():
+    # rectangle ABCD with two tangent circles (r=5) inscribed side by side
+    A, B, C, D = (20, 20), (260, 20), (260, 140), (20, 140)
+    P, Q, r = (80, 80), (200, 80), 60
+    b = poly([A, B, C, D])
+    b += f'<circle cx="{P[0]}" cy="{P[1]}" r="{r}" fill="none" stroke="{ACC}" stroke-width="2"/>'
+    b += f'<circle cx="{Q[0]}" cy="{Q[1]}" r="{r}" fill="none" stroke="{ACC}" stroke-width="2"/>'
+    b += seg(P, (P[0]+r, P[1]), col=SUB, wd=1.5) + dot(P, 2.4) + dot(Q, 2.4)
+    b += label((P[0]+r/2, P[1]-5), "5", size=12, col=SUB)
+    b += label((P[0], P[1]+16), "P", size=12, col=SUB) + label((Q[0], Q[1]+16), "Q", size=12, col=SUB)
+    b += vertex(A, "A", -9, -4) + vertex(B, "B", 9, -4) + vertex(C, "C", 9, 14) + vertex(D, "D", -9, 14)
+    return _svg(290, 162, b)
+
+
+def shapes_ab():
+    # rect 20x12; ב' = rectangle with a semicircular notch; א' = rectangle with a bump (r=6)
+    rw, rh, r = 110, 66, 33
+    yt, yb = 34, 34+rh
+    # shape ב' (left): notch cut into the left side
+    bx = 30
+    b = f'<path d="M{bx},{yt} H{bx+rw} V{yb} H{bx} A{r},{r} 0 0 0 {bx},{yt} Z" fill="none" stroke="{INK}" stroke-width="2"/>'
+    b += label((bx+rw/2, yt-7), "20 ס\"מ", size=10.5, col=SUB)
+    b += label((bx+rw+7, (yt+yb)/2+4), "12", size=10.5, col=SUB, anchor="start")
+    b += label((bx+rw/2, yb+22), "צורה ב'", size=12)
+    # shape א' (right): semicircle bump added on the left side
+    ax = 250
+    b += f'<path d="M{ax},{yt} A{r},{r} 0 0 0 {ax},{yb} H{ax+rw} V{yt} Z" fill="none" stroke="{INK}" stroke-width="2"/>'
+    b += label((ax+rw/2, yt-7), "20 ס\"מ", size=10.5, col=SUB)
+    b += label((ax+rw+7, (yt+yb)/2+4), "12", size=10.5, col=SUB, anchor="start")
+    b += label((ax+rw/2, yb+22), "צורה א'", size=12)
+    return _svg(250+rw+30, yb+34, b)
