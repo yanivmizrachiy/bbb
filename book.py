@@ -30,12 +30,18 @@ def _rgba(hexc, a):
     h = hexc.lstrip("#"); r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
     return f"rgba({r},{g},{b},{a})"
 
-# luxury gradient-orb identity: lightened top stop -> the subject's brand color
-ORB_LIGHT = {"uncertainty": "#818cf8", "algebra": "#38bdf8", "algebra8": "#a78bfa", "geometry8": "#2dd4bf"}
+# home identity palette: four clearly-distinct hues, each a light->deep orb gradient.
+# the deep stop also drives every home accent (active border, panel bar, chips,
+# primary button on white text) so it is kept dark enough to stay readable.
+PAL = {"uncertainty": ("#f472b6", "#db2777"),   # ורוד
+       "algebra":     ("#fcd34d", "#b45309"),   # צהוב / זהב
+       "algebra8":    ("#4ade80", "#15803d"),   # ירוק
+       "geometry8":   ("#38bdf8", "#0284c7")}   # תכלת
 subj = []
 for m in metas:
+    _lo, _hi = PAL.get(m["key"], (m["color"], m["color"]))
     subj.append({"key": m["key"], "title": m["title"], "subtitle": m["subtitle"],
-                 "color": m["color"], "light": ORB_LIGHT.get(m["key"], m["color"]),
+                 "color": _hi, "light": _lo,
                  "icon": m["icon"], "questions": m["questions"],
                  "chapters": m["chapters"], "pages": m["pages"],
                  "pdf": m["key"] + "/" + urllib.parse.quote(m["pdf"]),
