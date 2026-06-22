@@ -30,10 +30,13 @@ def _rgba(hexc, a):
     h = hexc.lstrip("#"); r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
     return f"rgba({r},{g},{b},{a})"
 
+# luxury gradient-orb identity: lightened top stop -> the subject's brand color
+ORB_LIGHT = {"uncertainty": "#818cf8", "algebra": "#38bdf8", "algebra8": "#a78bfa", "geometry8": "#2dd4bf"}
 subj = []
 for m in metas:
     subj.append({"key": m["key"], "title": m["title"], "subtitle": m["subtitle"],
-                 "color": m["color"], "icon": m["icon"], "questions": m["questions"],
+                 "color": m["color"], "light": ORB_LIGHT.get(m["key"], m["color"]),
+                 "icon": m["icon"], "questions": m["questions"],
                  "chapters": m["chapters"], "pages": m["pages"],
                  "pdf": m["key"] + "/" + urllib.parse.quote(m["pdf"]),
                  "viewer": m["key"] + "/viewer.html", "index": m["key"] + "/index.html",
@@ -42,7 +45,7 @@ for m in metas:
 nav = ""
 for i, s in enumerate(subj):
     nav += (f'<button class="navitem{" active" if i == 0 else ""}" style="--c:{s["color"]};--tint:{_rgba(s["color"],0.09)}" onclick="sel({i})">'
-            f'<span class="ic">{s["icon"]}</span>'
+            f'<span class="ic" style="background:linear-gradient(135deg,{s["light"]},{s["color"]})"></span>'
             f'<span class="nt"><span class="nm">{s["title"]}</span><span class="ct">{s["questions"]} שאלות</span></span></button>')
 
 s0 = subj[0]
@@ -63,7 +66,7 @@ HOME = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
  .navitem{display:flex;align-items:center;gap:11px;width:100%;padding:10px 11px;border:none;border-inline-start:3px solid transparent;border-radius:12px;background:transparent;cursor:pointer;text-align:right;font-family:inherit;transition:background .15s}
  .navitem:hover{background:#fafbff}
  .navitem.active{background:var(--tint);border-inline-start-color:var(--c)}
- .navitem .ic{width:38px;height:38px;border-radius:11px;border:1.25px solid var(--c);color:var(--c);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex:0 0 auto}
+ .navitem .ic{width:36px;height:36px;border-radius:50%;flex:0 0 auto;box-shadow:0 2px 7px rgba(20,25,50,.13)}
  .navitem .nt{display:flex;flex-direction:column;min-width:0}
  .navitem .nm{font-size:13.5px;font-weight:700;color:#1f2a44}
  .navitem .ct{font-size:10.5px;color:#9aa1b3;margin-top:1px}
@@ -72,6 +75,8 @@ HOME = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
  .panel{flex:1;min-width:0;background:#fff;border:0.75px solid #e8eaf1;border-radius:18px;box-shadow:0 6px 22px rgba(20,25,50,.05);overflow:hidden}
  .panel::before{content:"";display:block;height:4px;background:var(--c)}
  .pbody{padding:28px 30px 26px}
+ .phead{display:flex;align-items:center;gap:13px}
+ .porb{width:30px;height:30px;border-radius:50%;flex:0 0 auto;box-shadow:0 2px 7px rgba(20,25,50,.13)}
  .ptitle{font-size:clamp(24px,5vw,32px);font-weight:800;letter-spacing:.3px}
  .psub{font-size:14px;color:#6b7280;margin-top:4px}
  .pmeta{display:flex;gap:10px;margin:18px 0 22px}
@@ -103,7 +108,7 @@ HOME = """<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
  </aside>
  <main class="panel" id="panel" style="--c:__C0__">
    <div class="pbody">
-     <div class="ptitle" id="pt">__T0__</div>
+     <div class="phead"><span class="porb" id="porb" style="background:linear-gradient(135deg,__LIGHT0__,__C0__)"></span><div class="ptitle" id="pt">__T0__</div></div>
      <div class="psub" id="ps">__SUB0__</div>
      <div class="pmeta">
        <div class="chip"><b id="pq">__Q0__</b><span>שאלות</span></div>
@@ -126,6 +131,7 @@ function sel(i){var s=D[i];
  var items=document.querySelectorAll('.navitem');
  for(var j=0;j<items.length;j++){items[j].classList.toggle('active',j===i);}
  document.getElementById('panel').style.setProperty('--c',s.color);
+ document.getElementById('porb').style.background='linear-gradient(135deg,'+s.light+','+s.color+')';
  document.getElementById('pt').textContent=s.title;
  document.getElementById('ps').textContent=s.subtitle;
  document.getElementById('pq').textContent=s.questions;
@@ -139,7 +145,7 @@ function sel(i){var s=D[i];
 </body></html>"""
 HOME = (HOME.replace("__TOTQ__", str(tot_q)).replace("__TOTS__", str(tot_s)).replace("__TOTP__", str(tot_p))
             .replace("__NAV__", nav).replace("__DATA__", DATA_JS).replace("__GH__", GH_URL)
-            .replace("__C0__", s0["color"]).replace("__T0__", s0["title"]).replace("__SUB0__", s0["subtitle"])
+            .replace("__C0__", s0["color"]).replace("__LIGHT0__", s0["light"]).replace("__T0__", s0["title"]).replace("__SUB0__", s0["subtitle"])
             .replace("__Q0__", str(s0["questions"])).replace("__CH0__", str(s0["chapters"])).replace("__P0__", str(s0["pages"]))
             .replace("__COVER0__", s0["cover"]).replace("__VIEW0__", s0["viewer"]).replace("__PDF0__", s0["pdf"]).replace("__IDX0__", s0["index"]))
 open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(HOME)
