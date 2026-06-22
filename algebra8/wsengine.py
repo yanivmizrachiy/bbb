@@ -188,25 +188,35 @@ def render(OUT, h1, subtitle, meta_line, pdf_name, meta):
     for old in glob.glob(os.path.join(pages_dir, "*.png")):
         os.remove(old)
     doc = fitz.open(pdf_path); npages = doc.page_count
+    chap_pg = sorted(l["page"] + 1 for l in doc[0].get_links() if l.get("page", -1) >= 0)
     for i in range(npages):
         doc[i].get_pixmap(dpi=120).save(os.path.join(pages_dir, f"p{i+1:03d}.png"))
     doc.close()
 
     ts = int(time.time()); pdf_href = urllib.parse.quote(pdf_name)
     nq = len([c for c in CARDS if c.startswith('<div class="q"')]); nchap = len(SECTIONS)
-    sheets = "".join(f'<div class="sheet"><img src="assets/pages/p{i+1:03d}.png?v={ts}" loading="lazy" alt="עמוד {i+1}">'
+    sheets = "".join(f'<div class="sheet" id="p{i+1}"><img src="assets/pages/p{i+1:03d}.png?v={ts}" loading="lazy" alt="עמוד {i+1}">'
                      f'<div class="pgn">עמוד {i+1} / {npages}</div></div>' for i in range(npages))
+    chapnav = "".join(f'<a class="tc" href="#p{pg}" style="--cc:{c}"><i>{l}</i>{t}</a>'
+                      for (l, t, c), pg in zip(SECTIONS, chap_pg))
     viewer = f"""<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h1} — תצוגת הדפים</title><style>
+ html{{scroll-behavior:smooth}}
  html,body{{margin:0;background:#e9ebf0;font-family:'Segoe UI',Arial,sans-serif}}
- .bar{{position:sticky;top:0;z-index:5;background:#191c2e;color:#eef;padding:11px 16px;font-size:13.5px;display:flex;gap:16px;align-items:center;justify-content:center}}
+ .head{{position:sticky;top:0;z-index:6}}
+ .bar{{background:#191c2e;color:#eef;padding:11px 16px;font-size:13.5px;display:flex;gap:16px;align-items:center;justify-content:center}}
  .bar b{{color:#fff}} .bar a{{color:#8ad7ff;text-decoration:none;font-weight:600}}
+ .chapters{{background:#21243a;display:flex;gap:8px;overflow-x:auto;padding:9px 12px;border-top:1px solid #2c3050;-webkit-overflow-scrolling:touch}}
+ .tc{{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;background:#2c3050;color:#dfe3f2;text-decoration:none;border-radius:999px;padding:6px 13px 6px 7px;font-size:12px;white-space:nowrap}}
+ .tc i{{width:19px;height:19px;border-radius:50%;background:var(--cc);color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:700;font-size:11px;flex:0 0 auto}}
+ .tc:hover{{background:#363c63;color:#fff}}
  .wrap{{padding:22px 10px 70px;display:flex;flex-direction:column;align-items:center;gap:22px}}
- .sheet{{width:min(820px,96vw);background:#fff;box-shadow:0 5px 20px rgba(20,25,50,.22);border-radius:3px;overflow:hidden}}
- .sheet img{{display:block;width:100%;height:auto}}
+ .sheet{{width:min(820px,96vw);background:#fff;box-shadow:0 5px 20px rgba(20,25,50,.22);border-radius:3px;overflow:hidden;scroll-margin-top:108px}}
+ .sheet img{{display:block;width:100%;height:auto;aspect-ratio:210/297}}
  .pgn{{text-align:center;color:#7a8194;font-size:11px;padding:6px;background:#fafbfd;border-top:1px solid #eef}}
 </style></head><body>
-<div class="bar"><a href="index.html">⌂ דף הנושא</a> <span>📄 <b>תצוגת הדפים A4</b> · {npages} עמודים</span> <a href="{pdf_href}?v={ts}" download>⬇ הורדה</a></div>
+<div class="head"><div class="bar"><a href="index.html">⌂ דף הנושא</a> <span>📄 <b>תצוגת הדפים A4</b> · {npages} עמודים</span> <a href="{pdf_href}?v={ts}" download>⬇ הורדה</a></div>
+<div class="chapters">{chapnav}</div></div>
 <div class="wrap">{sheets}</div></body></html>"""
     open(os.path.join(OUT, "viewer.html"), "w", encoding="utf-8").write(viewer)
 
