@@ -77,7 +77,7 @@ def SECTION(title, subtitle, color):
     _qn[0] = 0
     letter = _letter(len(SECTIONS) + 1)
     SECTIONS.append((letter, title, color))
-    CARDS.append(f'<section class="topic" style="--c:{color}"><div class="sectionbar">'
+    CARDS.append(f'<section id="sec-{len(SECTIONS)}" class="topic" style="--c:{color}"><div class="sectionbar">'
                  f'<div class="secletter">{letter}</div><div><div class="sectitle">{title}</div>'
                  f'<div class="secsub">{subtitle}</div></div></div>')
 
@@ -113,8 +113,10 @@ p { margin:6px 0; }
 .toc { margin:40px 6px 0; }
 .toc h2 { color:#1f2a44; font-size:12pt; font-weight:600; letter-spacing:5px; padding-bottom:12px; border-bottom:1.5px solid #1f2a44; margin:0; }
 .toc ol { list-style:none; padding:0; margin:0; }
-.toc li { display:flex; align-items:center; gap:18px; padding:13px 2px; border-bottom:0.75px solid #ececf1; }
+.toc li { border-bottom:0.75px solid #ececf1; }
 .toc li:last-child { border-bottom:none; }
+.toc .tl { display:flex; align-items:center; gap:18px; padding:13px 2px; text-decoration:none; color:inherit; border-radius:8px; }
+.toc .tl:hover { background:#f6f7fb; }
 .toc .idx { color:var(--cc,#4f46e5); font-size:11pt; font-weight:600; letter-spacing:1px; min-width:24px; text-align:center; }
 .toc .nm { flex:1; font-size:12pt; color:#2a3142; letter-spacing:.2px; }
 .toc .tick { width:24px; height:1.5px; background:var(--cc,#4f46e5); opacity:.5; }
@@ -158,8 +160,8 @@ def render(OUT, h1, subtitle, meta_line, pdf_name, meta):
     """Assemble cover + all CARDS, then emit worksheet.html, PDF, page images,
     viewer.html, index.html (app) and meta.json into OUT."""
     import time, urllib.parse, json
-    toc = "".join(f'<li style="--cc:{c}"><span class="idx">{l}</span><span class="nm">{t}</span><span class="tick"></span></li>'
-                  for l, t, c in SECTIONS)
+    toc = "".join(f'<li style="--cc:{c}"><a class="tl" href="#sec-{n}"><span class="idx">{l}</span><span class="nm">{t}</span><span class="tick"></span></a></li>'
+                  for n, (l, t, c) in enumerate(SECTIONS, 1))
     cover = f"""<div class="cover">
   <div class="band"><div class="kick">מתמטיקה · חטיבת הביניים</div><h1>{h1}</h1><div class="rule"></div><div class="sub">{subtitle}</div></div>
   <div class="toc"><h2>תוכן העניינים</h2><ol>{toc}</ol></div>

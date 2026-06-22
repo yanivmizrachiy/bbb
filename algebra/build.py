@@ -58,9 +58,10 @@ def Q(num, body, src="", grade=""):
     gp = f'<span class="pill grade">{grade}</span>' if grade else ""
     CARDS.append(f'<div class="q"><div class="qhead"><span class="qnum">{label}</span><div class="qtags">{src and pill}{gp}</div></div><div class="qbody">{body}</div></div>')
 
+_HSEQ = "אבגדהוזחטיכלמנסעפצקרשת"
 def SECTION(letter, title, subtitle, color):
     _qcount[0] = 0
-    CARDS.append(f'<section class="topic" style="--c:{color}"><div class="sectionbar"><div class="secletter">{letter}</div><div><div class="sectitle">{title}</div><div class="secsub">{subtitle}</div></div></div>')
+    CARDS.append(f'<section id="sec-{_HSEQ.index(letter)+1}" class="topic" style="--c:{color}"><div class="sectionbar"><div class="secletter">{letter}</div><div><div class="sectitle">{title}</div><div class="secsub">{subtitle}</div></div></div>')
 
 def ENDSEC():
     CARDS.append('</section>')
@@ -401,7 +402,9 @@ p { margin:6px 0; }
 .toc { margin:40px 6px 0; }
 .toc h2 { color:#1f2a44; font-size:12pt; font-weight:600; letter-spacing:5px; padding-bottom:12px; border-bottom:1.5px solid #1f2a44; margin:0; }
 .toc ol { list-style:none; padding:0; margin:0; }
-.toc li { display:flex; align-items:center; gap:18px; padding:13px 2px; border-bottom:0.75px solid #ececf1; }
+.toc li { border-bottom:0.75px solid #ececf1; }
+.toc .tl { display:flex; align-items:center; gap:18px; padding:13px 2px; text-decoration:none; color:inherit; border-radius:8px; }
+.toc .tl:hover { background:#f6f7fb; }
 .toc li:last-child { border-bottom:none; }
 .toc .idx { color:var(--cc,#4f46e5); font-size:11pt; font-weight:600; letter-spacing:1px; min-width:24px; text-align:center; }
 .toc .nm { flex:1; font-size:12pt; color:#2a3142; letter-spacing:.2px; }
@@ -442,7 +445,7 @@ table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
 TOPICS = [("א","משתנים וביטויים אלגבריים","#4f46e5"),("ב","שוויון בין ביטויים אלגבריים","#0d9488"),
           ("ג","כינוס איברים דומים","#7c3aed"),("ד","משוואות וזיהוי פתרונן","#e11d48"),
           ("ה","פתירת משוואות ממעלה ראשונה","#d97706"),("ו","קריאת גרף — נקודות ברביע I","#0284c7")]
-toc = "".join(f'<li style="--cc:{c}"><span class="idx">{l}</span><span class="nm">{t}</span><span class="tick"></span></li>' for l,t,c in TOPICS)
+toc = "".join(f'<li style="--cc:{c}"><a class="tl" href="#sec-{_HSEQ.index(l)+1}"><span class="idx">{l}</span><span class="nm">{t}</span><span class="tick"></span></a></li>' for l,t,c in TOPICS)
 
 cover = f"""<div class="cover">
   <div class="band">
