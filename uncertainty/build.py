@@ -681,10 +681,17 @@ pdf_path = os.path.join(OUT, PDF_NAME)
 foot = ('<div style="font-family:Segoe UI,Arial; font-size:8px; color:#9aa3b8; width:100%; '
         'text-align:center;">תחום אי־וודאות · אוסף שאלות &nbsp;·&nbsp; עמוד '
         '<span class="pageNumber"></span> מתוך <span class="totalPages"></span></div>')
+toc_rows = []
 with sync_playwright() as p:
     b = p.chromium.launch()
-    pg = b.new_page()
+    pg = b.new_page(viewport={"width":703,"height":2000})
     pg.goto(url)
+    pg.emulate_media(media="print")
+    toc_rows = pg.evaluate("""()=>{const c=document.querySelector('.cover');if(!c)return[];
+      const cb=c.getBoundingClientRect();
+      return [...c.querySelectorAll('.toc .tl')].map(a=>{const r=a.getBoundingClientRect();
+        const fx=(r.left-cb.left)/cb.width, fy=(r.top-cb.top)/cb.height, fw=r.width/cb.width, fh=r.height/cb.height;
+        return {l:(12+fx*186)/210, t:(16+fy*262)/297, w:fw*186/210, h:fh*262/297};});}""")
     pg.pdf(path=pdf_path, format="A4", print_background=True,
            display_header_footer=True, header_template="<div></div>", footer_template=foot,
            margin={"top":"16mm","bottom":"18mm","left":"12mm","right":"12mm"})
@@ -711,10 +718,12 @@ pdf_href = urllib.parse.quote(PDF_NAME)
 GH_URL = "https://github.com/yanivmizrachiy/bbb"
 
 # ---- viewer.html : high-quality A4 page gallery ----
-sheets = "".join(
-    f'<div class="sheet" id="p{i+1}"><img src="assets/pages/p{i+1:03d}.png?v={ts}" loading="lazy" alt="עמוד {i+1}">'
-    f'<div class="pgn">עמוד {i+1} / {npages}</div></div>'
-    for i in range(npages))
+_hot = "".join(f'<a class="hot" href="#p{pg}" style="left:{r["l"]*100:.3f}%;top:{r["t"]*100:.3f}%;width:{r["w"]*100:.3f}%;height:{r["h"]*100:.3f}%" aria-label="מעבר לפרק"></a>' for r, pg in zip(toc_rows, chap_pg))
+def _sheet(i):
+    img = f'<img src="assets/pages/p{i+1:03d}.png?v={ts}" loading="lazy" alt="עמוד {i+1}">'
+    body = f'<div class="imgwrap">{img}{_hot}</div>' if (i == 0 and toc_rows) else img
+    return f'<div class="sheet" id="p{i+1}">{body}<div class="pgn">עמוד {i+1} / {npages}</div></div>'
+sheets = "".join(_sheet(i) for i in range(npages))
 chapnav = "".join(f'<a class="tc" href="#p{pg}" style="--cc:{c}"><i>{l}</i>{t}</a>' for (l, t, c), pg in zip(TOPICS, chap_pg))
 viewer = f"""<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -735,6 +744,9 @@ viewer = f"""<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8
   .sheet {{ width:min(820px,96vw); background:#fff; box-shadow:0 5px 20px rgba(20,25,50,.22);
             border-radius:3px; overflow:hidden; scroll-margin-top:108px; }}
   .sheet img {{ display:block; width:100%; height:auto; aspect-ratio:210/297; }}
+  .imgwrap {{ position:relative; line-height:0; }}
+  .hot {{ position:absolute; display:block; border-radius:7px; transition:background .12s; }}
+  .hot:hover {{ background:rgba(79,70,229,.15); box-shadow:0 0 0 2px rgba(79,70,229,.5) inset; }}
   .pgn {{ text-align:center; color:#7a8194; font-size:11px; padding:6px; background:#fafbfd; border-top:1px solid #eef; }}
 </style></head><body>
 <div class="head"><div class="bar"><a href="index.html">⌂ דף הבית</a> <span>📄 <b>תצוגת הדפים A4</b> · {npages} עמודים</span>
