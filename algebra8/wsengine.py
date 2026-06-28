@@ -54,6 +54,22 @@ def table(headers, rows, cls="tbl"):
     out.append('</tbody></table>')
     return "".join(out)
 
+def filltable(h1, h2, given=None, n=5):
+    """A fill-in value table the student completes. `given` = values for the first
+    (shaded) column; the second is left empty. If given is None, both are empty."""
+    if given is not None:
+        body = "".join(f'<tr><td class="giv">{L(str(g))}</td><td></td></tr>' for g in given)
+    else:
+        body = '<tr><td></td><td></td></tr>' * n
+    return (f'<table class="wtbl"><thead><tr><th>{h1}</th><th>{h2}</th></tr></thead>'
+            f'<tbody>{body}</tbody></table>')
+
+def tg(tbl, grid, cap=""):
+    """Place a fill-in table beside blank graph paper (table | graph), A4-friendly."""
+    c = f'<div class="gcap">{cap}</div>' if cap else ""
+    return (f'<div class="row2"><div class="tcol">{tbl}</div>'
+            f'<div class="gcol">{grid}{c}</div></div>')
+
 def fig(svg, cap="", w=None):
     c = f'<div class="cap">{cap}</div>' if cap else ""
     style = f' style="max-width:{w}%;margin-inline:auto"' if w else ""
