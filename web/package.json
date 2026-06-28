@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx db/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:migrate": "tsx db/migrate.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.3",

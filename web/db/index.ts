@@ -41,3 +41,15 @@ export async function closeDb() {
   if (g._pglite) await g._pglite.close();
   if (g._pool) await g._pool.end();
 }
+
+/** Apply versioned Drizzle migrations with the active driver's migrator. */
+export async function migrateDb() {
+  const folder = path.join(process.cwd(), "db", "migrations");
+  if (usingServer) {
+    const { migrate } = await import("drizzle-orm/node-postgres/migrator");
+    await migrate(db as never, { migrationsFolder: folder });
+  } else {
+    const { migrate } = await import("drizzle-orm/pglite/migrator");
+    await migrate(db, { migrationsFolder: folder });
+  }
+}

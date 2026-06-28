@@ -1,8 +1,7 @@
 import "dotenv/config";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { sql } from "drizzle-orm";
-import { db, closeDb, usingServer, pgliteDir } from "./index";
+import { db, closeDb, migrateDb, usingServer, pgliteDir } from "./index";
 import {
   subjects,
   chapters,
@@ -43,35 +42,8 @@ function readChapters(key: string, root: string): NewChapter[] {
 }
 
 async function main() {
-  // Idempotent schema (lets embedded PGlite run with no separate migration step).
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS subjects (
-      id serial PRIMARY KEY,
-      key text NOT NULL UNIQUE,
-      title text NOT NULL,
-      subtitle text NOT NULL,
-      icon text NOT NULL,
-      color text NOT NULL,
-      orb_light text NOT NULL,
-      orb_deep text NOT NULL,
-      questions integer NOT NULL,
-      chapters integer NOT NULL,
-      pages integer NOT NULL,
-      pdf text NOT NULL,
-      sort integer NOT NULL DEFAULT 0
-    );
-  `);
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS chapters (
-      id serial PRIMARY KEY,
-      subject_key text NOT NULL,
-      idx integer NOT NULL,
-      letter text NOT NULL,
-      title text NOT NULL,
-      color text NOT NULL,
-      page integer NOT NULL
-    );
-  `);
+  // Apply versioned Drizzle migrations (creates/updates the schema).
+  await migrateDb();
 
   const root = join(process.cwd(), ".."); // bbb_work/ — the existing static project
 
