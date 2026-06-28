@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { Pool } from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
+import { sql } from "drizzle-orm";
+import { db, closeDb, usingServer, pgliteDir } from "./index";
 import { subjects, type NewSubject } from "./schema";
 
 // Gradient-orb palette (matches the live site's home identity colors).
@@ -15,10 +15,27 @@ const ORB: Record<string, [string, string]> = {
 const ORDER = ["uncertainty", "algebra", "algebra8", "geometry8"];
 
 async function main() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  const db = drizzle(pool);
-  const root = join(process.cwd(), ".."); // bbb_work/ — the existing static project
+  // Idempotent schema — lets embedded PGlite run with no separate migration step
+  // (a server Postgres can also use `npm run db:push`; IF NOT EXISTS is harmless).
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS subjects (
+      id serial PRIMARY KEY,
+      key text NOT NULL UNIQUE,
+      title text NOT NULL,
+      subtitle text NOT NULL,
+      icon text NOT NULL,
+      color text NOT NULL,
+      orb_light text NOT NULL,
+      orb_deep text NOT NULL,
+      questions integer NOT NULL,
+      chapters integer NOT NULL,
+      pages integer NOT NULL,
+      pdf text NOT NULL,
+      sort integer NOT NULL DEFAULT 0
+    );
+  `);
 
+  const root = join(process.cwd(), ".."); // bbb_work/ — the existing static project
   const rows: NewSubject[] = ORDER.map((key, i) => {
     const m = JSON.parse(readFileSync(join(root, key, "meta.json"), "utf8"));
     const [orbLight, orbDeep] = ORB[key];
@@ -40,8 +57,12 @@ async function main() {
 
   await db.delete(subjects);
   await db.insert(subjects).values(rows);
-  console.log(`seeded ${rows.length} subjects from meta.json`);
-  await pool.end();
+  console.log(
+    `seeded ${rows.length} subjects → ${
+      usingServer ? "server Postgres" : "PGlite @ " + pgliteDir
+    }`,
+  );
+  await closeDb();
 }
 
 main().catch((e) => {
