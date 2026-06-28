@@ -85,6 +85,20 @@
   height: auto;
   aspect-ratio: 210 / 297;
 }
+.imgwrap {
+  position: relative;
+  line-height: 0;
+}
+.hot {
+  position: absolute;
+  display: block;
+  border-radius: 7px;
+  transition: background 0.12s;
+}
+.hot:hover {
+  background: rgba(79, 70, 229, 0.16);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5) inset;
+}
 .pgn {
   text-align: center;
   color: #7a8194;

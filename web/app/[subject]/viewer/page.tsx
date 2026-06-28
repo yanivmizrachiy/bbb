@@ -58,22 +58,46 @@ export default async function Viewer({
       </div>
 
       <div className={styles.wrap}>
-        {pages.map((i) => (
-          <div key={i} id={`p${i}`} className={styles.sheet}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`${ARTIFACTS}/${s.key}/assets/pages/p${String(i).padStart(
-                3,
-                "0",
-              )}.png`}
-              alt={`עמוד ${i}`}
-              loading="lazy"
-            />
-            <div className={styles.pgn}>
-              עמוד {i} / {s.pages}
+        {pages.map((i) => {
+          const src = `${ARTIFACTS}/${s.key}/assets/pages/p${String(i).padStart(
+            3,
+            "0",
+          )}.png`;
+          // eslint-disable-next-line @next/next/no-img-element
+          const img = <img src={src} alt={`עמוד ${i}`} loading="lazy" />;
+          // Page 1 is the cover — overlay the clickable table-of-contents hotspots.
+          const hotspots = chapterRows.filter((c) => c.hotLeft != null);
+          const body =
+            i === 1 && hotspots.length > 0 ? (
+              <div className={styles.imgwrap}>
+                {img}
+                {hotspots.map((c) => (
+                  <a
+                    key={c.id}
+                    className={styles.hot}
+                    href={`#p${c.page}`}
+                    aria-label={`מעבר ל${c.title}`}
+                    style={{
+                      left: `${c.hotLeft}%`,
+                      top: `${c.hotTop}%`,
+                      width: `${c.hotWidth}%`,
+                      height: `${c.hotHeight}%`,
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              img
+            );
+          return (
+            <div key={i} id={`p${i}`} className={styles.sheet}>
+              {body}
+              <div className={styles.pgn}>
+                עמוד {i} / {s.pages}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

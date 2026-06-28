@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, real } from "drizzle-orm/pg-core";
 
 /** One row per subject (נושא) — the catalog that drives the home page. */
 export const subjects = pgTable("subjects", {
@@ -26,6 +26,11 @@ export const chapters = pgTable("chapters", {
   title: text("title").notNull(),
   color: text("color").notNull(),
   page: integer("page").notNull(),
+  // Clickable hotspot rect (% of the cover image), parsed from viewer.html.
+  hotLeft: real("hot_left"),
+  hotTop: real("hot_top"),
+  hotWidth: real("hot_width"),
+  hotHeight: real("hot_height"),
 });
 
 export type Subject = typeof subjects.$inferSelect;
