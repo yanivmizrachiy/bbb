@@ -17,5 +17,18 @@ export const subjects = pgTable("subjects", {
   sort: integer("sort").notNull().default(0),
 });
 
+/** One row per chapter (פרק) within a subject — drives chapter navigation. */
+export const chapters = pgTable("chapters", {
+  id: serial("id").primaryKey(),
+  subjectKey: text("subject_key").notNull(),
+  idx: integer("idx").notNull(),
+  letter: text("letter").notNull(),
+  title: text("title").notNull(),
+  color: text("color").notNull(),
+  page: integer("page").notNull(),
+});
+
 export type Subject = typeof subjects.$inferSelect;
 export type NewSubject = typeof subjects.$inferInsert;
+export type Chapter = typeof chapters.$inferSelect;
+export type NewChapter = typeof chapters.$inferInsert;

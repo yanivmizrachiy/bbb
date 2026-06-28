@@ -1,8 +1,11 @@
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/db";
-import { subjects as subjectsTable } from "@/db/schema";
+import {
+  subjects as subjectsTable,
+  chapters as chaptersTable,
+} from "@/db/schema";
 import styles from "./subject.module.css";
 
 export const dynamic = "force-dynamic";
@@ -16,12 +19,19 @@ export default async function SubjectPage({
 }) {
   // Next.js 16: params is async and must be awaited.
   const { subject } = await params;
+
   const [s] = await db
     .select()
     .from(subjectsTable)
     .where(eq(subjectsTable.key, subject));
 
   if (!s) notFound();
+
+  const chapterRows = await db
+    .select()
+    .from(chaptersTable)
+    .where(eq(chaptersTable.subjectKey, subject))
+    .orderBy(asc(chaptersTable.idx));
 
   const pdf = `${ARTIFACTS}/${s.key}/${encodeURIComponent(s.pdf)}`;
 
@@ -89,6 +99,29 @@ export default async function SubjectPage({
               דף הנושא
             </a>
           </div>
+
+          <div className={styles.chhead}>הפרקים בנושא</div>
+          <ol className={styles.chlist}>
+            {chapterRows.map((c) => (
+              <li key={c.id}>
+                <a
+                  className={styles.chrow}
+                  href={`${ARTIFACTS}/${s.key}/viewer.html#p${c.page}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <span
+                    className={styles.chletter}
+                    style={{ background: c.color }}
+                  >
+                    {c.letter}
+                  </span>
+                  <span className={styles.chtitle}>{c.title}</span>
+                  <span className={styles.chpage}>עמ' {c.page}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     </div>
