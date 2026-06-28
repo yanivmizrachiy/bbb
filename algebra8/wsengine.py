@@ -150,6 +150,18 @@ table.tbl th, table.tbl td { border:1px solid #c7ccda; padding:6px 12px; text-al
 table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
 .blank { display:inline-block; min-width:46px; border-bottom:1.6px solid #9aa3b8; height:14px; }
 .note { background:#f7f8fc; border:1px solid #e6e8ee; border-right:5px solid var(--c,#4f46e5); border-radius:8px; padding:8px 14px; margin:12px 0; font-size:10pt; color:#3a4256; page-break-inside:avoid; }
+.wtbl { border-collapse:collapse; width:100%; font-size:11pt; }
+.wtbl th, .wtbl td { border:1px solid #c7ccda; text-align:center; vertical-align:middle; }
+.wtbl thead th { background:var(--c,#4f46e5); color:#fff; font-weight:700; padding:6px 4px; font-size:10pt; }
+.wtbl td { height:28px; padding:2px 6px; }
+.wtbl td.giv { background:#f4f5fb; color:#3a4256; font-weight:700; }
+.ebox { display:flex; align-items:center; gap:10px; border:1.25px solid var(--c,#4f46e5); border-radius:10px; padding:9px 14px; margin:9px 0 4px; background:#fafbff; font-size:11.5pt; page-break-inside:avoid; }
+.ebox .lab { font-weight:700; color:#3a4256; white-space:nowrap; }
+.ebox .fill { flex:1; border-bottom:1.6px dashed #aab0c4; height:1.5em; }
+.row2 { display:flex; gap:16px; align-items:flex-start; margin:9px 0 2px; page-break-inside:avoid; }
+.row2 .tcol { flex:0 0 37%; }
+.row2 .gcol { flex:1; min-width:0; }
+.gcap { text-align:center; font-size:9.5pt; color:#6b7280; margin-top:3px; font-weight:600; }
 @media screen { html { background:#e9ebf0; } body { max-width: 880px; margin: 22px auto 60px; padding: 32px 44px; background:#fff; box-shadow:0 4px 24px rgba(20,25,50,.14); border-radius:6px; } .cover { height:auto; min-height:auto; } }
 """
 
