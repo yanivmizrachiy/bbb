@@ -486,7 +486,7 @@ def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
     curves:[(pts,color,label?,dash?)]. labx/laby = numeric-label spacing."""
     lines = lines or []; points = points or []; curves = curves or []
     labx = labx or xstep; laby = laby or ystep
-    ml = mr = 14; mt = 16 + (16 if title else 0); mb = 14
+    ml = mr = 14; mt = 24 + (16 if title else 0); mb = 30
     pw, ph = W - ml - mr, H - mt - mb
 
     def X(x): return ml + (x - xmin) / (xmax - xmin) * pw
@@ -523,9 +523,9 @@ def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
             s.append(f'<text x="{x0-5:.1f}" y="{Y(gy)+3.5:.1f}" text-anchor="end" fill="{SUB}" font-size="10.5" style="{FONT}">{_num(gy)}</text>')
         gy += laby
     s.append(f'<text x="{x0-5:.1f}" y="{y0+13:.1f}" text-anchor="end" fill="{SUB}" font-size="10.5" style="{FONT}">O</text>')
-    # axis names
-    s.append(f'<text x="{ml+pw-2:.0f}" y="{y0-7:.1f}" text-anchor="end" fill="{INK}" font-size="13" font-style="italic" style="{FONT}">{xlabel}</text>')
-    s.append(f'<text x="{x0+7:.1f}" y="{mt+11}" text-anchor="start" fill="{INK}" font-size="13" font-style="italic" style="{FONT}">{ylabel}</text>')
+    # axis names — x centred below the axis, y near the top, both clear of ticks/arrows
+    s.append(f'<text x="{ml+pw/2:.0f}" y="{mt+ph+22:.0f}" text-anchor="middle" fill="{INK}" font-size="12.5" style="{FONT}">{xlabel}</text>')
+    s.append(f'<text x="{x0+2:.1f}" y="{mt-9:.0f}" text-anchor="start" fill="{INK}" font-size="12.5" style="{FONT}">{ylabel}</text>')
     # curves (sampled polylines)
     for cv in curves:
         pts = cv[0]; col = cv[1] if len(cv) > 1 else PAL[0]
