@@ -1,14 +1,11 @@
 import { asc } from "drizzle-orm";
+import Link from "next/link";
 import { db } from "@/db";
 import { subjects as subjectsTable } from "@/db/schema";
 import styles from "./page.module.css";
 
 // Always render from the live database (per-request), not at build time.
 export const dynamic = "force-dynamic";
-
-// Existing generated worksheets/PDFs still live on the static GitHub Pages site.
-// Phase 3 will serve them natively; for now the catalog links to them.
-const ARTIFACTS = "https://yanivmizrachiy.github.io/bbb";
 
 export default async function Home() {
   const subjects = await db
@@ -62,15 +59,13 @@ export default async function Home() {
               {s.questions} שאלות &nbsp;·&nbsp; {s.chapters} פרקים &nbsp;·&nbsp;{" "}
               {s.pages} עמ&#39;
             </div>
-            <a
+            <Link
               className={styles.open}
-              href={`${ARTIFACTS}/${s.key}/`}
-              target="_blank"
-              rel="noopener"
+              href={`/${s.key}`}
               style={{ background: s.orbDeep }}
             >
               פתיחת הנושא
-            </a>
+            </Link>
           </article>
         ))}
       </div>

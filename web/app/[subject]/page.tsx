@@ -1,0 +1,96 @@
+import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { db } from "@/db";
+import { subjects as subjectsTable } from "@/db/schema";
+import styles from "./subject.module.css";
+
+export const dynamic = "force-dynamic";
+
+const ARTIFACTS = "https://yanivmizrachiy.github.io/bbb";
+
+export default async function SubjectPage({
+  params,
+}: {
+  params: Promise<{ subject: string }>;
+}) {
+  // Next.js 16: params is async and must be awaited.
+  const { subject } = await params;
+  const [s] = await db
+    .select()
+    .from(subjectsTable)
+    .where(eq(subjectsTable.key, subject));
+
+  if (!s) notFound();
+
+  const pdf = `${ARTIFACTS}/${s.key}/${encodeURIComponent(s.pdf)}`;
+
+  return (
+    <div className={styles.wrap}>
+      <Link href="/" className={styles.back}>
+        ← חזרה לכל הנושאים
+      </Link>
+
+      <div className={styles.card}>
+        <div className={styles.bar} style={{ background: s.orbDeep }} />
+        <div className={styles.body}>
+          <div className={styles.head}>
+            <span
+              className={styles.orb}
+              style={{
+                background: `linear-gradient(135deg, ${s.orbLight}, ${s.orbDeep})`,
+              }}
+            />
+            <div>
+              <div className={styles.title}>{s.title}</div>
+              <div className={styles.sub}>{s.subtitle}</div>
+            </div>
+          </div>
+
+          <div className={styles.stats}>
+            <div className={styles.stat}>
+              <b style={{ color: s.orbDeep }}>{s.questions}</b>
+              <span>שאלות</span>
+            </div>
+            <div className={styles.stat}>
+              <b style={{ color: s.orbDeep }}>{s.chapters}</b>
+              <span>פרקים</span>
+            </div>
+            <div className={styles.stat}>
+              <b style={{ color: s.orbDeep }}>{s.pages}</b>
+              <span>עמודי A4</span>
+            </div>
+          </div>
+
+          <div className={styles.actions}>
+            <a
+              className={`${styles.btn} ${styles.primary}`}
+              href={`${ARTIFACTS}/${s.key}/viewer.html`}
+              target="_blank"
+              rel="noopener"
+              style={{ background: s.orbDeep }}
+            >
+              צפייה בדפים
+            </a>
+            <a
+              className={`${styles.btn} ${styles.ghost}`}
+              href={pdf}
+              target="_blank"
+              rel="noopener"
+            >
+              הורדת PDF
+            </a>
+            <a
+              className={`${styles.btn} ${styles.ghost}`}
+              href={`${ARTIFACTS}/${s.key}/`}
+              target="_blank"
+              rel="noopener"
+            >
+              דף הנושא
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
