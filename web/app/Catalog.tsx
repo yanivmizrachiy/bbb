@@ -101,14 +101,12 @@ export default function Catalog({ subjects }: { subjects: Subject[] }) {
           </div>
 
           <div className={styles.pactions}>
-            <a
+            <Link
               className={`${styles.btn} ${styles.primary}`}
-              href={`${ARTIFACTS}/${s.key}/viewer.html`}
-              target="_blank"
-              rel="noopener"
+              href={`/${s.key}/viewer`}
             >
               צפייה בדפים
-            </a>
+            </Link>
             <a
               className={`${styles.btn} ${styles.ghost}`}
               href={`${ARTIFACTS}/${s.key}/${encodeURIComponent(s.pdf)}`}

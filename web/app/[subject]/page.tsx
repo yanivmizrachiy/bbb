@@ -73,15 +73,13 @@ export default async function SubjectPage({
           </div>
 
           <div className={styles.actions}>
-            <a
+            <Link
               className={`${styles.btn} ${styles.primary}`}
-              href={`${ARTIFACTS}/${s.key}/viewer.html`}
-              target="_blank"
-              rel="noopener"
+              href={`/${s.key}/viewer`}
               style={{ background: s.orbDeep }}
             >
               צפייה בדפים
-            </a>
+            </Link>
             <a
               className={`${styles.btn} ${styles.ghost}`}
               href={pdf}

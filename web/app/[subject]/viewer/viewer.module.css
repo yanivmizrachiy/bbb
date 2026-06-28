@@ -1,0 +1,95 @@
+.viewer {
+  background: #e9ebf0;
+  min-height: 100vh;
+}
+.head {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+}
+.bar {
+  background: #191c2e;
+  color: #eef;
+  padding: 11px 16px;
+  font-size: 13.5px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+.bar a {
+  color: #8ad7ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+.bar b {
+  color: #fff;
+}
+.chapters {
+  background: #21243a;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 9px 12px;
+  border-top: 1px solid #2c3050;
+  -webkit-overflow-scrolling: touch;
+}
+.tc {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #2c3050;
+  color: #dfe3f2;
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 6px 13px 6px 7px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.tc i {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  flex: 0 0 auto;
+}
+.tc:hover {
+  background: #363c63;
+  color: #fff;
+}
+.wrap {
+  padding: 22px 10px 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.sheet {
+  width: min(820px, 96vw);
+  background: #fff;
+  box-shadow: 0 5px 20px rgba(20, 25, 50, 0.22);
+  border-radius: 3px;
+  overflow: hidden;
+  scroll-margin-top: 108px;
+}
+.sheet img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 210 / 297;
+}
+.pgn {
+  text-align: center;
+  color: #7a8194;
+  font-size: 11px;
+  padding: 6px;
+  background: #fafbfd;
+  border-top: 1px solid #eef;
+}
