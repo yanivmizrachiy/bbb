@@ -8,6 +8,7 @@ import {
   type NewSubject,
   type NewChapter,
 } from "./schema";
+import { parseChapterStrip } from "./parse";
 
 // Gradient-orb palette (matches the live site's home identity colors).
 const ORB: Record<string, [string, string]> = {
@@ -20,25 +21,9 @@ const ORDER = ["uncertainty", "algebra", "algebra8", "geometry8"];
 
 // Read chapters straight from each subject's existing viewer.html chapter strip
 // (read-only — never touches worksheet content).
-const CHIP =
-  /<a class="tc" href="#p(\d+)" style="--cc:([^"]+)"><i>([^<]+)<\/i>([^<]+)<\/a>/g;
-
 function readChapters(key: string, root: string): NewChapter[] {
   const html = readFileSync(join(root, key, "viewer.html"), "utf8");
-  const out: NewChapter[] = [];
-  let m: RegExpExecArray | null;
-  let i = 0;
-  while ((m = CHIP.exec(html))) {
-    out.push({
-      subjectKey: key,
-      idx: i++,
-      page: Number(m[1]),
-      color: m[2],
-      letter: m[3],
-      title: m[4],
-    });
-  }
-  return out;
+  return parseChapterStrip(html, key);
 }
 
 async function main() {

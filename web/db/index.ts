@@ -34,8 +34,20 @@ function build(): DB {
   return drizzlePglite(client, { schema });
 }
 
-export const db: DB = g._db ?? build();
-if (process.env.NODE_ENV !== "production") g._db = db;
+function getDb(): DB {
+  if (!g._db) g._db = build();
+  return g._db;
+}
+
+// Lazy proxy: the driver (and PGlite's WASM) initializes on first *use*, not at
+// import — so build-time module analysis never spins up a database connection.
+export const db: DB = new Proxy({} as DB, {
+  get(_t, prop) {
+    const real = getDb() as unknown as Record<string | symbol, unknown>;
+    const v = real[prop];
+    return typeof v === "function" ? (v as (...a: unknown[]) => unknown).bind(real) : v;
+  },
+});
 
 export async function closeDb() {
   if (g._pglite) await g._pglite.close();
@@ -45,11 +57,12 @@ export async function closeDb() {
 /** Apply versioned Drizzle migrations with the active driver's migrator. */
 export async function migrateDb() {
   const folder = path.join(process.cwd(), "db", "migrations");
+  const real = getDb();
   if (usingServer) {
     const { migrate } = await import("drizzle-orm/node-postgres/migrator");
-    await migrate(db as never, { migrationsFolder: folder });
+    await migrate(real as never, { migrationsFolder: folder });
   } else {
     const { migrate } = await import("drizzle-orm/pglite/migrator");
-    await migrate(db, { migrationsFolder: folder });
+    await migrate(real, { migrationsFolder: folder });
   }
 }
