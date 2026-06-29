@@ -5,7 +5,14 @@ import { Pool } from "pg";
 import { PGlite } from "@electric-sql/pglite";
 import * as schema from "./schema";
 
-const url = process.env.DATABASE_URL ?? "";
+// Accept a Postgres URL from DATABASE_URL or from the vars Vercel Postgres /
+// Neon inject automatically — so attaching a DB in the dashboard needs zero
+// manual env config. Falls back to embedded PGlite when none is present.
+const url =
+  process.env.DATABASE_URL ??
+  process.env.POSTGRES_URL ??
+  process.env.POSTGRES_PRISMA_URL ??
+  "";
 
 /** Use a real Postgres server when DATABASE_URL points to one (docker / hosted);
  *  otherwise fall back to embedded PGlite (real Postgres, zero setup). */
