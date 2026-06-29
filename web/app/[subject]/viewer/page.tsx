@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
-import { eq, asc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { db } from "@/db";
-import {
-  subjects as subjectsTable,
-  chapters as chaptersTable,
-} from "@/db/schema";
+import { getSubject, getChapters } from "@/db/data";
 import styles from "./viewer.module.css";
 
 export const dynamic = "force-dynamic";
@@ -17,10 +12,7 @@ export async function generateMetadata({
   params: Promise<{ subject: string }>;
 }): Promise<Metadata> {
   const { subject } = await params;
-  const [s] = await db
-    .select()
-    .from(subjectsTable)
-    .where(eq(subjectsTable.key, subject));
+  const s = await getSubject(subject);
   if (!s) return { title: "צפייה בדפים" };
   return { title: `${s.title} · צפייה בדפים` };
 }
@@ -35,18 +27,10 @@ export default async function Viewer({
 }) {
   const { subject } = await params;
 
-  const [s] = await db
-    .select()
-    .from(subjectsTable)
-    .where(eq(subjectsTable.key, subject));
-
+  const s = await getSubject(subject);
   if (!s) notFound();
 
-  const chapterRows = await db
-    .select()
-    .from(chaptersTable)
-    .where(eq(chaptersTable.subjectKey, subject))
-    .orderBy(asc(chaptersTable.idx));
+  const chapterRows = await getChapters(subject);
 
   const pdf = `${ARTIFACTS}/${s.key}/${encodeURIComponent(s.pdf)}`;
   const pages = Array.from({ length: s.pages }, (_, i) => i + 1);

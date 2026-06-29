@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
-import { asc } from "drizzle-orm";
-import { db } from "@/db";
-import { subjects, chapters } from "@/db/schema";
+import { getSubjects, getAllChapters } from "@/db/data";
 
 export const dynamic = "force-dynamic";
 
-/** GET /api/subjects — the catalog + chapter list, straight from PostgreSQL. */
+/** GET /api/subjects — the catalog + chapter list (Postgres when configured,
+ *  else the bundled snapshot). */
 export async function GET() {
   const [subjectRows, chapterRows] = await Promise.all([
-    db.select().from(subjects).orderBy(asc(subjects.sort)),
-    db.select().from(chapters).orderBy(asc(chapters.idx)),
+    getSubjects(),
+    getAllChapters(),
   ]);
 
   const byKey = new Map<string, typeof chapterRows>();

@@ -1,16 +1,10 @@
-import { asc } from "drizzle-orm";
-import { db } from "@/db";
-import { subjects as subjectsTable } from "@/db/schema";
+import { getSubjects } from "@/db/data";
 import Catalog from "./Catalog";
 
-// Always render from the live database (per-request), not at build time.
+// Always render per-request, not at build time.
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const subjects = await db
-    .select()
-    .from(subjectsTable)
-    .orderBy(asc(subjectsTable.sort));
-
+  const subjects = await getSubjects();
   return <Catalog subjects={subjects} />;
 }

@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/sync-content.mjs && next dev",
-    "build": "node scripts/sync-content.mjs && next build",
-    "vercel-build": "node scripts/sync-content.mjs && next build && tsx db/seed.ts",
+    "build": "node scripts/sync-content.mjs && tsx scripts/gen-data.ts && next build",
+    "vercel-build": "node scripts/sync-content.mjs && tsx scripts/gen-data.ts && next build && tsx db/seed.ts",
+    "data:gen": "tsx scripts/gen-data.ts",
     "start": "next start",
     "lint": "eslint",
     "db:push": "drizzle-kit push",
