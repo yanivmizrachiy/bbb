@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { eq, asc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -9,6 +10,23 @@ import {
 import styles from "./subject.module.css";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ subject: string }>;
+}): Promise<Metadata> {
+  const { subject } = await params;
+  const [s] = await db
+    .select()
+    .from(subjectsTable)
+    .where(eq(subjectsTable.key, subject));
+  if (!s) return { title: "נושא לא נמצא" };
+  return {
+    title: `${s.title} — מתמטיקה לחטיבת הביניים`,
+    description: `${s.subtitle} · ${s.questions} שאלות · ${s.chapters} פרקים · ${s.pages} עמודים.`,
+  };
+}
 
 // Worksheet assets are served by this app itself (synced into public/worksheets).
 const ARTIFACTS = "/worksheets";
