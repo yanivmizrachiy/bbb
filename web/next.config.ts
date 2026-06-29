@@ -12,9 +12,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // PGlite ships a WASM build that must stay external to the server bundle.
-  serverExternalPackages: ["@electric-sql/pglite"],
-
   // Don't advertise the framework/version.
   poweredByHeader: false,
 

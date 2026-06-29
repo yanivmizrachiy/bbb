@@ -17,7 +17,6 @@
     "content:sync": "node scripts/sync-content.mjs"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.5.3",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "next": "16.2.9",
@@ -26,6 +25,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.3",
     "@types/node": "^20",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",

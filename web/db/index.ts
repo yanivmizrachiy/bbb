@@ -1,44 +1,36 @@
 import path from "node:path";
-import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
-import { drizzle as drizzlePglite } from "drizzle-orm/pglite";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { PGlite } from "@electric-sql/pglite";
 import * as schema from "./schema";
 
 // Accept a Postgres URL from DATABASE_URL or from the vars Vercel Postgres /
 // Neon inject automatically — so attaching a DB in the dashboard needs zero
-// manual env config. Falls back to embedded PGlite when none is present.
+// manual env config.
 const url =
   process.env.DATABASE_URL ??
   process.env.POSTGRES_URL ??
   process.env.POSTGRES_PRISMA_URL ??
   "";
 
-/** Use a real Postgres server when DATABASE_URL points to one (docker / hosted);
- *  otherwise fall back to embedded PGlite (real Postgres, zero setup). */
+/** True when a real Postgres server is configured. When false, the app serves
+ *  the committed build-time snapshot (see db/data.ts) and this client is unused. */
 export const usingServer = /^postgres(ql)?:\/\//.test(url);
-export const pgliteDir =
-  process.env.PGLITE_DIR ?? path.join(process.cwd(), ".pgdata");
 
-type DB = ReturnType<typeof drizzlePglite<typeof schema>>;
+type DB = ReturnType<typeof drizzle<typeof schema>>;
 
-// Reuse one client/connection across dev hot-reloads.
-const g = globalThis as unknown as {
-  _db?: DB;
-  _pglite?: PGlite;
-  _pool?: Pool;
-};
+// Reuse one pool/connection across dev hot-reloads.
+const g = globalThis as unknown as { _db?: DB; _pool?: Pool };
 
 function build(): DB {
-  if (usingServer) {
-    const pool = g._pool ?? new Pool({ connectionString: url });
-    g._pool = pool;
-    // The query-builder API is identical across drivers; cast keeps one type.
-    return drizzlePg(pool, { schema }) as unknown as DB;
-  }
-  const client = g._pglite ?? new PGlite(pgliteDir);
-  g._pglite = client;
-  return drizzlePglite(client, { schema });
+  if (!usingServer)
+    throw new Error(
+      "No Postgres server configured (set DATABASE_URL/POSTGRES_URL). " +
+        "Without one the app reads the committed snapshot via db/data.ts; " +
+        "the db client is only for a real server (seed/migrate).",
+    );
+  const pool = g._pool ?? new Pool({ connectionString: url });
+  g._pool = pool;
+  return drizzle(pool, { schema });
 }
 
 function getDb(): DB {
@@ -46,8 +38,8 @@ function getDb(): DB {
   return g._db;
 }
 
-// Lazy proxy: the driver (and PGlite's WASM) initializes on first *use*, not at
-// import — so build-time module analysis never spins up a database connection.
+// Lazy proxy: the pool initializes on first *use*, not at import — so build-time
+// module analysis never opens a database connection.
 export const db: DB = new Proxy({} as DB, {
   get(_t, prop) {
     const real = getDb() as unknown as Record<string | symbol, unknown>;
@@ -57,19 +49,12 @@ export const db: DB = new Proxy({} as DB, {
 });
 
 export async function closeDb() {
-  if (g._pglite) await g._pglite.close();
   if (g._pool) await g._pool.end();
 }
 
-/** Apply versioned Drizzle migrations with the active driver's migrator. */
+/** Apply versioned Drizzle migrations (server Postgres only). */
 export async function migrateDb() {
   const folder = path.join(process.cwd(), "db", "migrations");
-  const real = getDb();
-  if (usingServer) {
-    const { migrate } = await import("drizzle-orm/node-postgres/migrator");
-    await migrate(real as never, { migrationsFolder: folder });
-  } else {
-    const { migrate } = await import("drizzle-orm/pglite/migrator");
-    await migrate(real, { migrationsFolder: folder });
-  }
+  const { migrate } = await import("drizzle-orm/node-postgres/migrator");
+  await migrate(getDb() as never, { migrationsFolder: folder });
 }
