@@ -15,16 +15,27 @@ A topic file looks like:
         W.Q(1, "...")
         W.ENDSEC()
 """
-import os
+import os, html as _html
 
 CARDS = []          # rendered question/section html, in order
 SECTIONS = []       # (letter, title, color) collected for the TOC
 _qn = [0]           # per-section auto counter
 
+# Vendored KaTeX (committed at repo root) — rendered into the worksheet HTML
+# before the PDF is captured, for textbook-quality math typesetting.
+_KATEX = "file:///" + os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vendor", "katex"
+).replace("\\", "/")
+
 
 # ---------- inline helpers ----------
 def L(x):
     return f'<span dir="ltr">{x}</span>'
+
+def M(tex):
+    """Render LaTeX math with KaTeX (stacked fractions, exponents, roots …).
+    Use for 2-D math; simple inline math can stay with L()."""
+    return f'<span class="math" data-tex="{_html.escape(tex, quote=True)}"></span>'
 
 def lines(n):
     return '<div class="lines">' + '<div class="ln"></div>' * n + '</div>'
@@ -195,8 +206,16 @@ def render(OUT, h1, subtitle, meta_line, pdf_name, meta):
   <div class="toc"><h2>תוכן העניינים</h2><ol>{toc}</ol></div>
   <div class="foot">מתמטיקה · חטיבת הביניים</div>
 </div>"""
+    katex_js = (
+        f'<script src="{_KATEX}/katex.min.js"></script>'
+        '<script>document.querySelectorAll("span.math").forEach(function(e){'
+        'if(window.katex){try{katex.render(e.getAttribute("data-tex"),e,{throwOnError:false});}catch(err){}}});'
+        'window.__kx=1;</script>'
+    )
     html = (f'<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
-            f'<title>{h1}</title><style>{CSS}</style></head><body>' + cover + "".join(CARDS) + "</body></html>")
+            f'<link rel="stylesheet" href="{_KATEX}/katex.min.css">'
+            f'<title>{h1}</title><style>{CSS}</style></head><body>'
+            + cover + "".join(CARDS) + katex_js + "</body></html>")
     open(os.path.join(OUT, "worksheet.html"), "w", encoding="utf-8").write(html)
 
     from playwright.sync_api import sync_playwright
@@ -207,6 +226,7 @@ def render(OUT, h1, subtitle, meta_line, pdf_name, meta):
     with sync_playwright() as p:
         b = p.chromium.launch(); pg = b.new_page(viewport={"width": 703, "height": 2000})
         pg.goto("file:///" + os.path.join(OUT, "worksheet.html").replace("\\", "/"))
+        pg.wait_for_function("window.__kx===1", timeout=8000)
         pg.emulate_media(media="print")
         toc_rows = pg.evaluate("""()=>{const c=document.querySelector('.cover');if(!c)return[];
           const cb=c.getBoundingClientRect();
