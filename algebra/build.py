@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
-import os, charts as C
+import os, html as _html, charts as C
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(OUT, exist_ok=True)
 
+# Vendored KaTeX (repo root) — rendered into the worksheet HTML before the PDF
+# is captured, for textbook-quality math typesetting (stacked fractions …).
+_KATEX = "file:///" + os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vendor", "katex"
+).replace("\\", "/")
+
 # ---------- helpers (same engine as the uncertainty booklet) ----------
 def L(x):
     return f'<span dir="ltr">{x}</span>'
+
+def M(tex):  # LaTeX math via KaTeX (stacked fractions, exponents, roots …)
+    return f'<span class="math" data-tex="{_html.escape(tex, quote=True)}"></span>'
 
 def lines(n):
     return '<div class="lines">' + '<div class="ln"></div>' * n + '</div>'
@@ -130,7 +139,7 @@ Q(14, "התאימו לכל <b>תיאור מילולי</b> את הביטוי הא
            ("3.", "כפלו את " + L("a") + " ב־" + L("2"), 0),
            ("4.", "חלקו את " + L("a") + " ב־" + L("2"), 0),
            ("5.", "כפלו את " + L("a") + " בעצמו", 0)])
-  + "<p>הביטויים: א. " + L("a + 2") + " · ב. " + L("a − 2") + " · ג. " + L("2a") + " · ד. " + L("a/2") + " · ה. " + L("a²") + " · ו. " + L("2 − a") + " · ז. " + L("2/a") + "</p>" + lines(1))
+  + "<p>הביטויים: א. " + L("a + 2") + " · ב. " + L("a − 2") + " · ג. " + L("2a") + " · ד. " + M("\\frac{a}{2}") + " · ה. " + L("a²") + " · ו. " + L("2 − a") + " · ז. " + M("\\frac{2}{a}") + "</p>" + lines(1))
 
 Q(15, "לפניכם סדרת המספרים " + L("2, 5, 11, 23, …") + " (האיבר הראשון הוא " + L("2") + "). איזו מההוראות הבאות יוצרת כל איבר מהאיבר הקודם לו?"
   + mc([("א.", "הוסיפו " + L("1") + " לאיבר הקודם, ואז כפלו ב־" + L("2")),
@@ -154,7 +163,7 @@ Q(17, "התאימו כל ביטוי לתיאור המילולי:"
 Q(18, "מחיר ק\"ג עגבניות בחנות הוא " + L("a") + " שקלים ומחיר ק\"ג מלפפונים הוא " + L("b") + " שקלים. "
   "כתבו ביטוי אלגברי לעלות הכוללת של " + L("3") + " ק\"ג עגבניות ו־" + L("2") + " ק\"ג מלפפונים." + lines(1))
 
-Q(19, "מחיר ק\"ג עגבניות בשוק נמוך ב־" + L("2") + " שקלים ממחירו בחנות, ומחיר ק\"ג מלפפונים בשוק הוא " + L("3/4") + " ממחירו בחנות. "
+Q(19, "מחיר ק\"ג עגבניות בשוק נמוך ב־" + L("2") + " שקלים ממחירו בחנות, ומחיר ק\"ג מלפפונים בשוק הוא " + M("\\frac{3}{4}") + " ממחירו בחנות. "
   "כתבו ביטוי אלגברי לעלות הכוללת של " + L("3") + " ק\"ג עגבניות ו־" + L("2") + " ק\"ג מלפפונים בשוק." + lines(1))
 
 Q(20, "ידוע כי " + L("a + b = 5") + ". חשבו:"
@@ -230,8 +239,8 @@ Q(2, "סרגל עולה " + L("k") + " שקלים ועט עולה " + L("m") + "
 
 Q(3, "חברו בין הביטויים בטור א' לביטויים השווים להם בטור ב':"
   + table(['טור ב\'', 'טור א\''],
-          [[L("8a + 5"), L("2a + 5")], [L("a/2"), L("3a − a")], [L("4a + 4"), L("4(a + 1)")],
-           [L("15a"), L("6a + 2a + 5")], [L("5 + 2a"), L("5 · 3a")], [L("2a"), L("a/2 · ... ")]]))
+          [[L("8a + 5"), L("2a + 5")], [M("\\frac{a}{2}"), L("3a − a")], [L("4a + 4"), L("4(a + 1)")],
+           [L("15a"), L("6a + 2a + 5")], [L("5 + 2a"), L("5 · 3a")], [L("2a"), M("\\frac{a}{2} \\cdot \\dots")]]))
 ENDSEC()
 
 # =====================================================================
@@ -273,7 +282,7 @@ Q(9, "לדני היו פי שניים בולים מאשר לרינה. לאחר �
   "התאימו לכל בחירת משתנה את המשוואה המתאימה:"
   + parts([("•", L("x") + " = הבולים שהיו לדני בתחילה", 0),
            ("•", L("x") + " = הבולים שהיו לרינה בתחילה  →  " + L("2x − 7 = x + 7"), 0),
-           ("•", L("x") + " = הבולים של שניהם יחד  →  " + L("x/2 − 7 = x/2 + 7"), 0)], ))
+           ("•", L("x") + " = הבולים של שניהם יחד  →  " + M("\\frac{x}{2} - 7 = \\frac{x}{2} + 7"), 0)], ))
 
 Q(10, "בסרטוט משולש שווה־צלעות ומחומש משוכלל. צלע המשולש " + L("10") + " ס\"מ וצלע המחומש " + L("d") + " ס\"מ. "
   "היקף המחומש גדול ב־" + L("5") + " ס\"מ מהיקף המשולש. בנו משוואה עם הנעלם " + L("d") + "."
@@ -306,7 +315,7 @@ Q(4, "פתרו את המשוואה " + L("15(x + 6) = 18x") + " והסבירו �
 Q(5, "פתרו, בעזרת מעבר למשוואות שקולות:"
   + parts([("א.", L("8x − 6 = 3x + 4"), 1), ("ב.", L("3(y − 2) + 1 = y + 5"), 1),
            ("ג.", L("2(z − 3) + 5 = 5(7 − 2z) − 2"), 1), ("ד.", L("6x + 20 = 4(2x + 3)"), 1),
-           ("ה.", L("(x − 1)/3 = 7"), 1), ("ו.", L("(x − 1)/3 = x/5"), 1)]))
+           ("ה.", M("\\frac{x-1}{3} = 7"), 1), ("ו.", M("\\frac{x-1}{3} = \\frac{x}{5}"), 1)]))
 
 Q(6, "<b>שיח מתמטי.</b> ארבעה תלמידים פתרו את המשוואה " + L("7x + 4(3x − 2) = 5x − 8") + ". התייחסו לפתרון של כל אחד — האם הוא נכון או שגוי? נמקו."
   + table(["ירון", "שירה", "מיכל", "אלון"],
@@ -461,9 +470,14 @@ cover = f"""<div class="cover">
   <div class="foot">מתמטיקה · חטיבת הביניים</div>
 </div>"""
 
+_katex_js = (f'<script src="{_KATEX}/katex.min.js"></script>'
+             '<script>document.querySelectorAll("span.math").forEach(function(e){'
+             'if(window.katex){try{katex.render(e.getAttribute("data-tex"),e,{throwOnError:false});}catch(err){}}});'
+             'window.__kx=1;</script>')
 html = (f'<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
+        f'<link rel="stylesheet" href="{_KATEX}/katex.min.css">'
         f'<title>אלגברה לכיתה ז - אוסף שאלות</title><style>{CSS}</style></head><body>'
-        + cover + "".join(CARDS) + "</body></html>")
+        + cover + "".join(CARDS) + _katex_js + "</body></html>")
 
 import time, urllib.parse
 with open(os.path.join(OUT, "worksheet.html"), "w", encoding="utf-8") as f:
@@ -479,6 +493,7 @@ foot = ('<div style="font-family:Segoe UI,Arial; font-size:8px; color:#9aa3b8; w
 toc_rows = []
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_page(viewport={"width":703,"height":2000}); pg.goto(url)
+    pg.wait_for_function("window.__kx===1", timeout=8000)
     pg.emulate_media(media="print")
     toc_rows = pg.evaluate("""()=>{const c=document.querySelector('.cover');if(!c)return[];
       const cb=c.getBoundingClientRect();

@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
-import os, charts as C
+import os, html as _html, charts as C
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(OUT, exist_ok=True)
 
+# Vendored KaTeX (repo root) — rendered into the worksheet HTML before the PDF
+# is captured, for textbook-quality math typesetting (stacked fractions …).
+_KATEX = "file:///" + os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vendor", "katex"
+).replace("\\", "/")
+
 # ---------- small HTML helpers ----------
 def L(x):  # isolate LTR fragment (fractions, ratios, times) inside RTL text
     return f'<span dir="ltr">{x}</span>'
+
+def M(tex):  # LaTeX math via KaTeX (stacked fractions, exponents, roots …)
+    return f'<span class="math" data-tex="{_html.escape(tex, quote=True)}"></span>'
 
 def lines(n):
     return '<div class="lines">' + '<div class="ln"></div>' * n + '</div>'
@@ -417,7 +426,7 @@ ENDSEC()
 SECTION("ד", "הסתברות", "כיתה ח' · מושגים בסיסיים, סימטריה ותוצאה משלימה", "#e11d48")
 
 Q(1, "במגירה יש " + L("28") + " עטים: חלקם לבנים, חלקם כחולים, חלקם ורודים וחלקם אפורים."
-  + parts([("א.", "אם ההסתברות לבחירת עט כחול היא " + L("2/7") + ", כמה עטים כחולים יש במגירה?", 1),
+  + parts([("א.", "אם ההסתברות לבחירת עט כחול היא " + M("\\frac{2}{7}") + ", כמה עטים כחולים יש במגירה?", 1),
            ("ב.", "מספר העטים הוורודים גדול פי " + L("2") + " ממספר העטים הכחולים. מה ההסתברות להוציא באקראי עט ורוד?", 2)]))
 
 Q(2, "בתחנה המטאורולוגית משתמשים במודלים כדי לחשב את ההסתברות לגשם (מספר בין " + L("0") + " ל־" + L("1")
@@ -664,9 +673,14 @@ cover = f"""<div class="cover">
   <div class="foot">מתמטיקה · חטיבת הביניים</div>
 </div>"""
 
+_katex_js = (f'<script src="{_KATEX}/katex.min.js"></script>'
+             '<script>document.querySelectorAll("span.math").forEach(function(e){'
+             'if(window.katex){try{katex.render(e.getAttribute("data-tex"),e,{throwOnError:false});}catch(err){}}});'
+             'window.__kx=1;</script>')
 html = (f'<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
+        f'<link rel="stylesheet" href="{_KATEX}/katex.min.css">'
         f'<title>תחום אי-ודאות — אוסף שאלות</title><style>{CSS}</style></head><body>'
-        + cover + "".join(CARDS) + "</body></html>")
+        + cover + "".join(CARDS) + _katex_js + "</body></html>")
 
 import time, urllib.parse
 with open(os.path.join(OUT, "worksheet.html"), "w", encoding="utf-8") as f:
@@ -686,6 +700,7 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     pg = b.new_page(viewport={"width":703,"height":2000})
     pg.goto(url)
+    pg.wait_for_function("window.__kx===1", timeout=8000)
     pg.emulate_media(media="print")
     toc_rows = pg.evaluate("""()=>{const c=document.querySelector('.cover');if(!c)return[];
       const cb=c.getBoundingClientRect();
