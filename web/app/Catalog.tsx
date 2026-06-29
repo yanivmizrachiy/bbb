@@ -5,7 +5,8 @@ import Link from "next/link";
 import type { Subject } from "@/db/schema";
 import styles from "./catalog.module.css";
 
-const ARTIFACTS = "https://yanivmizrachiy.github.io/bbb";
+// Worksheet assets are served by this app itself (synced into public/worksheets).
+const ARTIFACTS = "/worksheets";
 
 function tint(hex: string, a: number): string {
   const h = hex.replace("#", "");
@@ -94,7 +95,7 @@ export default function Catalog({ subjects }: { subjects: Subject[] }) {
           <div className={styles.preview}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`${ARTIFACTS}/${s.key}/assets/pages/p001.png`}
+              src={`${ARTIFACTS}/${s.key}/pages/p001.png`}
               alt={s.title}
               loading="lazy"
             />

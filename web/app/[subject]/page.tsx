@@ -10,7 +10,8 @@ import styles from "./subject.module.css";
 
 export const dynamic = "force-dynamic";
 
-const ARTIFACTS = "https://yanivmizrachiy.github.io/bbb";
+// Worksheet assets are served by this app itself (synced into public/worksheets).
+const ARTIFACTS = "/worksheets";
 
 export default async function SubjectPage({
   params,
@@ -88,25 +89,15 @@ export default async function SubjectPage({
             >
               הורדת PDF
             </a>
-            <a
-              className={`${styles.btn} ${styles.ghost}`}
-              href={`${ARTIFACTS}/${s.key}/`}
-              target="_blank"
-              rel="noopener"
-            >
-              דף הנושא
-            </a>
           </div>
 
           <div className={styles.chhead}>הפרקים בנושא</div>
           <ol className={styles.chlist}>
             {chapterRows.map((c) => (
               <li key={c.id}>
-                <a
+                <Link
                   className={styles.chrow}
-                  href={`${ARTIFACTS}/${s.key}/viewer.html#p${c.page}`}
-                  target="_blank"
-                  rel="noopener"
+                  href={`/${s.key}/viewer#p${c.page}`}
                 >
                   <span
                     className={styles.chletter}
@@ -116,7 +107,7 @@ export default async function SubjectPage({
                   </span>
                   <span className={styles.chtitle}>{c.title}</span>
                   <span className={styles.chpage}>עמ' {c.page}</span>
-                </a>
+                </Link>
               </li>
             ))}
           </ol>

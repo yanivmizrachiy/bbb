@@ -10,7 +10,8 @@ import styles from "./viewer.module.css";
 
 export const dynamic = "force-dynamic";
 
-const ARTIFACTS = "https://yanivmizrachiy.github.io/bbb";
+// Worksheet assets are served by this app itself (synced into public/worksheets).
+const ARTIFACTS = "/worksheets";
 
 export default async function Viewer({
   params,
@@ -59,7 +60,7 @@ export default async function Viewer({
 
       <div className={styles.wrap}>
         {pages.map((i) => {
-          const src = `${ARTIFACTS}/${s.key}/assets/pages/p${String(i).padStart(
+          const src = `${ARTIFACTS}/${s.key}/pages/p${String(i).padStart(
             3,
             "0",
           )}.png`;

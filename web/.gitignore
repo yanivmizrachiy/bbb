@@ -43,3 +43,6 @@ next-env.d.ts
 
 # embedded PGlite data
 /.pgdata
+
+# synced worksheet assets (generated)
+/public/worksheets
