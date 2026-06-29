@@ -81,6 +81,26 @@ def tg(tbl, grid, cap=""):
     return (f'<div class="row2"><div class="tcol">{tbl}</div>'
             f'<div class="gcol">{grid}{c}</div></div>')
 
+def ansval(label, unit="", w=72):
+    """A boxed answer field sized for a short value (a number/length/slope).
+    Renders `label [box] unit` — use when the expected answer is a single value."""
+    u = f'<span class="unit">{unit}</span>' if unit else ""
+    lab = f'<span class="alab">{label}</span>' if label else ""
+    return f'<div class="ansrow">{lab}<span class="abox" style="min-width:{w}px"></span>{u}</div>'
+
+def opair():
+    """Ordered-pair answer field: ( __ , __ ) — use when the expected answer is a
+    coordinate/point and the student fills in the two שיעורים."""
+    return ('<div class="ansrow"><span class="opair">'
+            '<span class="par">(</span><span class="abox"></span>'
+            '<span class="cma">,</span><span class="abox"></span>'
+            '<span class="par">)</span></span></div>')
+
+def justify(label="נמקו:", n=2):
+    """A justification prompt + n reasoning lines — use after the answer field when
+    the question asks to explain/justify (נמקו/הסבירו)."""
+    return f'<div class="just"><span class="jlab">{label}</span>{lines(n)}</div>'
+
 def fig(svg, cap="", w=None):
     c = f'<div class="cap">{cap}</div>' if cap else ""
     style = f' style="max-width:{w}%;margin-inline:auto"' if w else ""
@@ -186,6 +206,15 @@ table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
 .ebox { display:flex; align-items:center; gap:10px; border:1.25px solid var(--c,#4f46e5); border-radius:10px; padding:9px 14px; margin:9px 0 4px; background:#fafbff; font-size:11.5pt; page-break-inside:avoid; }
 .ebox .lab { font-weight:700; color:#3a4256; white-space:nowrap; }
 .ebox .fill { flex:1; border-bottom:1.6px dashed #aab0c4; height:1.5em; }
+.ansrow { display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin:9px 0 3px; font-size:11.5pt; page-break-inside:avoid; }
+.ansrow .alab { font-weight:700; color:#3a4256; white-space:nowrap; }
+.abox { display:inline-block; height:1.75em; min-width:64px; border:1.3px solid #c3c9d8; border-radius:7px; background:#fafbff; vertical-align:middle; }
+.ansrow .unit { color:#6b7280; font-size:10.5pt; }
+.opair { display:inline-flex; align-items:center; gap:7px; font-weight:800; color:#3a4256; font-size:14pt; }
+.opair .par { font-size:1.15em; }
+.opair .abox { min-width:50px; }
+.just { margin:8px 0 2px; }
+.just .jlab { display:block; font-weight:700; color:#3a4256; font-size:11pt; margin-bottom:1px; }
 .row2 { display:flex; gap:16px; align-items:flex-start; margin:9px 0 2px; page-break-inside:avoid; }
 .row2 .tcol { flex:0 0 37%; }
 .row2 .gcol { flex:1; min-width:0; }
