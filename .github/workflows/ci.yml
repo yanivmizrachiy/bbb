@@ -1,0 +1,45 @@
+name: CI
+
+# Quality gate for the Next.js + Postgres app (web/). Runs on every push to
+# main and on PRs, so the auto-deploy to Vercel is always backed by green
+# type-checks, tests and a production build.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: web · typecheck · test · build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Unit tests (parser + PGlite round-trip)
+        run: npm test
+
+      - name: Production build (PGlite — no external DB needed)
+        run: npm run build
