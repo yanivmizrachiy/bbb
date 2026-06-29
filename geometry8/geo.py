@@ -26,9 +26,15 @@ def dot(p, r=3.0, col=INK):
     return f'<circle cx="{p[0]:.1f}" cy="{p[1]:.1f}" r="{r}" fill="{col}"/>'
 
 
-def label(p, text, dx=0, dy=0, size=14, col=INK, anchor="middle"):
+def label(p, text, dx=0, dy=0, size=14, col=INK, anchor="middle", halo=True):
+    """Text label. By default a white knockout halo is painted behind the glyphs
+    (paint-order:stroke) so the label stays crisp wherever it sits — over a
+    gridline, an axis or a curve. Textbook-grade legibility, applied everywhere
+    so future figures inherit it and can't regress. Pass halo=False to disable."""
+    h = (f' paint-order="stroke" stroke="#ffffff" stroke-width="{max(2.5, size * 0.26):.1f}"'
+         f' stroke-linejoin="round"') if halo else ""
     return (f'<text x="{p[0]+dx:.1f}" y="{p[1]+dy:.1f}" text-anchor="{anchor}" '
-            f'fill="{col}" font-size="{size}" font-weight="700" style="{FONT}">{text}</text>')
+            f'fill="{col}" font-size="{size}" font-weight="700" style="{FONT}"{h}>{text}</text>')
 
 
 def vertex(p, name, dx=0, dy=0, anchor="middle"):
@@ -272,7 +278,9 @@ def circle_diameter():
     """Coordinate circle with horizontal diameter AB: A(-3,0), B(7,0) → centre (2,0), r=5.
     Clean vector: faint grid, arrowed axes, labelled points."""
     ml, mt, u = 26, 16, 18                 # unit = 18 px/grid-square
-    xmin, xmax, ymin, ymax = -5, 9, -6, 6
+    # 2-unit headroom beyond the circle (x∈[-3,7], y∈[-5,5]) so the axis arrows,
+    # the x/y labels and the A/B labels never collide with the curve.
+    xmin, xmax, ymin, ymax = -6, 10, -7, 7
     def X(x): return ml + (x - xmin) * u
     def Y(y): return mt + (ymax - y) * u
     W = ml + (xmax - xmin) * u + 22
