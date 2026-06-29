@@ -54,14 +54,6 @@ export default function Catalog({ subjects }: { subjects: Subject[] }) {
             </button>
           ))}
         </nav>
-        <a
-          className={styles.ext}
-          href="https://github.com/yanivmizrachiy/bbb"
-          target="_blank"
-          rel="noopener"
-        >
-          קוד המקור ב־GitHub
-        </a>
       </aside>
 
       <main className={styles.panel} style={vars({ "--c": s.orbDeep })}>
