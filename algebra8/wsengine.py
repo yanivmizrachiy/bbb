@@ -101,6 +101,16 @@ def justify(label="נמקו:", n=2):
     the question asks to explain/justify (נמקו/הסבירו)."""
     return f'<div class="just"><span class="jlab">{label}</span>{lines(n)}</div>'
 
+def tagblanks(items, w=64):
+    """Render each item with a small answer box beside it, in a wrapping grid —
+    use for 'write next to each ___ ...' short (one-word) answers."""
+    cells = "".join(
+        f'<span class="tbcell"><span class="tbi">{it}</span>'
+        f'<span class="abox" style="min-width:{w}px"></span></span>'
+        for it in items
+    )
+    return f'<div class="tbgrid">{cells}</div>'
+
 def fig(svg, cap="", w=None):
     c = f'<div class="cap">{cap}</div>' if cap else ""
     style = f' style="max-width:{w}%;margin-inline:auto"' if w else ""
@@ -215,6 +225,9 @@ table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
 .opair .abox { min-width:50px; }
 .just { margin:8px 0 2px; }
 .just .jlab { display:block; font-weight:700; color:#3a4256; font-size:11pt; margin-bottom:1px; }
+.tbgrid { display:flex; flex-wrap:wrap; gap:11px 20px; margin:9px 0 3px; page-break-inside:avoid; }
+.tbcell { display:inline-flex; align-items:center; gap:7px; font-size:11pt; }
+.tbcell .tbi { font-weight:700; color:#3a4256; white-space:nowrap; }
 .row2 { display:flex; gap:16px; align-items:flex-start; margin:9px 0 2px; page-break-inside:avoid; }
 .row2 .tcol { flex:0 0 37%; }
 .row2 .gcol { flex:1; min-width:0; }
