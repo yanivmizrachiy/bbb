@@ -273,6 +273,34 @@ def drone_cone():
     return _svg(240, 182, b)
 
 
+# ---- blank coordinate grid for the student to draw on (same style as below) ----
+def coord_grid(xmin, xmax, ymin, ymax, u=18, ox="x", oy="y"):
+    """Empty coordinate grid — faint grid, arrowed axes, O/x/y labels — for the
+    student to draw on (e.g. sketch a circle and plot points). Matches the look of
+    circle_diameter() so paired figures are consistent."""
+    ml, mt = 26, 16
+    def X(x): return ml + (x - xmin) * u
+    def Y(y): return mt + (ymax - y) * u
+    W = ml + (xmax - xmin) * u + 22
+    H = mt + (ymax - ymin) * u + 16
+    GRID = "#e7eaf1"
+    s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
+    for gx in range(xmin, xmax + 1):
+        s.append(f'<line x1="{X(gx):.0f}" y1="{Y(ymax):.0f}" x2="{X(gx):.0f}" y2="{Y(ymin):.0f}" stroke="{GRID}" stroke-width="1"/>')
+    for gy in range(ymin, ymax + 1):
+        s.append(f'<line x1="{X(xmin):.0f}" y1="{Y(gy):.0f}" x2="{X(xmax):.0f}" y2="{Y(gy):.0f}" stroke="{GRID}" stroke-width="1"/>')
+    y0, x0 = Y(0), X(0)
+    s.append(f'<line x1="{X(xmin):.0f}" y1="{y0:.0f}" x2="{X(xmax):.0f}" y2="{y0:.0f}" stroke="{INK}" stroke-width="1.6"/>')
+    s.append(f'<line x1="{x0:.0f}" y1="{Y(ymin):.0f}" x2="{x0:.0f}" y2="{Y(ymax):.0f}" stroke="{INK}" stroke-width="1.6"/>')
+    s.append(f'<path d="M{X(xmax):.0f},{y0:.0f} l-8,-4 l0,8 z" fill="{INK}"/>')
+    s.append(f'<path d="M{x0:.0f},{Y(ymax):.0f} l-4,8 l8,0 z" fill="{INK}"/>')
+    s.append(label((x0 - 6, Y(0) + 13), "O", anchor="end", size=12, col=SUB))
+    s.append(label((X(xmax) - 2, y0 - 7), ox, anchor="end", size=13, col=INK))
+    s.append(label((x0 + 8, Y(ymax) + 11), oy, anchor="start", size=13, col=INK))
+    s.append("</svg>")
+    return "".join(s)
+
+
 # ---- topic-1 (circle) reconstructed coordinate figure ----
 def circle_diameter():
     """Coordinate circle with horizontal diameter AB: A(-3,0), B(7,0) → centre (2,0), r=5.
