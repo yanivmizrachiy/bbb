@@ -101,6 +101,11 @@ def justify(label="נמקו:", n=2):
     the question asks to explain/justify (נמקו/הסבירו)."""
     return f'<div class="just"><span class="jlab">{label}</span>{lines(n)}</div>'
 
+def blank(w=64):
+    """An inline boxed blank — drop into a sentence/equation in place of a bare
+    '___' so fill-in answers match the boxed-answer design everywhere."""
+    return f'<span class="abox" style="min-width:{w}px"></span>'
+
 def tagblanks(items, w=64):
     """Render each item with a small answer box beside it, in a wrapping grid —
     use for 'write next to each ___ ...' short (one-word) answers."""
