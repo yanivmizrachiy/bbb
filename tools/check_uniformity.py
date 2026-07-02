@@ -91,9 +91,13 @@ def main():
                     pg.emulate_media(media="print")
                     pg.goto(pathlib.Path(f).resolve().as_uri())
                     hs = pg.evaluate("()=>[...document.querySelectorAll('.q')].map(q=>q.getBoundingClientRect().height/3.779528)")
-                    over = [round(h) for h in hs if h > 263]
+                    # A4 content height is 263mm, but a card also carries ~6mm of
+                    # margin and needs slack so page-break-inside:avoid keeps it
+                    # whole. Empirically a ~254mm card still split across pages, so
+                    # flag anything above 250mm as a page-overflow risk.
+                    over = [round(h) for h in hs if h > 250]
                     if over:
-                        issues.append(f"[FIT]  {s}: {len(over)} card(s) > 263mm (orphan risk): {over}")
+                        issues.append(f"[FIT]  {s}: {len(over)} card(s) > 250mm (page-split risk): {over}")
                     pg.close()
                 b.close()
         except Exception as e:

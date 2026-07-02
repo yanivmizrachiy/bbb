@@ -63,10 +63,15 @@ def justify(label, n=2):
     """A labelled work/justification block: a prompt + n lines."""
     return f'<div class="just"><span class="jlab">{label}</span>{lines(n)}</div>'
 
+def frac(n, d):
+    """Proper stacked fraction (numerator over denominator, with a bar) — inherits
+    the surrounding font/colour (so it's round inside an example row). Never '/'."""
+    return f'<span class="frac"><span class="fnum">{n}</span><span class="fden">{d}</span></span>'
+
 def freqtable(cols, nrows, example=None, total=None):
     """Fill-in frequency table (.wtbl). cols = list of (title, width), e.g.
     ("ציון","32%"). example = first-row demo cells, rendered in the round HandFont
-    like a textbook worked example. total = given total row ('' cell = blank)."""
+    with a "דוגמה" note beside the row (textbook convention). total = given row."""
     colgroup = "<colgroup>" + "".join(f'<col style="width:{w}">' for _, w in cols) + "</colgroup>"
     th = "".join(f"<th>{t}</th>" for t, _ in cols)
     body = ""
@@ -77,7 +82,10 @@ def freqtable(cols, nrows, example=None, total=None):
         body += "<tr>" + "".join(
             (f'<td class="giv">{c}</td>' if c else "<td></td>") for c in total
         ) + "</tr>"
-    return f'<table class="wtbl">{colgroup}<thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>'
+    tbl = f'<table class="wtbl">{colgroup}<thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>'
+    if example:
+        return f'<div class="freqwrap">{tbl}<span class="exnote">דוגמה</span></div>'
+    return tbl
 
 def fig(svg, cap="", w=None):
     c = f'<div class="cap">{cap}</div>' if cap else ""
@@ -260,12 +268,13 @@ SECTION("ב", "שכיחות יחסית", "סטטיסטיקה · כיתה ז' · 
 
 Q(1, "לפניכם רשימת ציונים של תלמידי הכיתה:<br>"
   + L("80, 82, 63, 56, 76, 82, 90, 56, 44, 72, 70, 80, 68, 76, 78, 80, 78, 82, 90, 85, 44, 72, 80, 82, 63, 70, 70, 80, 82, 82, 90, 90")
-  + parts([("א.", "ארגנו את הציונים בטבלת שכיחות — רשמו כל ציון שמופיע, כמה תלמידים קיבלו אותו (שכיחות), ומהי השכיחות היחסית (מספר התלמידים חלקי כלל התלמידים). <b>השורה הראשונה — דוגמה.</b>"
-            + freqtable([(L("ציון"), "32%"), (L("שכיחות"), "30%"), (L("שכיחות יחסית"), "38%")], 11,
-                        example=[L("44"), L("2"), L("2/32")], total=[L("סה\"כ"), "", ""]), 0),
-           ("ב.", "המורה שוקלת שתי דרכים לשנות את הציונים: (1) להוסיף " + L("5") + " נקודות לכל תלמיד; (2) להוסיף לכל תלמיד עשירית מציונו. חשבו את <b>טווח</b> הציונים בכל דרך, והראו את דרך החישוב:"
-            + justify("(1) הוספת 5 נקודות — דרך החישוב:", 2) + ansval("הטווח =", "נק'")
-            + justify("(2) הוספת עשירית מהציון — דרך החישוב:", 2) + ansval("הטווח =", "נק'"), 0)]))
+  + "<br>ארגנו את הציונים בטבלת שכיחות: לכל ציון שמופיע — כמה תלמידים קיבלו אותו (שכיחות), ומהי השכיחות היחסית (מספר התלמידים חלקי כלל התלמידים)."
+  + freqtable([(L("ציון"), "32%"), (L("שכיחות"), "30%"), (L("שכיחות יחסית"), "38%")], 11,
+              example=[L("44"), L("2"), frac(2, 32)], total=[L("סה\"כ"), "", ""]))
+
+Q(2, "בכיתה שברשימת הציונים שלמעלה, המורה שוקלת שתי דרכים לשנות את הציונים: (1) להוסיף " + L("5") + " נקודות לכל תלמיד; (2) להוסיף לכל תלמיד עשירית מציונו. חשבו את <b>טווח</b> הציונים בכל דרך, והראו את דרך החישוב:"
+  + justify("(1) הוספת 5 נקודות — דרך החישוב:", 2) + ansval("הטווח =", "נק'")
+  + justify("(2) הוספת עשירית מהציון — דרך החישוב:", 2) + ansval("הטווח =", "נק'"))
 
 Q(2, "בבית הספר \"אלונים\" נערכה תחרות \"הכיתה הספורטיבית\". המדד לניצחון הוא מספר התלמידים בכל כיתה העוסקים בספורט באופן קבוע. "
   "נציגי מועצת התלמידים אספו את הנתונים משתי כיתות ז':"
@@ -558,7 +567,7 @@ Q(1, "באליפויות אתלטיקה, תוצאה בקפיצה לרוחק מו
   + "<p><b>מקור מידע 1:</b> גרף מהירות הרוח (מטר/שנייה) בכל אחת מארבע הקפיצות.</p>"
   + fig(C.line_chart(['קפיצה 1','קפיצה 2','קפיצה 3','קפיצה 4'], [0.5,1.2,2.4,1.8], 0, 3, 0.5,
                      'מהירות הרוח (מ\'/ש\')', 'מספר הקפיצה', color='#0284c7',
-                     threshold=2.0, threshold_label='גבול חוקי 2.0'), w=46)
+                     threshold=2.0, threshold_label='גבול חוקי 2.0'), w=32)
   + "<p><b>מקור מידע 2:</b> טבלת מרחקי הקפיצה (במטרים):</p>"
   + table(['קפיצה 4','קפיצה 3','קפיצה 2','קפיצה 1','קופץ'],
           [['6.50','6.80','6.45','6.20','יואב'],
@@ -673,6 +682,12 @@ table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
 .wtbl td.giv { background:#f4f5fb; color:#3a4256; font-weight:700; }
 .wtbl tr.exrow td { font-family:'HandFont','Segoe UI',sans-serif; color:#2f7d95; background:#f2fbfb; font-size:13.5pt; letter-spacing:.3px; }
 .hw { font-family:'HandFont','Segoe UI',sans-serif; }
+.freqwrap { position:relative; max-width:470px; margin:9px auto; }
+.freqwrap .wtbl { margin:0; }
+.exnote { position:absolute; top:33px; right:0; transform:translateX(118%); font-family:'HandFont','Segoe UI',sans-serif; color:#2f7d95; font-size:12pt; white-space:nowrap; }
+.frac { display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; line-height:1.02; }
+.frac .fnum { border-bottom:1.6px solid currentColor; padding:0 5px 1px; }
+.frac .fden { padding:1px 5px 0; }
 .ansrow { display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin:9px 0 3px; font-size:11.5pt; page-break-inside:avoid; }
 .ansrow .alab { font-weight:700; color:#3a4256; white-space:nowrap; }
 .abox { display:inline-block; height:1.75em; min-width:64px; border:1.3px solid #c3c9d8; border-radius:7px; background:#fafbff; vertical-align:middle; }
