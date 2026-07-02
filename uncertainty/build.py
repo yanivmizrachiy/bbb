@@ -9,11 +9,17 @@ os.makedirs(OUT, exist_ok=True)
 _KATEX = "file:///" + os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vendor", "katex"
 ).replace("\\", "/")
-# Vendored rounded Hebrew font (Secular One) for the handwritten worked-example row.
-_FONT = "file:///" + os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vendor", "fonts", "secularone-he.woff2"
+# Vendored Hebrew handwriting font (Gveret Levin — Hebrew + Latin subsets) for the
+# worked-example row, so the demo (text AND digits) looks student-handwritten.
+_FDIR = "file:///" + os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vendor", "fonts"
 ).replace("\\", "/")
-_FONTFACE = '<style>@font-face{font-family:"HandFont";src:url("' + _FONT + '") format("woff2");font-display:swap;}</style>'
+_FONTFACE = (
+    '<style>'
+    '@font-face{font-family:"HandFont";src:url("' + _FDIR + '/gveretlevin-he.woff2") format("woff2");unicode-range:U+0590-05FF,U+FB1D-FB4F;}'
+    '@font-face{font-family:"HandFont";src:url("' + _FDIR + '/gveretlevin-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+2000-206F;}'
+    '</style>'
+)
 
 # ---------- small HTML helpers ----------
 def L(x):  # isolate LTR fragment (fractions, ratios, times) inside RTL text
