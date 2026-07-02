@@ -9,6 +9,11 @@ os.makedirs(OUT, exist_ok=True)
 _KATEX = "file:///" + os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vendor", "katex"
 ).replace("\\", "/")
+# Vendored rounded Hebrew font (Secular One) for the handwritten worked-example row.
+_FONT = "file:///" + os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vendor", "fonts", "secularone-he.woff2"
+).replace("\\", "/")
+_FONTFACE = '<style>@font-face{font-family:"HandFont";src:url("' + _FONT + '") format("woff2");font-display:swap;}</style>'
 
 # ---------- small HTML helpers ----------
 def L(x):  # isolate LTR fragment (fractions, ratios, times) inside RTL text
@@ -58,16 +63,21 @@ def justify(label, n=2):
     """A labelled work/justification block: a prompt + n lines."""
     return f'<div class="just"><span class="jlab">{label}</span>{lines(n)}</div>'
 
-def freqtable(headers, nrows, total=None):
-    """A blank fill-in frequency table (.wtbl) — header row + nrows empty rows for
-    the student to complete; optional labelled `total` row ('' cell = blank)."""
-    th = "".join(f"<th>{h}</th>" for h in headers)
-    body = ("<tr>" + "<td></td>" * len(headers) + "</tr>") * nrows
+def freqtable(cols, nrows, example=None, total=None):
+    """Fill-in frequency table (.wtbl). cols = list of (title, width), e.g.
+    ("ציון","32%"). example = first-row demo cells, rendered in the round HandFont
+    like a textbook worked example. total = given total row ('' cell = blank)."""
+    colgroup = "<colgroup>" + "".join(f'<col style="width:{w}">' for _, w in cols) + "</colgroup>"
+    th = "".join(f"<th>{t}</th>" for t, _ in cols)
+    body = ""
+    if example:
+        body += "<tr class='exrow'>" + "".join(f"<td>{c}</td>" for c in example) + "</tr>"
+    body += ("<tr>" + "<td></td>" * len(cols) + "</tr>") * nrows
     if total:
         body += "<tr>" + "".join(
             (f'<td class="giv">{c}</td>' if c else "<td></td>") for c in total
         ) + "</tr>"
-    return f'<table class="wtbl"><thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>'
+    return f'<table class="wtbl">{colgroup}<thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>'
 
 def fig(svg, cap="", w=None):
     c = f'<div class="cap">{cap}</div>' if cap else ""
@@ -250,8 +260,9 @@ SECTION("ב", "שכיחות יחסית", "סטטיסטיקה · כיתה ז' · 
 
 Q(1, "לפניכם רשימת ציונים של תלמידי הכיתה:<br>"
   + L("80, 82, 63, 56, 76, 82, 90, 56, 44, 72, 70, 80, 68, 76, 78, 80, 78, 82, 90, 85, 44, 72, 80, 82, 63, 70, 70, 80, 82, 82, 90, 90")
-  + parts([("א.", "ארגנו את הציונים בטבלת שכיחות — רשמו כל ציון שמופיע, כמה תלמידים קיבלו אותו (שכיחות), ומהי השכיחות היחסית (החלק מתוך כלל התלמידים)."
-            + freqtable([L("ציון"), L("שכיחות"), L("שכיחות יחסית")], 12, total=[L("סה\"כ"), "", ""]), 0),
+  + parts([("א.", "ארגנו את הציונים בטבלת שכיחות — רשמו כל ציון שמופיע, כמה תלמידים קיבלו אותו (שכיחות), ומהי השכיחות היחסית (מספר התלמידים חלקי כלל התלמידים). <b>השורה הראשונה — דוגמה.</b>"
+            + freqtable([(L("ציון"), "32%"), (L("שכיחות"), "30%"), (L("שכיחות יחסית"), "38%")], 11,
+                        example=[L("44"), L("2"), L("2/32")], total=[L("סה\"כ"), "", ""]), 0),
            ("ב.", "המורה שוקלת שתי דרכים לשנות את הציונים: (1) להוסיף " + L("5") + " נקודות לכל תלמיד; (2) להוסיף לכל תלמיד עשירית מציונו. חשבו את <b>טווח</b> הציונים בכל דרך, והראו את דרך החישוב:"
             + justify("(1) הוספת 5 נקודות — דרך החישוב:", 2) + ansval("הטווח =", "נק'")
             + justify("(2) הוספת עשירית מהציון — דרך החישוב:", 2) + ansval("הטווח =", "נק'"), 0)]))
@@ -655,11 +666,13 @@ img.embed.wide { max-width:88%; }
 table.tbl { border-collapse:collapse; margin:9px auto; font-size:10.5pt; }
 table.tbl th, table.tbl td { border:1px solid #c7ccda; padding:6px 12px; text-align:center; vertical-align:middle; }
 table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
-.wtbl { border-collapse:collapse; width:100%; font-size:11pt; margin:8px 0 3px; }
+.wtbl { border-collapse:collapse; width:100%; max-width:470px; margin:9px auto; font-size:11pt; }
 .wtbl th, .wtbl td { border:1px solid #c7ccda; text-align:center; vertical-align:middle; }
-.wtbl thead th { background:var(--c,#0d9488); color:#fff; font-weight:700; padding:6px 4px; font-size:10pt; }
-.wtbl td { height:28px; padding:2px 6px; }
+.wtbl thead th { background:var(--c,#0d9488); color:#fff; font-weight:700; padding:6px 4px; font-size:9.5pt; }
+.wtbl td { height:33px; padding:2px 6px; }
 .wtbl td.giv { background:#f4f5fb; color:#3a4256; font-weight:700; }
+.wtbl tr.exrow td { font-family:'HandFont','Segoe UI',sans-serif; color:#2f7d95; background:#f2fbfb; font-size:13.5pt; letter-spacing:.3px; }
+.hw { font-family:'HandFont','Segoe UI',sans-serif; }
 .ansrow { display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin:9px 0 3px; font-size:11.5pt; page-break-inside:avoid; }
 .ansrow .alab { font-weight:700; color:#3a4256; white-space:nowrap; }
 .abox { display:inline-block; height:1.75em; min-width:64px; border:1.3px solid #c3c9d8; border-radius:7px; background:#fafbff; vertical-align:middle; }
@@ -716,6 +729,7 @@ _katex_js = (f'<script src="{_KATEX}/katex.min.js"></script>'
              'window.__kx=1;</script>')
 html = (f'<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
         f'<link rel="stylesheet" href="{_KATEX}/katex.min.css">'
+        + _FONTFACE +
         f'<title>תחום אי-ודאות — אוסף שאלות</title><style>{CSS}</style></head><body>'
         + cover + "".join(CARDS) + _katex_js + "</body></html>")
 
