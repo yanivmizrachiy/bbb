@@ -47,6 +47,28 @@ def table(headers, rows, cls="tbl"):
     out.append('</tbody></table>')
     return "".join(out)
 
+# ----- answer-field toolkit (matches the design used across the project) -----
+def ansval(label, unit="", w=76):
+    """Boxed field for a single value answer: `label [box] unit`."""
+    u = f'<span class="unit">{unit}</span>' if unit else ""
+    lab = f'<span class="alab">{label}</span>' if label else ""
+    return f'<div class="ansrow">{lab}<span class="abox" style="min-width:{w}px"></span>{u}</div>'
+
+def justify(label, n=2):
+    """A labelled work/justification block: a prompt + n lines."""
+    return f'<div class="just"><span class="jlab">{label}</span>{lines(n)}</div>'
+
+def freqtable(headers, nrows, total=None):
+    """A blank fill-in frequency table (.wtbl) — header row + nrows empty rows for
+    the student to complete; optional labelled `total` row ('' cell = blank)."""
+    th = "".join(f"<th>{h}</th>" for h in headers)
+    body = ("<tr>" + "<td></td>" * len(headers) + "</tr>") * nrows
+    if total:
+        body += "<tr>" + "".join(
+            (f'<td class="giv">{c}</td>' if c else "<td></td>") for c in total
+        ) + "</tr>"
+    return f'<table class="wtbl"><thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>'
+
 def fig(svg, cap="", w=None):
     c = f'<div class="cap">{cap}</div>' if cap else ""
     style = f' style="max-width:{w}%;margin-inline:auto"' if w else ""
@@ -228,8 +250,11 @@ SECTION("ב", "שכיחות יחסית", "סטטיסטיקה · כיתה ז' · 
 
 Q(1, "לפניכם רשימת ציונים של תלמידי הכיתה:<br>"
   + L("80, 82, 63, 56, 76, 82, 90, 56, 44, 72, 70, 80, 68, 76, 78, 80, 78, 82, 90, 85, 44, 72, 80, 82, 63, 70, 70, 80, 82, 82, 90, 90")
-  + parts([("א.", "ארגנו את הציונים בטבלת שכיחות.", 4),
-           ("ב.", "המורה שקלה האם להעלות לכל תלמידי הכיתה את הציון ב־" + L("5") + " נקודות, או להוסיף לכל תלמיד עשירית מהציון. מה יהיה טווח הציונים בכל אחד מהמקרים?", 3)]))
+  + parts([("א.", "ארגנו את הציונים בטבלת שכיחות — רשמו כל ציון שמופיע, כמה תלמידים קיבלו אותו (שכיחות), ומהי השכיחות היחסית (החלק מתוך כלל התלמידים)."
+            + freqtable([L("ציון"), L("שכיחות"), L("שכיחות יחסית")], 12, total=[L("סה\"כ"), "", ""]), 0),
+           ("ב.", "המורה שוקלת שתי דרכים לשנות את הציונים: (1) להוסיף " + L("5") + " נקודות לכל תלמיד; (2) להוסיף לכל תלמיד עשירית מציונו. חשבו את <b>טווח</b> הציונים בכל דרך, והראו את דרך החישוב:"
+            + justify("(1) הוספת 5 נקודות — דרך החישוב:", 2) + ansval("הטווח =", "נק'")
+            + justify("(2) הוספת עשירית מהציון — דרך החישוב:", 2) + ansval("הטווח =", "נק'"), 0)]))
 
 Q(2, "בבית הספר \"אלונים\" נערכה תחרות \"הכיתה הספורטיבית\". המדד לניצחון הוא מספר התלמידים בכל כיתה העוסקים בספורט באופן קבוע. "
   "נציגי מועצת התלמידים אספו את הנתונים משתי כיתות ז':"
@@ -630,6 +655,17 @@ img.embed.wide { max-width:88%; }
 table.tbl { border-collapse:collapse; margin:9px auto; font-size:10.5pt; }
 table.tbl th, table.tbl td { border:1px solid #c7ccda; padding:6px 12px; text-align:center; vertical-align:middle; }
 table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
+.wtbl { border-collapse:collapse; width:100%; font-size:11pt; margin:8px 0 3px; }
+.wtbl th, .wtbl td { border:1px solid #c7ccda; text-align:center; vertical-align:middle; }
+.wtbl thead th { background:var(--c,#0d9488); color:#fff; font-weight:700; padding:6px 4px; font-size:10pt; }
+.wtbl td { height:28px; padding:2px 6px; }
+.wtbl td.giv { background:#f4f5fb; color:#3a4256; font-weight:700; }
+.ansrow { display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin:9px 0 3px; font-size:11.5pt; page-break-inside:avoid; }
+.ansrow .alab { font-weight:700; color:#3a4256; white-space:nowrap; }
+.abox { display:inline-block; height:1.75em; min-width:64px; border:1.3px solid #c3c9d8; border-radius:7px; background:#fafbff; vertical-align:middle; }
+.ansrow .unit { color:#6b7280; font-size:10.5pt; }
+.just { margin:8px 0 2px; }
+.just .jlab { display:block; font-weight:700; color:#3a4256; font-size:11pt; margin-bottom:1px; }
 .blank { display:inline-block; min-width:46px; border-bottom:1.6px solid #9aa3b8; height:14px; }
 
 .note { background:#f7f8fc; border:1px solid #e6e8ee; border-right:5px solid var(--c,#4f46e5);
