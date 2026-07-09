@@ -24,6 +24,31 @@ def _num(v):
     return f"{v:g}"
 
 
+def numline(vmin, vmax, step, label="", W=620, H=66):
+    """Bare horizontal number line (ticks + numbers) for mark-the-interval tasks."""
+    ml, mr = 26, 26
+    pw = W - ml - mr
+    ya = H - 34
+
+    def x(v):
+        return ml + (v - vmin) / (vmax - vmin) * pw
+
+    s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
+    s.append(f'<line x1="{ml-8}" y1="{ya}" x2="{ml+pw+8}" y2="{ya}" stroke="{AXIS}" stroke-width="1.8"/>')
+    v = vmin
+    while v <= vmax + 1e-9:
+        xx = x(v)
+        s.append(f'<line x1="{xx:.1f}" y1="{ya-6}" x2="{xx:.1f}" y2="{ya+6}" stroke="{AXIS}" stroke-width="1.5"/>')
+        s.append(f'<text x="{xx:.1f}" y="{ya+22}" text-anchor="middle" fill="{INK}" font-size="13" style="{FONT}">{_num(v)}</text>')
+        v += step
+    if label:
+        # middle-anchored: Chromium extends RTL text rightward from an "end"
+        # anchor, clipping the first letter at the viewBox edge.
+        s.append(f'<text x="{ml+pw-14}" y="{ya-14}" text-anchor="middle" fill="{SUB}" font-size="13" font-weight="600" style="{FONT}">{label}</text>')
+    s.append("</svg>")
+    return "".join(s)
+
+
 def vbar(cats, vals, ymax, ystep, ytitle="", xtitle="", colors=None,
          W=620, H=360, value_labels=True, barw_ratio=0.5, sticks=False):
     """Vertical bar / stick chart. cats & vals given left->right. vals may contain None (blank)."""
