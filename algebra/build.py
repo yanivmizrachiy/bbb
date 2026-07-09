@@ -442,7 +442,7 @@ ol.parts > li { display:flex; gap:8px; margin:7px 0; align-items:flex-start; }
 .figure { margin:10px auto; text-align:center; page-break-inside:avoid; }
 svg.chart { display:block; margin:4px auto; max-width:100%; height:auto; }
 svg.chart text { paint-order:stroke; stroke:#ffffff; stroke-width:2.6px; stroke-linejoin:round; }
-.cap { color:#5b6573; font-size:9.5pt; margin-top:2px; font-weight:600; }
+.cap { color:#3a4256; font-size:9.5pt; margin-top:2px; font-weight:600; }
 img.embed { max-width:66%; height:auto; border:1px solid #e6e8ee; border-radius:8px; padding:6px; background:#fff; }
 table.tbl { border-collapse:collapse; margin:9px auto; font-size:10.5pt; }
 table.tbl th, table.tbl td { border:1px solid #c7ccda; padding:6px 12px; text-align:center; vertical-align:middle; }

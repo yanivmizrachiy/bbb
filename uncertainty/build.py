@@ -675,7 +675,7 @@ ul.bul li { margin:3px 0; }
 .figure { margin:10px auto; text-align:center; page-break-inside:avoid; }
 svg.chart { display:block; margin:4px auto; max-width:100%; height:auto; }
 svg.chart text { paint-order:stroke; stroke:#ffffff; stroke-width:2.6px; stroke-linejoin:round; }
-.cap { color:#5b6573; font-size:9.5pt; margin-top:2px; font-weight:600; }
+.cap { color:#3a4256; font-size:9.5pt; margin-top:2px; font-weight:600; }
 img.embed { max-width:72%; height:auto; border:1px solid #e6e8ee; border-radius:8px; padding:6px; background:#fff; }
 img.embed.wide { max-width:88%; }
 
@@ -698,7 +698,7 @@ table.tbl thead th { background:#f4f5fb; color:#3a4256; font-weight:700; }
 .ansrow { display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin:9px 0 3px; font-size:11.5pt; page-break-inside:avoid; }
 .ansrow .alab { font-weight:700; color:#3a4256; white-space:nowrap; }
 .abox { display:inline-block; height:1.75em; min-width:64px; border:1.3px solid #c3c9d8; border-radius:7px; background:#fafbff; vertical-align:middle; }
-.ansrow .unit { color:#6b7280; font-size:10.5pt; }
+.ansrow .unit { color:#3a4256; font-size:10.5pt; }
 .just { margin:8px 0 2px; }
 .just .jlab { display:block; font-weight:700; color:#3a4256; font-size:11pt; margin-bottom:1px; }
 .blank { display:inline-block; min-width:46px; border-bottom:1.6px solid #9aa3b8; height:14px; }

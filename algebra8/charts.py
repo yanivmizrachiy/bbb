@@ -3,9 +3,9 @@
 
 PAL = ["#4f46e5", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899"]
 GRID = "#e6e8ee"
-AXIS = "#94a3b8"
+AXIS = "#1f2a44"
 INK = "#1f2a44"
-SUB = "#5b6573"
+SUB = "#334155"
 FONT = "font-family:'Segoe UI',Arial,sans-serif;"
 
 
@@ -34,11 +34,11 @@ def numline(vmin, vmax, step, label="", W=620, H=66):
         return ml + (v - vmin) / (vmax - vmin) * pw
 
     s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
-    s.append(f'<line x1="{ml-8}" y1="{ya}" x2="{ml+pw+8}" y2="{ya}" stroke="{AXIS}" stroke-width="1.8"/>')
+    s.append(f'<line x1="{ml-8}" y1="{ya}" x2="{ml+pw+8}" y2="{ya}" stroke="{AXIS}" stroke-width="2"/>')
     v = vmin
     while v <= vmax + 1e-9:
         xx = x(v)
-        s.append(f'<line x1="{xx:.1f}" y1="{ya-6}" x2="{xx:.1f}" y2="{ya+6}" stroke="{AXIS}" stroke-width="1.5"/>')
+        s.append(f'<line x1="{xx:.1f}" y1="{ya-6}" x2="{xx:.1f}" y2="{ya+6}" stroke="{AXIS}" stroke-width="2"/>')
         s.append(f'<text x="{xx:.1f}" y="{ya+22}" text-anchor="middle" fill="{INK}" font-size="13" style="{FONT}">{_num(v)}</text>')
         v += step
     if label:
@@ -69,8 +69,14 @@ def vbar(cats, vals, ymax, ystep, ytitle="", xtitle="", colors=None,
         yy = round(y(t), 2)
         s.append(f'<line x1="{ml}" y1="{yy}" x2="{ml+pw}" y2="{yy}" stroke="{GRID}" stroke-width="1"/>')
         s.append(f'<text x="{ml-9}" y="{yy+4}" text-anchor="end" fill="{SUB}" font-size="13" style="{FONT}">{_num(t)}</text>')
-    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
-    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
+    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
+    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
+    # tick marks on both axes, textbook style
+    for t in _ticks(ymax, ystep):
+        yy = round(y(t), 2)
+        s.append(f'<line x1="{ml-5}" y1="{yy}" x2="{ml}" y2="{yy}" stroke="{AXIS}" stroke-width="1.6"/>')
+    for i in range(n):
+        s.append(f'<line x1="{xc(i):.1f}" y1="{mt+ph}" x2="{xc(i):.1f}" y2="{mt+ph+5}" stroke="{AXIS}" stroke-width="1.6"/>')
     for i, v in enumerate(vals):
         if v is None:
             continue
@@ -114,8 +120,8 @@ def grouped_bar(cats, series, ymax, ystep, ytitle="", xtitle="", W=770, H=400):
         yy = round(y(t), 2)
         s.append(f'<line x1="{ml}" y1="{yy}" x2="{ml+pw}" y2="{yy}" stroke="{GRID}" stroke-width="1"/>')
         s.append(f'<text x="{ml-9}" y="{yy+4}" text-anchor="end" fill="{SUB}" font-size="12.5" style="{FONT}">{_num(t)}</text>')
-    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
-    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
+    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
+    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
     for i in range(n):
         base = ml + slot * i + gap / 2
         for j, ser in enumerate(series):
@@ -227,8 +233,8 @@ def scatter(points, xtitle="", ytitle="", W=460, H=340):
     ay = mt + ph
     # axes with arrows
     s.append(f'<defs><marker id="arr" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="{AXIS}"/></marker></defs>')
-    s.append(f'<line x1="{ax}" y1="{ay}" x2="{ax+pw}" y2="{ay}" stroke="{AXIS}" stroke-width="1.6" marker-end="url(#arr)"/>')
-    s.append(f'<line x1="{ax}" y1="{ay}" x2="{ax}" y2="{mt}" stroke="{AXIS}" stroke-width="1.6" marker-end="url(#arr)"/>')
+    s.append(f'<line x1="{ax}" y1="{ay}" x2="{ax+pw}" y2="{ay}" stroke="{AXIS}" stroke-width="2" marker-end="url(#arr)"/>')
+    s.append(f'<line x1="{ax}" y1="{ay}" x2="{ax}" y2="{mt}" stroke="{AXIS}" stroke-width="2" marker-end="url(#arr)"/>')
     for xf, yf, lab in points:
         x = ax + 12 + xf * (pw - 30)
         y = ay - 12 - yf * (ph - 22)
@@ -262,8 +268,16 @@ def line_chart(xlabels, yvals, ymin, ymax, ystep, ytitle="", xtitle="", color="#
         yy = round(y(t), 2)
         s.append(f'<line x1="{ml}" y1="{yy}" x2="{ml+pw}" y2="{yy}" stroke="{GRID}" stroke-width="1"/>')
         s.append(f'<text x="{ml-9}" y="{yy+4}" text-anchor="end" fill="{SUB}" font-size="12.5" style="{FONT}">{_num(t)}</text>')
-    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
-    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
+    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
+    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
+    # tick marks on both axes, textbook style
+    for t in _ticks(ymax, ystep):
+        if t < ymin - 1e-9:
+            continue
+        yy = round(y(t), 2)
+        s.append(f'<line x1="{ml-5}" y1="{yy}" x2="{ml}" y2="{yy}" stroke="{AXIS}" stroke-width="1.6"/>')
+    for i in range(n):
+        s.append(f'<line x1="{xc(i):.1f}" y1="{mt+ph}" x2="{xc(i):.1f}" y2="{mt+ph+5}" stroke="{AXIS}" stroke-width="1.6"/>')
     if threshold is not None:
         yy = y(threshold)
         s.append(f'<line x1="{ml}" y1="{yy:.1f}" x2="{ml+pw}" y2="{yy:.1f}" stroke="#ef4444" stroke-width="1.6" stroke-dasharray="6 4"/>')
@@ -303,7 +317,7 @@ def hbar(cats, vals, vmax, vstep, color=None, W=600, H=300, xtitle=""):
         xx = round(x(t), 1)
         s.append(f'<line x1="{xx}" y1="{mt}" x2="{xx}" y2="{mt+ph}" stroke="{GRID}" stroke-width="1"/>')
         s.append(f'<text x="{xx}" y="{mt+ph+18}" text-anchor="middle" fill="{SUB}" font-size="12" style="{FONT}">{_num(t)}</text>')
-    s.append(f'<line x1="{rightx}" y1="{mt}" x2="{rightx}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
+    s.append(f'<line x1="{rightx}" y1="{mt}" x2="{rightx}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
     for i, (c, v) in enumerate(zip(cats, vals)):
         cy = mt + slot * (i + 0.5)
         col = (color[i] if isinstance(color, list) else color) if color else PAL[0]
@@ -334,8 +348,8 @@ def bar3d(cats, vals, ymin, ymax, ystep, colors, ytitle="", W=460, H=340, depth=
         yy = round(y(t), 1)
         s.append(f'<line x1="{ml}" y1="{yy}" x2="{ml+pw}" y2="{yy}" stroke="{GRID}" stroke-width="1"/>')
         s.append(f'<text x="{ml-8}" y="{yy+4}" text-anchor="end" fill="{SUB}" font-size="12.5" style="{FONT}">{_num(t)}%</text>')
-    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
-    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.5"/>')
+    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
+    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
     for i, (c, v) in enumerate(zip(cats, vals)):
         x0 = ml + slot * (i + 0.5) - bw / 2
         yy = y(v)
@@ -422,7 +436,7 @@ def pictograph(cats, counts, color="#0d9488", W=640, H=330):
             cy = base - cellh * (k + 0.5)
             s.append(_book(cx, cy, iconw, iconh, color))
         s.append(f'<text x="{cx:.1f}" y="{base+20}" text-anchor="middle" fill="{INK}" font-size="13" style="{FONT}">{c}</text>')
-    s.append(f'<line x1="{ml}" y1="{base}" x2="{ml+pw}" y2="{base}" stroke="{AXIS}" stroke-width="1.6"/>')
+    s.append(f'<line x1="{ml}" y1="{base}" x2="{ml+pw}" y2="{base}" stroke="{AXIS}" stroke-width="2"/>')
     s.append("</svg>")
     return "".join(s)
 
@@ -454,8 +468,8 @@ def points_plot(points, xmin, xmax, xstep, ymin, ymax, ystep, xtitle="", ytitle=
         s.append(f'<line x1="{gx}" y1="{mt}" x2="{gx}" y2="{mt+ph}" stroke="{GRID}" stroke-width="1"/>')
         s.append(f'<text x="{gx}" y="{mt+ph+18}" text-anchor="middle" fill="{SUB}" font-size="12" style="{FONT}">{_num(xv)}</text>')
         xv += xstep
-    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.6"/>')
-    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="1.6"/>')
+    s.append(f'<line x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
+    s.append(f'<line x1="{ml}" y1="{mt+ph}" x2="{ml+pw}" y2="{mt+ph}" stroke="{AXIS}" stroke-width="2"/>')
 
     def draw(pts, col):
         for p in pts:
@@ -536,6 +550,17 @@ def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
     s.append(f'<line x1="{x0:.1f}" y1="{mt}" x2="{x0:.1f}" y2="{mt+ph}" stroke="{INK}" stroke-width="1.6"/>')
     s.append(f'<path d="M{ml+pw+1},{y0:.1f} l-8,-4 l0,8 z" fill="{INK}"/>')
     s.append(f'<path d="M{x0:.1f},{mt-1} l-4,8 l8,0 z" fill="{INK}"/>')
+    # tick marks on the axes at every numeric label, textbook style
+    gx = _m.ceil(xmin / labx) * labx
+    while gx <= xmax + 1e-9:
+        if abs(gx) > 1e-9:
+            s.append(f'<line x1="{X(gx):.1f}" y1="{y0-3.5:.1f}" x2="{X(gx):.1f}" y2="{y0+3.5:.1f}" stroke="{INK}" stroke-width="1.4"/>')
+        gx += labx
+    gy = _m.ceil(ymin / laby) * laby
+    while gy <= ymax + 1e-9:
+        if abs(gy) > 1e-9:
+            s.append(f'<line x1="{x0-3.5:.1f}" y1="{Y(gy):.1f}" x2="{x0+3.5:.1f}" y2="{Y(gy):.1f}" stroke="{INK}" stroke-width="1.4"/>')
+        gy += laby
     # numeric tick labels (skip 0)
     gx = _m.ceil(xmin / labx) * labx
     while gx <= xmax + 1e-9:
