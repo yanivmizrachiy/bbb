@@ -11,7 +11,7 @@ A topic file looks like:
 
     import wsengine as W, charts as C
     def build():
-        W.SECTION("א", "פונקציה וקריאת גרף", "...", "#4f46e5")
+        W.SECTION("פונקציה וקריאת גרף", "...", "#4f46e5")   # letter auto-assigned
         W.Q(1, "...")
         W.ENDSEC()
 """

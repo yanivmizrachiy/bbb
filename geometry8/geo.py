@@ -553,7 +553,9 @@ def t2_fig_ext():          # right △ABC (right angle B), D on AC, 56° at D, 2
     D = (215, 150)          # on AC
     b = seg(A, B) + seg(B, C) + seg(C, A) + seg(B, D)
     b += right_angle(B, A, C, size=11)
-    b += arc(D, B, C, r=22, text="56°")
+    # 56° must sit on ∠ADB (then α=34°, β=68° via the exterior-angle theorem);
+    # on ∠BDC it is geometrically impossible (α would exceed the right angle at B).
+    b += arc(D, A, B, r=22, text="56°")
     b += arc(C, B, A, r=24, text="22°")
     b += arc(B, D, C, r=22, text="α")
     b += arc(A, B, C, r=22, text="β")
@@ -563,6 +565,26 @@ def t2_fig_ext():          # right △ABC (right angle B), D on AC, 56° at D, 2
 
 # ---- topic-1 complex figures reconstructed ----
 FILLB = "#cfe8f3"
+GRAYF = "#c9cfd8"
+
+
+def three_squares_circles():
+    # three congruent squares holding 1 / 4 / 9 congruent gray circles (tangent
+    # to each other and to the sides) — the gray area is equal in all three.
+    s, y0 = 88, 24
+    out = ""
+    # right-to-left (Hebrew reading order): א=1 circle, ב=4, ג=9
+    for idx, (x0, n) in enumerate([(232, 1), (121, 2), (10, 3)]):
+        r = s / (2 * n)
+        for i in range(n):
+            for j in range(n):
+                cx, cy = x0 + r + i * 2 * r, y0 + r + j * 2 * r
+                out += (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" '
+                        f'fill="{GRAYF}" stroke="{INK}" stroke-width="1.3"/>')
+        out += (f'<rect x="{x0}" y="{y0}" width="{s}" height="{s}" '
+                f'fill="none" stroke="{INK}" stroke-width="2"/>')
+        out += label((x0 + s / 2, y0 + s + 18), "אבג"[idx], size=13, col=SUB)
+    return _svg(330, 150, out)
 
 
 def yin_shaded():
