@@ -19,9 +19,25 @@ const vars = (o: Record<string, string>) => o as React.CSSProperties;
 
 export default function Catalog({ subjects }: { subjects: Subject[] }) {
   const [active, setActive] = useState(0);
-  const s = subjects[active];
+  // Guard the empty catalog (e.g. a migrated-but-unseeded DB) — render a calm
+  // empty state instead of crashing on subjects[active] below.
+  const s = subjects[active] ?? subjects[0];
   const totalQ = subjects.reduce((n, x) => n + x.questions, 0);
   const totalP = subjects.reduce((n, x) => n + x.pages, 0);
+
+  if (!s) {
+    return (
+      <div className={styles.app}>
+        <aside className={styles.rail}>
+          <div className={styles.brand}>
+            <div className={styles.kick}>אוסף שאלות להדפסה</div>
+            <h1>מתמטיקה לחטיבת הביניים</h1>
+          </div>
+          <div className={styles.rstats}>הקטלוג בטעינה — נסו לרענן בעוד רגע.</div>
+        </aside>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.app}>

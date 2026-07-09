@@ -28,6 +28,10 @@ for (const key of SUBJECTS) {
   const meta = JSON.parse(readFileSync(metaPath, "utf8"));
 
   const srcPages = join(ROOT, key, "assets", "pages");
+  if (!existsSync(srcPages)) {
+    console.warn(`sync-content: skipping ${key} (no assets/pages — run the Python build)`);
+    continue;
+  }
   const dstPages = join(OUT, key, "pages");
   mkdirSync(dstPages, { recursive: true });
   for (const f of readdirSync(srcPages)) {

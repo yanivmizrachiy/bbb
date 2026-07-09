@@ -108,7 +108,7 @@ export default async function SubjectPage({
                     {c.letter}
                   </span>
                   <span className={styles.chtitle}>{c.title}</span>
-                  <span className={styles.chpage}>עמ' {c.page}</span>
+                  <span className={styles.chpage}>עמ&apos; {c.page}</span>
                 </Link>
               </li>
             ))}

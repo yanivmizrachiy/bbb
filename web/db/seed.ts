@@ -20,10 +20,14 @@ async function main() {
   const root = join(process.cwd(), ".."); // bbb_work/ — the existing static project
   const { subjects: subjectRows, chapters: chapterRows } = buildCatalog(root);
 
-  await db.delete(chapters);
-  await db.delete(subjects);
-  await db.insert(subjects).values(subjectRows);
-  await db.insert(chapters).values(chapterRows);
+  // Atomic swap — the previous deployment keeps serving the old rows until
+  // commit, so live requests never observe a half-empty catalog mid-seed.
+  await db.transaction(async (tx) => {
+    await tx.delete(chapters);
+    await tx.delete(subjects);
+    await tx.insert(subjects).values(subjectRows);
+    await tx.insert(chapters).values(chapterRows);
+  });
 
   console.log(
     `seeded ${subjectRows.length} subjects + ${chapterRows.length} chapters → server Postgres`,

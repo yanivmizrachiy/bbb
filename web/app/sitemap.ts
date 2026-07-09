@@ -1,6 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getSubjects } from "@/db/data";
 
+// Render at request time like every other DB-backed route. Without this the
+// sitemap is prerendered during `next build`, which queries Postgres *before*
+// vercel-build's migrate+seed step has run — a fresh DB fails the whole build.
+export const dynamic = "force-dynamic";
+
 const BASE = "https://bbb-ten-plum.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -7,17 +7,18 @@
 ## הסטאק
 
 - **Next.js 16.2** (App Router, React 19, TypeScript)
-- **PostgreSQL** דרך **Drizzle ORM** + שכבת dual-driver:
-  - **PGlite** מוטמע (Postgres אמיתי ב־WASM) כברירת־מחדל — אפס התקנה.
-  - שרת Postgres אמיתי כש־`DATABASE_URL` מוגדר (Docker / מתארח).
+- **PostgreSQL** דרך **Drizzle ORM**, עם נפילה-רכה חכמה:
+  - ללא `DATABASE_URL` — האתר מגיש **סנאפשוט מחויב** (`app/_data/catalog.json`
+    דרך `db/data.ts`) — אפס התקנה, אפס מסד.
+  - שרת Postgres אמיתי כש־`DATABASE_URL`/`POSTGRES_URL` מוגדר (Docker / Vercel / Neon).
+  - PGlite (Postgres ב־WASM) משמש **בטסטים בלבד** (`test/db.test.ts`).
 
-## הרצה מקומית (אפס התקנה — PGlite)
+## הרצה מקומית (אפס התקנה — סנאפשוט)
 
 ```bash
 cd web
 npm install
-npm run db:seed     # יוצר Postgres מוטמע ב־.pgdata ומזריע נושאים + פרקים
-npm run dev         # http://localhost:3000
+npm run dev         # http://localhost:3000 — מגיש את הסנאפשוט המחויב
 ```
 
 ### אופציה: שרת Postgres אמיתי (Docker)
@@ -25,7 +26,7 @@ npm run dev         # http://localhost:3000
 ```bash
 docker compose up -d db          # מתיקיית השורש bbb_work
 # ב־web/.env: בטל הערה מ־DATABASE_URL, ואז:
-npm run db:push && npm run db:seed && npm run dev
+npm run db:migrate && npm run db:seed && npm run dev
 ```
 
 ## מבנה
@@ -38,7 +39,7 @@ web/
     api/subjects/route.ts  API: JSON של נושאים+פרקים מהמסד
   db/
     schema.ts     סכימת Drizzle — טבלאות subjects, chapters
-    index.ts      dual-driver (PGlite / שרת Postgres), pool יחיד
+    index.ts      חיבור שרת Postgres (pool יחיד, lazy) — ללא שרת מוגש הסנאפשוט
     seed.ts       הזרעה: נושאים מ־meta.json, פרקים מ־viewer.html (קריאה בלבד)
 docker-compose.yml  (בשורש) — Postgres 16 לשרת אמיתי
 ```
