@@ -93,8 +93,6 @@ def main():
     paths = sorted(glob.glob(os.path.join(root, "*", "assets", "*.png")))
     flagged = []
     for p in paths:
-        if p.endswith(".bak"):
-            continue
         try:
             r = suspect(p)
         except Exception as e:  # noqa

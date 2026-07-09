@@ -50,6 +50,7 @@ def main():
     for src in CSS_SOURCES:
         p = os.path.join(ROOT, src)
         if not os.path.exists(p):
+            issues.append(f"[CSS]  {src}: file missing — cannot verify design tokens")
             continue
         t = rd(p)
         for tok in CSS_TOKENS:
@@ -81,12 +82,18 @@ def main():
         try:
             from playwright.sync_api import sync_playwright
             import pathlib
+            checked = []
             with sync_playwright() as pw:
                 b = pw.chromium.launch()
                 for s in ["uncertainty", "algebra", "algebra8", "geometry8"]:
                     f = os.path.join(ROOT, s, "worksheet.html")
                     if not os.path.exists(f):
+                        # worksheet.html is a gitignored build intermediate — its
+                        # absence means heights were NOT verified, so say so loudly
+                        # instead of passing in silence.
+                        print(f"(heights NOT checked for {s}: {s}/worksheet.html missing — run the build first)")
                         continue
+                    checked.append(s)
                     pg = b.new_page(viewport={"width": 703, "height": 1000})
                     pg.emulate_media(media="print")
                     pg.goto(pathlib.Path(f).resolve().as_uri())
@@ -100,8 +107,12 @@ def main():
                         issues.append(f"[FIT]  {s}: {len(over)} card(s) > 250mm (page-split risk): {over}")
                     pg.close()
                 b.close()
+            if checked:
+                print(f"(heights verified for: {', '.join(checked)})")
+            else:
+                issues.append("[FIT]  --heights verified nothing (no worksheet.html found — run the build first)")
         except Exception as e:
-            print(f"(height check skipped: {e})")
+            issues.append(f"[FIT]  --heights could not run ({e}) — heights NOT verified")
 
     if issues:
         print("UNIFORMITY ISSUES (%d):" % len(issues))
