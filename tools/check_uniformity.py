@@ -62,6 +62,31 @@ def main():
     if os.path.exists(a) and os.path.exists(g) and rd(a) != rd(g):
         issues.append("[CSS]  algebra8/wsengine.py and geometry8/wsengine.py have DIVERGED")
 
+    # the canonical cartesian toolkit must stay byte-identical in every charts.py
+    def _block(text, name):
+        if name == "_POS":
+            m = re.search(r"^_POS = \{.*?\}\n", text, re.S | re.M)
+        else:
+            m = re.search(rf"^def {re.escape(name)}\(.*?(?=^\S|\Z)", text, re.S | re.M)
+        return m.group(0).rstrip() if m else None
+
+    CHART_FILES = ["uncertainty/charts.py", "algebra/charts.py",
+                   "algebra8/charts.py", "geometry8/charts.py"]
+    for fn in ["coord", "numline", "_clip_line", "_POS", "grid_of"]:
+        ref, ref_src = None, None
+        for cf in CHART_FILES:
+            p = os.path.join(ROOT, cf)
+            if not os.path.exists(p):
+                issues.append(f"[AXES] {cf}: file missing — cannot verify canonical toolkit")
+                continue
+            b = _block(rd(p), fn)
+            if b is None:
+                issues.append(f"[AXES] {cf}: canonical {fn}() is MISSING")
+            elif ref is None:
+                ref, ref_src = b, cf
+            elif b != ref:
+                issues.append(f"[AXES] {cf}: {fn}() DIVERGED from {ref_src} — sync it (one canonical implementation!)")
+
     # 2) notation inside content
     for p in CONTENT:
         rel = os.path.relpath(p, ROOT).replace("\\", "/")

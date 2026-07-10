@@ -623,3 +623,175 @@ def fig_e13_cross():     # lines AB, CD cross at O; ∠AOC = 5x−40, ∠DOB = x
     b += _glab((C[0]-9, C[1]+5), "C", anchor="end") + _glab((B[0]+9, B[1]+5), "B", anchor="start")
     b += _glab((O[0]-7, O[1]+15), "O", anchor="end", size=11, col=SUB)
     return _gsvg(320, 216, b)
+
+# ---------------------------------------------------------------------------
+# Canonical cartesian toolkit — BYTE-IDENTICAL across every subject's charts.py
+# (enforced by tools/check_uniformity.py). Edit in ONE place, then re-sync.
+# ---------------------------------------------------------------------------
+def numline(vmin, vmax, step, label="", W=620, H=66):
+    """Bare horizontal number line (ticks + numbers) for mark-the-interval tasks."""
+    ml, mr = 26, 26
+    pw = W - ml - mr
+    ya = H - 34
+
+    def x(v):
+        return ml + (v - vmin) / (vmax - vmin) * pw
+
+    s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
+    s.append(f'<line x1="{ml-8}" y1="{ya}" x2="{ml+pw+8}" y2="{ya}" stroke="{AXIS}" stroke-width="2"/>')
+    v = vmin
+    while v <= vmax + 1e-9:
+        xx = x(v)
+        s.append(f'<line x1="{xx:.1f}" y1="{ya-6}" x2="{xx:.1f}" y2="{ya+6}" stroke="{AXIS}" stroke-width="2"/>')
+        s.append(f'<text x="{xx:.1f}" y="{ya+22}" text-anchor="middle" fill="{INK}" font-size="13" style="{FONT}">{_num(v)}</text>')
+        v += step
+    if label:
+        # middle-anchored: Chromium extends RTL text rightward from an "end"
+        # anchor, clipping the first letter at the viewBox edge.
+        s.append(f'<text x="{ml+pw-14}" y="{ya-14}" text-anchor="middle" fill="{SUB}" font-size="13" font-weight="600" style="{FONT}">{label}</text>')
+    s.append("</svg>")
+    return "".join(s)
+
+
+def _clip_line(m, b, xmin, xmax, ymin, ymax):
+    """Return the two endpoints where y=mx+b enters/exits the view box."""
+    cand = []
+    for xx in (xmin, xmax):
+        yy = m * xx + b
+        if ymin - 1e-9 <= yy <= ymax + 1e-9:
+            cand.append((xx, yy))
+    if abs(m) > 1e-12:
+        for yy in (ymin, ymax):
+            xx = (yy - b) / m
+            if xmin - 1e-9 <= xx <= xmax + 1e-9:
+                cand.append((xx, yy))
+    uniq = []
+    for p in cand:
+        if not any(abs(p[0] - q[0]) < 1e-6 and abs(p[1] - q[1]) < 1e-6 for q in uniq):
+            uniq.append(p)
+    uniq.sort()
+    return (uniq[0], uniq[-1]) if len(uniq) >= 2 else None
+
+
+_POS = {"tr": (7, -7, "start"), "tl": (-7, -7, "end"), "br": (7, 15, "start"),
+        "bl": (-7, 15, "end"), "t": (0, -9, "middle"), "b": (0, 16, "middle"),
+        "r": (9, 5, "start"), "l": (-9, 5, "end")}
+
+
+def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
+          xlabel="x", ylabel="y", xstep=1, ystep=1, labx=None, laby=None,
+          W=380, H=330, title=""):
+    """Cartesian plane, textbook-grade. lines:[(m,b,color,label?,dash?)],
+    points:[(x,y,label,color?,pos?)], curves:[(pts,color,label?,dash?)].
+    labx/laby = numeric-label spacing. The left margin is computed from the
+    widest y-axis number, so numbers always sit fully clear of the axis —
+    even when the axis is at the plot edge (xmin=0). Every numeric label
+    carries a white knockout halo so gridlines never cut through it."""
+    lines = lines or []; points = points or []; curves = curves or []
+    labx = labx or xstep; laby = laby or ystep
+    import math as _m
+    HL = ' paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round"'
+
+    def _labs(vmin, vmax, step):
+        out = []; g = _m.ceil(vmin / step) * step
+        while g <= vmax + 1e-9:
+            if abs(g) > 1e-9:
+                out.append(round(g, 6))
+            g += step
+        return out
+
+    xlabs, ylabs = _labs(xmin, xmax, labx), _labs(ymin, ymax, laby)
+    # left margin: room for the widest y number to the left of the y-axis
+    maxw = max((len(_num(v)) for v in ylabs), default=1)
+    need = 10 + maxw * 7
+    mr = 16; mt = 24 + (16 if title else 0); mb = 36
+    fx = min(max((0 - xmin) / (xmax - xmin), 0.0), 1.0)
+    ml = max(14, int(_m.ceil((need - fx * (W - mr)) / (1.0 - fx)))) if fx < 0.999 else 14
+    pw, ph = W - ml - mr, H - mt - mb
+
+    def X(x): return ml + (x - xmin) / (xmax - xmin) * pw
+    def Y(y): return mt + (ymax - y) / (ymax - ymin) * ph
+
+    x0, y0 = X(0), Y(0)
+    s = [f'<svg class="chart" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
+    if title:
+        s.append(f'<text x="{W/2:.0f}" y="13" text-anchor="middle" fill="{INK}" font-size="14" font-weight="700" style="{FONT}">{title}</text>')
+    # grid
+    gx = _m.ceil(xmin / xstep) * xstep
+    while gx <= xmax + 1e-9:
+        s.append(f'<line x1="{X(gx):.1f}" y1="{mt}" x2="{X(gx):.1f}" y2="{mt+ph}" stroke="{GRID}" stroke-width="1"/>')
+        gx += xstep
+    gy = _m.ceil(ymin / ystep) * ystep
+    while gy <= ymax + 1e-9:
+        s.append(f'<line x1="{ml}" y1="{Y(gy):.1f}" x2="{ml+pw}" y2="{Y(gy):.1f}" stroke="{GRID}" stroke-width="1"/>')
+        gy += ystep
+    # axes + arrowheads (strong, textbook)
+    s.append(f'<line x1="{ml}" y1="{y0:.1f}" x2="{ml+pw}" y2="{y0:.1f}" stroke="{INK}" stroke-width="2.2"/>')
+    s.append(f'<line x1="{x0:.1f}" y1="{mt}" x2="{x0:.1f}" y2="{mt+ph}" stroke="{INK}" stroke-width="2.2"/>')
+    s.append(f'<path d="M{ml+pw+1},{y0:.1f} l-9,-4.5 l0,9 z" fill="{INK}"/>')
+    s.append(f'<path d="M{x0:.1f},{mt-1} l-4.5,9 l9,0 z" fill="{INK}"/>')
+    # tick marks (שנתות) on both axes at every numeric label
+    for gv in xlabs:
+        s.append(f'<line x1="{X(gv):.1f}" y1="{y0-3.5:.1f}" x2="{X(gv):.1f}" y2="{y0+3.5:.1f}" stroke="{INK}" stroke-width="1.5"/>')
+    for gv in ylabs:
+        s.append(f'<line x1="{x0-3.5:.1f}" y1="{Y(gv):.1f}" x2="{x0+3.5:.1f}" y2="{Y(gv):.1f}" stroke="{INK}" stroke-width="1.5"/>')
+    # numeric labels — dark, clear of the axes, haloed
+    for gv in xlabs:
+        s.append(f'<text x="{X(gv):.1f}" y="{y0+15:.1f}" text-anchor="middle" fill="{INK}" font-size="11" font-weight="600" style="{FONT}direction:ltr;unicode-bidi:isolate"{HL}>{_num(gv)}</text>')
+    for gv in ylabs:
+        s.append(f'<text x="{x0-6:.1f}" y="{Y(gv)+3.8:.1f}" text-anchor="end" fill="{INK}" font-size="11" font-weight="600" style="{FONT}direction:ltr;unicode-bidi:isolate"{HL}>{_num(gv)}</text>')
+    s.append(f'<text x="{x0-6:.1f}" y="{y0+15:.1f}" text-anchor="end" fill="{INK}" font-size="11" font-weight="600" style="{FONT}"{HL}>O</text>')
+    # axis names — x centred below the numbers row, y beside the arrow
+    s.append(f'<text x="{ml+pw/2:.0f}" y="{mt+ph+31:.0f}" text-anchor="middle" fill="{INK}" font-size="12.5" font-weight="600" style="{FONT}"{HL}>{xlabel}</text>')
+    s.append(f'<text x="{x0+3:.1f}" y="{mt-9:.0f}" text-anchor="start" fill="{INK}" font-size="12.5" font-weight="600" style="{FONT}"{HL}>{ylabel}</text>')
+    # curves (sampled polylines)
+    for cv in curves:
+        pts = cv[0]; col = cv[1] if len(cv) > 1 else PAL[0]
+        dash = ' stroke-dasharray="7 5"' if (len(cv) > 3 and cv[3]) else ""
+        pl = " ".join(f"{X(px):.1f},{Y(py):.1f}" for px, py in pts)
+        s.append(f'<polyline points="{pl}" fill="none" stroke="{col}" stroke-width="2.6"{dash}/>')
+        if len(cv) > 2 and cv[2]:
+            ex, ey = pts[-1]
+            s.append(f'<text x="{X(ex)-4:.1f}" y="{Y(ey)-6:.1f}" text-anchor="end" fill="{col}" font-size="13" style="{FONT}"{HL}>{cv[2]}</text>')
+    # lines y=mx+b
+    for ln in lines:
+        m, b, col = ln[0], ln[1], (ln[2] if len(ln) > 2 else PAL[0])
+        dash = ' stroke-dasharray="7 5"' if (len(ln) > 4 and ln[4]) else ""
+        seg = _clip_line(m, b, xmin, xmax, ymin, ymax)
+        if not seg:
+            continue
+        (ax, ay), (bx, by) = seg
+        s.append(f'<line x1="{X(ax):.1f}" y1="{Y(ay):.1f}" x2="{X(bx):.1f}" y2="{Y(by):.1f}" stroke="{col}" stroke-width="2.6"{dash}/>')
+        if len(ln) > 3 and ln[3]:
+            tx, ty = (ax, ay) if ay > by else (bx, by)        # topmost end
+            off = 6 if tx <= (xmin + xmax) / 2 else -6
+            anc = "start" if off > 0 else "end"
+            s.append(f'<text x="{X(tx)+off:.1f}" y="{Y(ty)+13:.1f}" text-anchor="{anc}" fill="{col}" font-size="13" font-style="italic" style="{FONT}"{HL}>{ln[3]}</text>')
+    # points
+    for p in points:
+        px, py = p[0], p[1]
+        lab = p[2] if len(p) > 2 else ""
+        col = p[3] if len(p) > 3 else INK
+        pos = p[4] if len(p) > 4 else "tr"
+        s.append(f'<circle cx="{X(px):.1f}" cy="{Y(py):.1f}" r="3.6" fill="{col}"/>')
+        if lab:
+            dx, dy, anc = _POS.get(pos, _POS["tr"])
+            s.append(f'<text x="{X(px)+dx:.1f}" y="{Y(py)+dy:.1f}" text-anchor="{anc}" fill="{INK}" font-size="13" font-weight="700" style="{FONT}"{HL}>{lab}</text>')
+    s.append("</svg>")
+    return "".join(s)
+
+
+def grid_of(svgs, cols, cellW, cellH, gap=12):
+    """Compose several coord()/chart SVGs into a grid (nested <svg> panels)."""
+    rows = (len(svgs) + cols - 1) // cols
+    PW = cols * cellW + (cols - 1) * gap
+    PH = rows * cellH + (rows - 1) * gap
+    out = [f'<svg class="chart" viewBox="0 0 {PW} {PH}" xmlns="http://www.w3.org/2000/svg">']
+    for i, sv in enumerate(svgs):
+        r, c = divmod(i, cols)
+        x, y = c * (cellW + gap), r * (cellH + gap)
+        out.append(sv.replace('<svg class="chart" viewBox',
+                               f'<svg x="{x}" y="{y}" width="{cellW}" height="{cellH}" preserveAspectRatio="xMidYMid meet" viewBox', 1))
+    out.append("</svg>")
+    return "".join(out)
+

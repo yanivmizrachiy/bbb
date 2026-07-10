@@ -521,11 +521,32 @@ _POS = {"tr": (7, -7, "start"), "tl": (-7, -7, "end"), "br": (7, 15, "start"),
 def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
           xlabel="x", ylabel="y", xstep=1, ystep=1, labx=None, laby=None,
           W=380, H=330, title=""):
-    """Cartesian plane. lines:[(m,b,color,label?,dash?)], points:[(x,y,label,color?,pos?)],
-    curves:[(pts,color,label?,dash?)]. labx/laby = numeric-label spacing."""
+    """Cartesian plane, textbook-grade. lines:[(m,b,color,label?,dash?)],
+    points:[(x,y,label,color?,pos?)], curves:[(pts,color,label?,dash?)].
+    labx/laby = numeric-label spacing. The left margin is computed from the
+    widest y-axis number, so numbers always sit fully clear of the axis —
+    even when the axis is at the plot edge (xmin=0). Every numeric label
+    carries a white knockout halo so gridlines never cut through it."""
     lines = lines or []; points = points or []; curves = curves or []
     labx = labx or xstep; laby = laby or ystep
-    ml = mr = 14; mt = 24 + (16 if title else 0); mb = 30
+    import math as _m
+    HL = ' paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round"'
+
+    def _labs(vmin, vmax, step):
+        out = []; g = _m.ceil(vmin / step) * step
+        while g <= vmax + 1e-9:
+            if abs(g) > 1e-9:
+                out.append(round(g, 6))
+            g += step
+        return out
+
+    xlabs, ylabs = _labs(xmin, xmax, labx), _labs(ymin, ymax, laby)
+    # left margin: room for the widest y number to the left of the y-axis
+    maxw = max((len(_num(v)) for v in ylabs), default=1)
+    need = 10 + maxw * 7
+    mr = 16; mt = 24 + (16 if title else 0); mb = 36
+    fx = min(max((0 - xmin) / (xmax - xmin), 0.0), 1.0)
+    ml = max(14, int(_m.ceil((need - fx * (W - mr)) / (1.0 - fx)))) if fx < 0.999 else 14
     pw, ph = W - ml - mr, H - mt - mb
 
     def X(x): return ml + (x - xmin) / (xmax - xmin) * pw
@@ -536,7 +557,6 @@ def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
     if title:
         s.append(f'<text x="{W/2:.0f}" y="13" text-anchor="middle" fill="{INK}" font-size="14" font-weight="700" style="{FONT}">{title}</text>')
     # grid
-    import math as _m
     gx = _m.ceil(xmin / xstep) * xstep
     while gx <= xmax + 1e-9:
         s.append(f'<line x1="{X(gx):.1f}" y1="{mt}" x2="{X(gx):.1f}" y2="{mt+ph}" stroke="{GRID}" stroke-width="1"/>')
@@ -545,37 +565,25 @@ def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
     while gy <= ymax + 1e-9:
         s.append(f'<line x1="{ml}" y1="{Y(gy):.1f}" x2="{ml+pw}" y2="{Y(gy):.1f}" stroke="{GRID}" stroke-width="1"/>')
         gy += ystep
-    # axes + arrowheads
-    s.append(f'<line x1="{ml}" y1="{y0:.1f}" x2="{ml+pw}" y2="{y0:.1f}" stroke="{INK}" stroke-width="1.6"/>')
-    s.append(f'<line x1="{x0:.1f}" y1="{mt}" x2="{x0:.1f}" y2="{mt+ph}" stroke="{INK}" stroke-width="1.6"/>')
-    s.append(f'<path d="M{ml+pw+1},{y0:.1f} l-8,-4 l0,8 z" fill="{INK}"/>')
-    s.append(f'<path d="M{x0:.1f},{mt-1} l-4,8 l8,0 z" fill="{INK}"/>')
-    # tick marks on the axes at every numeric label, textbook style
-    gx = _m.ceil(xmin / labx) * labx
-    while gx <= xmax + 1e-9:
-        if abs(gx) > 1e-9:
-            s.append(f'<line x1="{X(gx):.1f}" y1="{y0-3.5:.1f}" x2="{X(gx):.1f}" y2="{y0+3.5:.1f}" stroke="{INK}" stroke-width="1.4"/>')
-        gx += labx
-    gy = _m.ceil(ymin / laby) * laby
-    while gy <= ymax + 1e-9:
-        if abs(gy) > 1e-9:
-            s.append(f'<line x1="{x0-3.5:.1f}" y1="{Y(gy):.1f}" x2="{x0+3.5:.1f}" y2="{Y(gy):.1f}" stroke="{INK}" stroke-width="1.4"/>')
-        gy += laby
-    # numeric tick labels (skip 0)
-    gx = _m.ceil(xmin / labx) * labx
-    while gx <= xmax + 1e-9:
-        if abs(gx) > 1e-9:
-            s.append(f'<text x="{X(gx):.1f}" y="{y0+13:.1f}" text-anchor="middle" fill="{SUB}" font-size="10.5" style="{FONT}">{_num(gx)}</text>')
-        gx += labx
-    gy = _m.ceil(ymin / laby) * laby
-    while gy <= ymax + 1e-9:
-        if abs(gy) > 1e-9:
-            s.append(f'<text x="{x0-5:.1f}" y="{Y(gy)+3.5:.1f}" text-anchor="end" fill="{SUB}" font-size="10.5" style="{FONT}">{_num(gy)}</text>')
-        gy += laby
-    s.append(f'<text x="{x0-5:.1f}" y="{y0+13:.1f}" text-anchor="end" fill="{SUB}" font-size="10.5" style="{FONT}">O</text>')
-    # axis names — x centred below the axis, y near the top, both clear of ticks/arrows
-    s.append(f'<text x="{ml+pw/2:.0f}" y="{mt+ph+22:.0f}" text-anchor="middle" fill="{INK}" font-size="12.5" style="{FONT}">{xlabel}</text>')
-    s.append(f'<text x="{x0+2:.1f}" y="{mt-9:.0f}" text-anchor="start" fill="{INK}" font-size="12.5" style="{FONT}">{ylabel}</text>')
+    # axes + arrowheads (strong, textbook)
+    s.append(f'<line x1="{ml}" y1="{y0:.1f}" x2="{ml+pw}" y2="{y0:.1f}" stroke="{INK}" stroke-width="2.2"/>')
+    s.append(f'<line x1="{x0:.1f}" y1="{mt}" x2="{x0:.1f}" y2="{mt+ph}" stroke="{INK}" stroke-width="2.2"/>')
+    s.append(f'<path d="M{ml+pw+1},{y0:.1f} l-9,-4.5 l0,9 z" fill="{INK}"/>')
+    s.append(f'<path d="M{x0:.1f},{mt-1} l-4.5,9 l9,0 z" fill="{INK}"/>')
+    # tick marks (שנתות) on both axes at every numeric label
+    for gv in xlabs:
+        s.append(f'<line x1="{X(gv):.1f}" y1="{y0-3.5:.1f}" x2="{X(gv):.1f}" y2="{y0+3.5:.1f}" stroke="{INK}" stroke-width="1.5"/>')
+    for gv in ylabs:
+        s.append(f'<line x1="{x0-3.5:.1f}" y1="{Y(gv):.1f}" x2="{x0+3.5:.1f}" y2="{Y(gv):.1f}" stroke="{INK}" stroke-width="1.5"/>')
+    # numeric labels — dark, clear of the axes, haloed
+    for gv in xlabs:
+        s.append(f'<text x="{X(gv):.1f}" y="{y0+15:.1f}" text-anchor="middle" fill="{INK}" font-size="11" font-weight="600" style="{FONT}direction:ltr;unicode-bidi:isolate"{HL}>{_num(gv)}</text>')
+    for gv in ylabs:
+        s.append(f'<text x="{x0-6:.1f}" y="{Y(gv)+3.8:.1f}" text-anchor="end" fill="{INK}" font-size="11" font-weight="600" style="{FONT}direction:ltr;unicode-bidi:isolate"{HL}>{_num(gv)}</text>')
+    s.append(f'<text x="{x0-6:.1f}" y="{y0+15:.1f}" text-anchor="end" fill="{INK}" font-size="11" font-weight="600" style="{FONT}"{HL}>O</text>')
+    # axis names — x centred below the numbers row, y beside the arrow
+    s.append(f'<text x="{ml+pw/2:.0f}" y="{mt+ph+31:.0f}" text-anchor="middle" fill="{INK}" font-size="12.5" font-weight="600" style="{FONT}"{HL}>{xlabel}</text>')
+    s.append(f'<text x="{x0+3:.1f}" y="{mt-9:.0f}" text-anchor="start" fill="{INK}" font-size="12.5" font-weight="600" style="{FONT}"{HL}>{ylabel}</text>')
     # curves (sampled polylines)
     for cv in curves:
         pts = cv[0]; col = cv[1] if len(cv) > 1 else PAL[0]
@@ -584,7 +592,7 @@ def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
         s.append(f'<polyline points="{pl}" fill="none" stroke="{col}" stroke-width="2.6"{dash}/>')
         if len(cv) > 2 and cv[2]:
             ex, ey = pts[-1]
-            s.append(f'<text x="{X(ex)-4:.1f}" y="{Y(ey)-6:.1f}" text-anchor="end" fill="{col}" font-size="13" style="{FONT}">{cv[2]}</text>')
+            s.append(f'<text x="{X(ex)-4:.1f}" y="{Y(ey)-6:.1f}" text-anchor="end" fill="{col}" font-size="13" style="{FONT}"{HL}>{cv[2]}</text>')
     # lines y=mx+b
     for ln in lines:
         m, b, col = ln[0], ln[1], (ln[2] if len(ln) > 2 else PAL[0])
@@ -598,7 +606,7 @@ def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
             tx, ty = (ax, ay) if ay > by else (bx, by)        # topmost end
             off = 6 if tx <= (xmin + xmax) / 2 else -6
             anc = "start" if off > 0 else "end"
-            s.append(f'<text x="{X(tx)+off:.1f}" y="{Y(ty)+13:.1f}" text-anchor="{anc}" fill="{col}" font-size="13" font-style="italic" style="{FONT}">{ln[3]}</text>')
+            s.append(f'<text x="{X(tx)+off:.1f}" y="{Y(ty)+13:.1f}" text-anchor="{anc}" fill="{col}" font-size="13" font-style="italic" style="{FONT}"{HL}>{ln[3]}</text>')
     # points
     for p in points:
         px, py = p[0], p[1]
@@ -608,7 +616,7 @@ def coord(xmin, xmax, ymin, ymax, lines=None, points=None, curves=None,
         s.append(f'<circle cx="{X(px):.1f}" cy="{Y(py):.1f}" r="3.6" fill="{col}"/>')
         if lab:
             dx, dy, anc = _POS.get(pos, _POS["tr"])
-            s.append(f'<text x="{X(px)+dx:.1f}" y="{Y(py)+dy:.1f}" text-anchor="{anc}" fill="{INK}" font-size="13" font-weight="700" style="{FONT}">{lab}</text>')
+            s.append(f'<text x="{X(px)+dx:.1f}" y="{Y(py)+dy:.1f}" text-anchor="{anc}" fill="{INK}" font-size="13" font-weight="700" style="{FONT}"{HL}>{lab}</text>')
     s.append("</svg>")
     return "".join(s)
 

@@ -14,8 +14,8 @@ _FERRIS = [(round(t * 0.25, 3), round(6 - 5 * math.cos(2 * math.pi * (t * 0.25) 
 def _rise_fall_svg():
     # simple labelled graph: rises A->B, falls B->C, constant C->D
     return ('<svg class="chart" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">'
-            '<line x1="34" y1="186" x2="340" y2="186" stroke="#94a3b8" stroke-width="1.5"/>'
-            '<line x1="34" y1="186" x2="34" y2="20" stroke="#94a3b8" stroke-width="1.5"/>'
+            '<line x1="34" y1="186" x2="340" y2="186" stroke="#1f2a44" stroke-width="2.2"/>'
+            '<line x1="34" y1="186" x2="34" y2="20" stroke="#1f2a44" stroke-width="2.2"/>'
             '<polyline points="60,150 140,50 230,120 320,120" fill="none" stroke="#4f46e5" stroke-width="3"/>'
             '<circle cx="60" cy="150" r="4" fill="#1f2a44"/><text x="52" y="168" font-size="13" font-family="Segoe UI">A</text>'
             '<circle cx="140" cy="50" r="4" fill="#1f2a44"/><text x="134" y="42" font-size="13" font-family="Segoe UI">B</text>'

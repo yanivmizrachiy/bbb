@@ -274,10 +274,10 @@ def drone_cone():
 
 
 # ---- blank coordinate grid for the student to draw on (same style as below) ----
-def coord_grid(xmin, xmax, ymin, ymax, u=18, ox="x", oy="y"):
-    """Empty coordinate grid — faint grid, arrowed axes, O/x/y labels — for the
-    student to draw on (e.g. sketch a circle and plot points). Matches the look of
-    circle_diameter() so paired figures are consistent."""
+def coord_grid(xmin, xmax, ymin, ymax, u=18, ox="x", oy="y", labstep=2):
+    """Empty coordinate grid for the student to draw on — textbook-grade:
+    strong arrowed axes, tick marks + haloed numbers every `labstep` units,
+    O/x/y labels. Matches the canonical charts.coord() standard."""
     ml, mt = 26, 16
     def X(x): return ml + (x - xmin) * u
     def Y(y): return mt + (ymax - y) * u
@@ -290,13 +290,23 @@ def coord_grid(xmin, xmax, ymin, ymax, u=18, ox="x", oy="y"):
     for gy in range(ymin, ymax + 1):
         s.append(f'<line x1="{X(xmin):.0f}" y1="{Y(gy):.0f}" x2="{X(xmax):.0f}" y2="{Y(gy):.0f}" stroke="{GRID}" stroke-width="1"/>')
     y0, x0 = Y(0), X(0)
-    s.append(f'<line x1="{X(xmin):.0f}" y1="{y0:.0f}" x2="{X(xmax):.0f}" y2="{y0:.0f}" stroke="{INK}" stroke-width="1.6"/>')
-    s.append(f'<line x1="{x0:.0f}" y1="{Y(ymin):.0f}" x2="{x0:.0f}" y2="{Y(ymax):.0f}" stroke="{INK}" stroke-width="1.6"/>')
-    s.append(f'<path d="M{X(xmax):.0f},{y0:.0f} l-8,-4 l0,8 z" fill="{INK}"/>')
-    s.append(f'<path d="M{x0:.0f},{Y(ymax):.0f} l-4,8 l8,0 z" fill="{INK}"/>')
-    s.append(label((x0 - 6, Y(0) + 13), "O", anchor="end", size=12, col=SUB))
-    s.append(label((X(xmax) - 2, y0 - 7), ox, anchor="end", size=13, col=INK))
-    s.append(label((x0 + 8, Y(ymax) + 11), oy, anchor="start", size=13, col=INK))
+    s.append(f'<line x1="{X(xmin):.0f}" y1="{y0:.0f}" x2="{X(xmax):.0f}" y2="{y0:.0f}" stroke="{INK}" stroke-width="2.2"/>')
+    s.append(f'<line x1="{x0:.0f}" y1="{Y(ymin):.0f}" x2="{x0:.0f}" y2="{Y(ymax):.0f}" stroke="{INK}" stroke-width="2.2"/>')
+    s.append(f'<path d="M{X(xmax):.0f},{y0:.0f} l-9,-4.5 l0,9 z" fill="{INK}"/>')
+    s.append(f'<path d="M{x0:.0f},{Y(ymax):.0f} l-4.5,9 l9,0 z" fill="{INK}"/>')
+    # tick marks + numbers every labstep units (skip 0) — haloed by label()
+    # ⁦..⁩ (LRI/PDI) keep minus BEFORE the digit under the page's RTL bidi
+    for gx in range(xmin, xmax + 1):
+        if gx != 0 and gx % labstep == 0:
+            s.append(f'<line x1="{X(gx):.0f}" y1="{y0-3.5:.0f}" x2="{X(gx):.0f}" y2="{y0+3.5:.0f}" stroke="{INK}" stroke-width="1.5"/>')
+            s.append(label((X(gx), y0 + 14), "⁦" + str(gx).replace("-", "−") + "⁩", size=10.5))
+    for gy in range(ymin, ymax + 1):
+        if gy != 0 and gy % labstep == 0:
+            s.append(f'<line x1="{x0-3.5:.0f}" y1="{Y(gy):.0f}" x2="{x0+3.5:.0f}" y2="{Y(gy):.0f}" stroke="{INK}" stroke-width="1.5"/>')
+            s.append(label((x0 - 6, Y(gy) + 3.8), "⁦" + str(gy).replace("-", "−") + "⁩", size=10.5, anchor="end"))
+    s.append(label((x0 - 6, Y(0) + 14), "O", anchor="end", size=11))
+    s.append(label((X(xmax) - 2, y0 - 8), ox, size=13))
+    s.append(label((x0 + 9, Y(ymax) + 11), oy, anchor="start", size=13))
     s.append("</svg>")
     return "".join(s)
 
