@@ -475,8 +475,9 @@ def _isect(a, b, c, d):
 
 
 def t2_fig_q2():           # △ABC, D on extension of BC, AB∥EC, ∠A=65°, ∠ECD=40°, α=∠BCA
-    B, C, D, A = (48, 152), (168, 152), (288, 152), (110, 52)
-    E = (168 + (110-48), 152 - (152-52))     # CE ∥ AB
+    # Built from the stated angles (∠B = 40° via CE ∥ AB, ∠A = 65°, so α = 75°): true size.
+    B, C, D, A = (48, 152), (168, 152), (288, 152), (146.0, 69.8)
+    E = (168 + (146.0-48), 152 - (152-69.8))     # CE ∥ AB
     b = seg(A, B) + seg(B, D) + seg(A, C) + seg(C, E)
     b += arc(A, B, C, r=22, text="65°")
     b += arc(C, E, D, r=20, text="40°")
@@ -498,7 +499,7 @@ def t2_fig_q5():           # ∠A=50°(bisected 25°), ∠C=30° (∠BCE=150°),
 def t2_fig_q3km():         # k∥m, A,D on k; B,C on m; x and 55° at A, y at B
     k0, k1 = (40, 48), (296, 48)
     m0, m1 = (40, 168), (296, 168)
-    A, D, B, C = (150, 48), (258, 48), (108, 168), (212, 168)
+    A, D, B, C = (150, 48), (258, 48), (108, 168), (234.0, 168)   # ∠DAC = 55° true size
     b = seg(k0, k1) + seg(m0, m1) + seg(A, B) + seg(A, C)
     b += arc(A, k0, B, r=20, text="x")
     b += arc(A, D, C, r=26, text="55°")
@@ -510,7 +511,8 @@ def t2_fig_q3km():         # k∥m, A,D on k; B,C on m; x and 55° at A, y at B
 
 def t2_fig_2tri():         # B,E,C,F collinear; △ABC & △DEF; G=AC∩DE; ∠B=40°, ∠F=60°
     B, E, C, F = (45, 158), (118, 158), (215, 158), (292, 158)
-    A, D = (135, 52), (228, 58)
+    # Built from the stated angles (∠B = 40°, ∠F = 60°, AB ∥ DE, AC ∥ DF): every angle is drawn true size.
+    A, D = (159.5, 61.9), (235.2, 59.6)
     G = _isect(A, C, D, E)
     b = seg(A, B) + seg(A, C) + seg(D, E) + seg(D, F) + seg(B, F)
     b += arc(B, A, F, r=22, text="40°")
