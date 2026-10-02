@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>שאלה 1</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+    <header class="top-header">
+      <div class="top-title">שאלה 1</div>
+    </header>
+
+    <section class="question-area">
+      <h1>בסיבוב של גלגל המזל שלפניכם, מהי ההסתברות שהמחוג ייעצר על הצבע הכחול?</h1>
+    </section>
+
+    <section class="visual-graphic">
+      <svg width="200" height="200" viewBox="0 0 100 100" class="wheel-svg">
+        <circle cx="50" cy="50" r="48" fill="none" stroke="#112b4c" stroke-width="0.5" />
+        <!-- Sector 1 (Light grey) -->
+        <path d="M 50 50 L 98 50 A 48 48 0 0 1 50 98 Z" fill="#e2e8f0" stroke="#112b4c" stroke-width="0.5" />
+        <!-- Sector 2 (Active Dark Blue Sector - exactly 1/4) -->
+        <path d="M 50 50 L 50 98 A 48 48 0 0 1 2 50 Z" fill="#112b4c" stroke="#112b4c" stroke-width="0.5" />
+        <!-- Sector 3 (Light grey) -->
+        <path d="M 50 50 L 2 50 A 48 48 0 0 1 50 2 Z" fill="#e2e8f0" stroke="#112b4c" stroke-width="0.5" />
+        <!-- Sector 4 (Lightest grey) -->
+        <path d="M 50 50 L 50 2 A 48 48 0 0 1 98 50 Z" fill="#f1f5f9" stroke="#112b4c" stroke-width="0.5" />
+        <circle cx="50" cy="50" r="2.5" fill="#112b4c" />
+      </svg>
+    </section>
+
+    <section class="choices">
+      <div class="choice">
+        <span class="choice-letter">(א)</span>
+        <span class="choice-text">1/2</span>
+      </div>
+      <div class="choice">
+        <span class="choice-letter">(ב)</span>
+        <span class="choice-text">1/4</span>
+      </div>
+      <div class="choice">
+        <span class="choice-letter">(ג)</span>
+        <span class="choice-text">1/8</span>
+      </div>
+      <div class="choice">
+        <span class="choice-letter">(ד)</span>
+        <span class="choice-text">3/4</span>
+      </div>
+    </section>
+
+    <section class="solution-lines">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-line"></div>
+      <div class="footer-text">תחום וודאות</div>
+    </footer>
+  </main>
+</body>
+</html>

@@ -45,3 +45,31 @@ jobs:
 
       - name: Production build (PGlite — no external DB needed)
         run: npm run build
+
+
+  legacy-uncertainty-react-prototype:
+    name: legacy uncertainty React prototype · typecheck · build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: legacy/uncertainty-react-prototype
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: legacy/uncertainty-react-prototype/package-lock.json
+
+      - name: Validate migration blob integrity
+        run: node validate-migration.mjs
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Type-check
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build

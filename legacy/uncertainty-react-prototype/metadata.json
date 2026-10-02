@@ -1,0 +1,6 @@
+{
+  "name": "דפי עבודה - אי וודאות",
+  "description": "מחולל ומציג דפי עבודה מרהיבים, נקיים ומוכנים להדפסה (A4) בנושא הסתברות, סטטיסטיקה ואי-ודאות לתלמידי חטיבת הביניים.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

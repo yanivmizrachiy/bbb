@@ -40,3 +40,12 @@ python tools/check_uniformity.py --heights
 ```
 
 *Python · PyMuPDF · Playwright/Chromium · SVG · RTL.*
+
+
+## אב־טיפוס React היסטורי
+
+אב־טיפוס עצמאי של 8 שאלות בנושא הסתברות/אי־וודאות, שנוצר ב־Google AI Studio ונשמר בעבר בשורש של `yanivmizrachiy/hadash`, נשמר כאן לצורכי היסטוריה ושימוש חוזר:
+
+`legacy/uncertainty-react-prototype/`
+
+הוא **אינו מקור האמת הראשי** של תחום אי־וודאות. התוכן הקנוני ממשיך להיות תחת `uncertainty/`.
