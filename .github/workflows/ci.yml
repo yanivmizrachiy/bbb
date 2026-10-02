@@ -62,6 +62,9 @@ jobs:
           cache: npm
           cache-dependency-path: legacy/uncertainty-react-prototype/package-lock.json
 
+      - name: Validate migration blob integrity
+        run: node validate-migration.mjs
+
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
